@@ -27,16 +27,21 @@ const StatCard = ({ value, label, gradient, shadow }) => {
   );
 };
 
-const AppStoreButton = ({ store, logo }) => (
-  <button className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 border-2 border-accent rounded-full hover:bg-accent transition-colors w-full sm:w-auto shadow-md shadow-accent">
-    <img src={logo} alt={`${store} logo`} className="h-6 w-6" />
-    <div className="text-left text-white">
-      <div className="text-xs">
-        {store === "Google Play" ? "GET IT ON" : "Download on the"}
-      </div>
-      <div className="text-sm font-semibold">{store}</div>
+const AppStoreButton = ({ store, logo,link }) => (
+  <a
+  href={link}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 border-2 border-accent rounded-full hover:bg-accent transition-colors w-full sm:w-auto shadow-md shadow-accent"
+>
+  <img src={logo} alt={`${store} logo`} className="h-6 w-6" />
+  <div className="text-left text-white">
+    <div className="text-xs">
+      {store === "Google Play" ? "GET IT ON" : "Download on the"}
     </div>
-  </button>
+    <div className="text-sm font-semibold">{store}</div>
+  </div>
+</a>
 );
 
 const Discover = () => {
@@ -65,8 +70,8 @@ const Discover = () => {
               and personalized recommendations for an unforgettable stay.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <AppStoreButton store="Google Play" logo={GoogleImage} />
-              <AppStoreButton store="App Store" logo={AppleImage} />{" "}
+            <AppStoreButton store="Google Play" logo={GoogleImage} link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"/>
+            <AppStoreButton store="App Store" logo={AppleImage}  link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"/>{" "}
               {/* Pass Apple logo here */}
             </div>
           </motion.div>

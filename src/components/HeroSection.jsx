@@ -53,12 +53,12 @@ const HeroSection = ({ scrollToNextSection }) => {
                 "Explore hostels tailored to your needs",
                 "Join a thriving community of explorers",
               ]}
-              loop={5}
+              loop={1000}
               typeSpeed={80}
-              deleteSpeed={50}
-              delaySpeed={1000}
+              deleteSpeed={30}
+              delaySpeed={2000}
               cursor
-              cursorStyle="_"
+              cursorStyle=""
             />
           </h1>
 

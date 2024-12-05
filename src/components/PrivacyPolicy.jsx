@@ -3,37 +3,50 @@ import TermsNavbar from "./TermsNavBar";
 
 function PrivacyPolicyPage() {
   return (
-    <div className="bg-white text-gray-900">
+    <div className="bg-gray-50 text-gray-800 min-h-screen">
       <TermsNavbar />
-      <main className="container mx-auto p-6 sm:px-12 md:px-24">
-        <h1 className="text-4xl font-bold text-center text-secondary mb-12">
+      <main className="container mx-auto p-6 sm:px-8 lg:px-20 xl:px-32">
+        <h1 className="text-4xl font-semibold text-center text-secondary mb-8">
           Privacy Policy
         </h1>
 
         <section className="space-y-12">
-          <div className="prose lg:prose-xl mx-auto text-sm">
+          <div className="prose lg:prose-lg mx-auto text-base leading-relaxed text-gray-700">
             {/* Introduction */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 Introduction
               </h2>
               <p>
-                This Privacy Policy outlines how HostelHubb Ghana collects,
-                uses, and protects your information. By using our services, you
-                consent to the terms outlined in this policy.
+              At HostelHubb, we prioritize your privacy and take it seriously. 
+              We understand that by using our services, you're placing your 
+              trust in us, and we are committed to honoring that trust by safeguarding 
+              your personal data. We aim to act in the best interest of our users and 
+              maintain transparency in how we handle and protect your information.
+              </p>
+              <p className="mt-3">
+              This document, referred to as our Privacy Statement, explains how we use and process your
+               personal data in a clear and transparent manner. Here, you'll also learn about your rights 
+               regarding your personal data and how you can reach out to us for any concerns. 
+              When you use HostelHubb, through our mobile app, this Privacy Statement applies to any personal 
+              data collected through these channels.If you’re one of our business partners, please refer to our Privacy Statement
+             for Business Partners for more specific information on data handling in our business relationships.
+              We may update this Privacy Statement from time to time. If any significant changes that impact you are made,
+              we’ll inform you before implementing them, so you always know where you stand regarding your privacy with HostelHubb.
+              We encourage you to check back here periodically to stay informed of any updates.
               </p>
             </div>
 
             {/* Information Collection */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 1. Information Collection
               </h2>
               <p>
                 We collect information to provide a better experience,
                 including:
               </p>
-              <ul className="list-inside list-disc space-y-3">
+              <ul className="list-inside list-disc space-y-3 ml-4 text-gray-600">
                 <li>
                   Personal information such as your name, email, and contact
                   details.
@@ -44,12 +57,12 @@ function PrivacyPolicyPage() {
             </div>
 
             {/* Information Usage */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 2. Information Usage
               </h2>
               <p>Your information is used to:</p>
-              <ul className="list-inside list-disc space-y-3">
+              <ul className="list-inside list-disc space-y-3 ml-4 text-gray-600">
                 <li>Facilitate bookings and provide customer support.</li>
                 <li>Improve our app's functionality and user experience.</li>
                 <li>
@@ -59,15 +72,15 @@ function PrivacyPolicyPage() {
             </div>
 
             {/* Information Sharing */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 3. Information Sharing
               </h2>
               <p>
                 We do not share your personal information with third parties
                 except:
               </p>
-              <ul className="list-inside list-disc space-y-3">
+              <ul className="list-inside list-disc space-y-3 ml-4 text-gray-600">
                 <li>As necessary to complete a transaction you request.</li>
                 <li>To comply with legal requirements or enforce our terms.</li>
                 <li>
@@ -77,8 +90,8 @@ function PrivacyPolicyPage() {
             </div>
 
             {/* Security Measures */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 4. Security Measures
               </h2>
               <p>
@@ -89,11 +102,11 @@ function PrivacyPolicyPage() {
             </div>
 
             {/* Your Rights */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 5. Your Rights
               </h2>
-              <ul className="list-inside list-disc space-y-3">
+              <ul className="list-inside list-disc space-y-3 ml-4 text-gray-600">
                 <li>Access, correct, or delete your personal data.</li>
                 <li>Withdraw consent for data processing at any time.</li>
                 <li>Request a copy of the data we hold on you.</li>
@@ -101,8 +114,8 @@ function PrivacyPolicyPage() {
             </div>
 
             {/* Cookies */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 6. Cookies
               </h2>
               <p>
@@ -113,8 +126,8 @@ function PrivacyPolicyPage() {
             </div>
 
             {/* Policy Updates */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+            <div className="mb-12 border-b border-gray-300 pb-8">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 7. Policy Updates
               </h2>
               <p>
@@ -125,7 +138,7 @@ function PrivacyPolicyPage() {
 
             {/* Contact Us */}
             <div className="mb-12">
-              <h2 className="text-3xl font-extrabold text-secondary mb-4">
+              <h2 className="text-2xl font-semibold text-secondary mb-4">
                 8. Contact Us
               </h2>
               <p>
@@ -134,7 +147,7 @@ function PrivacyPolicyPage() {
               </p>
             </div>
 
-            <p className="italic text-center mt-12 text-lg">
+            <p className="italic text-center mt-12 text-gray-500 text-lg">
               By using our services, you confirm that you have read, understood,
               and agree to this Privacy Policy.
             </p>

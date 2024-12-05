@@ -15,7 +15,16 @@ export default function ContactUs() {
   const [submitStatus, setSubmitStatus] = useState("");
   const bannerRef = useRef(null);
 
-  const handleInputChange = (e) => {
+  // Validation logic
+  const isEmailValid = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isFormValid =
+    formData.from_name.trim() !== "" &&
+    isEmailValid(formData.email) &&
+    formData.message.trim() !== "";
+
+  const handleInputChange = (e
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -24,7 +33,6 @@ export default function ContactUs() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Send email using EmailJS
     emailjs
       .send(
         "service_ncxubhl",
@@ -54,7 +62,6 @@ export default function ContactUs() {
       ref={bannerRef}
       className="w-full max-w-6xl mx-auto p-6 flex flex-col md:flex-row gap-6"
     >
-      {/* Contact Form Section */}
       <motion.div
         className="flex-1 bg-white bg-opacity-60 backdrop-blur-lg rounded-lg shadow-lg p-6 space-y-6"
         initial={{ opacity: 0, y: 20 }}
@@ -118,8 +125,10 @@ export default function ContactUs() {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-secondary text-white rounded-md shadow-lg hover:bg-opacity-80 transition duration-300"
-            disabled={isSubmitting}
+            className={`w-full py-2 px-4 bg-secondary text-white rounded-md shadow-lg hover:bg-opacity-80 transition duration-300 ${
+              isSubmitting || !isFormValid ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isSubmitting || !isFormValid}
           >
             {isSubmitting ? "Sending..." : "Send Message"}
           </button>
