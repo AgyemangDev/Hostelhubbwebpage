@@ -71,7 +71,7 @@ const Discover = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <AppStoreButton store="Google Play" logo={GoogleImage} link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"/>
-            <AppStoreButton store="App Store" logo={AppleImage}  link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"/>{" "}
+            <AppStoreButton store="App Store" logo={AppleImage}  link="https://apps.apple.com/us/app/hostelhubb/id6738483533"/>{" "}
               {/* Pass Apple logo here */}
             </div>
           </motion.div>
