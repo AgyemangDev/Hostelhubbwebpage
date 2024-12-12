@@ -3,8 +3,17 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import GoogleImage from "../assets/playstore.png";
 import AppleImage from "../assets/apple.png";
+import {
+  Building2,
+  Star,
+  Hotel,
+  Shield,
+  Users,
+  PenToolIcon as Tool,
+  Smartphone,
+} from "lucide-react";
 
-const StatCard = ({ value, label, gradient, shadow }) => {
+const StatCard = ({ value, label, gradient, shadow, icon: Icon }) => {
   const { ref, inView } = useInView({
     triggerOnce: false,
     threshold: 0.3,
@@ -17,31 +26,34 @@ const StatCard = ({ value, label, gradient, shadow }) => {
       animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={`p-4 sm:p-6 rounded-3xl shadow-lg ${shadow} transform transition-transform hover:scale-105 ${gradient} 
-                  h-40 w-full sm:h-48 sm:w-auto`}
+                  h-40 w-full sm:h-48 sm:w-auto flex flex-col justify-between`}
     >
-      <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-        {value}
+      <Icon className="w-8 h-8 text-white opacity-80" />
+      <div>
+        <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+          {value}
+        </div>
+        <p className="mt-2 text-sm sm:text-base text-gray-100">{label}</p>
       </div>
-      <p className="mt-2 text-sm sm:text-base text-gray-100">{label}</p>
     </motion.div>
   );
 };
 
-const AppStoreButton = ({ store, logo,link }) => (
+const AppStoreButton = ({ store, logo, link }) => (
   <a
-  href={link}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 border-2 border-accent rounded-full hover:bg-accent transition-colors w-full sm:w-auto shadow-md shadow-accent"
->
-  <img src={logo} alt={`${store} logo`} className="h-6 w-6" />
-  <div className="text-left text-white">
-    <div className="text-xs">
-      {store === "Google Play" ? "GET IT ON" : "Download on the"}
+    href={link}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 border-2 border-accent rounded-full hover:bg-accent transition-colors w-full sm:w-auto shadow-md shadow-accent"
+  >
+    <img src={logo} alt={`${store} logo`} className="h-6 w-6" />
+    <div className="text-left text-white">
+      <div className="text-xs">
+        {store === "Google Play" ? "GET IT ON" : "Download on the"}
+      </div>
+      <div className="text-sm font-semibold">{store}</div>
     </div>
-    <div className="text-sm font-semibold">{store}</div>
-  </div>
-</a>
+  </a>
 );
 
 const Discover = () => {
@@ -61,7 +73,8 @@ const Discover = () => {
             transition={{ duration: 0.6 }}
             className="bg-gradient-to-br from-[#610b0c] to-[#9c3d5c] text-white rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-12 space-y-6 lg:w-1/2 transform transition-transform hover:scale-105"
           >
-            <h1 className="text-3xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
+            <h1 className="text-3xl sm:text-3xl lg:text-4xl font-bold tracking-tight flex items-center gap-4">
+              <Building2 className="w-10 h-10" />
               Discover HostelHubb
             </h1>
             <p className="text-base sm:text-lg">
@@ -69,10 +82,39 @@ const Discover = () => {
               notifications, comprehensive management tools, secure payments,
               and personalized recommendations for an unforgettable stay.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <AppStoreButton store="Google Play" logo={GoogleImage} link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"/>
-            <AppStoreButton store="App Store" logo={AppleImage}  link="https://apps.apple.com/us/app/hostelhubb/id6738483533"/>{" "}
-              {/* Pass Apple logo here */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                <Tool className="w-6 h-6" />
+                Admin Apps
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <AppStoreButton
+                  store="Google Play"
+                  logo={GoogleImage}
+                  link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"
+                />
+                <AppStoreButton
+                  store="App Store"
+                  logo={AppleImage}
+                  link="https://apps.apple.com/us/app/hostelhubb/id6738483533"
+                />
+              </div>
+              <h2 className="text-xl font-semibold pt-4 flex items-center gap-2">
+                <Smartphone className="w-6 h-6" />
+                Client Apps
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <AppStoreButton
+                  store="Google Play"
+                  logo={GoogleImage}
+                  link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"
+                />
+                <AppStoreButton
+                  store="App Store"
+                  logo={AppleImage}
+                  link="https://apps.apple.com/us/app/hostelhubb/id6738483533"
+                />
+              </div>
             </div>
           </motion.div>
 
@@ -82,24 +124,28 @@ const Discover = () => {
               label="Active Users"
               gradient="bg-gradient-to-br from-[#ff7f50] to-[#f0e68c]"
               shadow="shadow-rose-300"
+              icon={Users}
             />
             <StatCard
               value="4.9 Stars"
               label="User Satisfaction"
               gradient="bg-gradient-to-br from-[#6a0dad] to-[#dda0dd]"
               shadow="shadow-purple-300"
+              icon={Star}
             />
             <StatCard
               value="400+"
               label="Hostels Available"
               gradient="bg-gradient-to-br from-[#20b2aa] to-[#3cb371]"
               shadow="shadow-teal-300"
+              icon={Hotel}
             />
             <StatCard
               value="100%"
               label="Secure Payments"
               gradient="bg-gradient-to-br from-[#ffd700] to-[#ffa500]"
               shadow="shadow-yellow-300"
+              icon={Shield}
             />
           </div>
         </div>

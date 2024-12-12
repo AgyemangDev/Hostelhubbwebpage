@@ -64,7 +64,7 @@ const Footer = () => {
           </motion.a>
 
           <motion.a
-            href="https://instagram.com"
+            href="https://www.instagram.com/hostelhubb_gh/"
             aria-label="Instagram"
             className="text-gray-300"
             whileHover={{
