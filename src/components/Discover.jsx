@@ -26,18 +26,19 @@ const StatCard = ({ value, label, gradient, shadow, icon: Icon }) => {
       animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={`p-4 sm:p-6 rounded-3xl shadow-lg ${shadow} transform transition-transform hover:scale-105 ${gradient} 
-                  h-40 w-full sm:h-48 sm:w-auto flex flex-col justify-between`}
+                  h-[150px] w-full sm:h-64 sm:w-auto flex flex-col justify-between`}
     >
-      <Icon className="w-8 h-8 text-white opacity-80" />
+      <Icon className="w-8 h-8 sm:w-10 sm:h-10 text-white opacity-80" />
       <div>
-        <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+        <div className="text-2xl sm:text-4xl md:text-5xl font-bold text-white">
           {value}
         </div>
-        <p className="mt-2 text-sm sm:text-base text-gray-100">{label}</p>
+        <p className="mt-1 text-sm sm:text-[20px] font-semibold text-gray-100">{label}</p>
       </div>
     </motion.div>
   );
 };
+
 
 const AppStoreButton = ({ store, logo, link }) => (
   <a
@@ -49,7 +50,7 @@ const AppStoreButton = ({ store, logo, link }) => (
     <img src={logo} alt={`${store} logo`} className="h-6 w-6" />
     <div className="text-left text-white">
       <div className="text-xs">
-        {store === "Google Play" ? "GET IT ON" : "Download on the"}
+        {store === "Google Play" ? "GET IT ON" : "DOWNLOAD ON THE"}
       </div>
       <div className="text-sm font-semibold">{store}</div>
     </div>
@@ -83,9 +84,10 @@ const Discover = () => {
               and personalized recommendations for an unforgettable stay.
             </p>
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold flex items-center gap-2">
-                <Tool className="w-6 h-6" />
-                Admin Apps
+              
+              <h2 className="text-xl font-semibold pt-4 flex items-center gap-2">
+                <Smartphone className="w-6 h-6" />
+                Booking Apps for Clients
               </h2>
               <div className="flex flex-col sm:flex-row gap-4">
                 <AppStoreButton
@@ -99,20 +101,20 @@ const Discover = () => {
                   link="https://apps.apple.com/us/app/hostelhubb/id6738483533"
                 />
               </div>
-              <h2 className="text-xl font-semibold pt-4 flex items-center gap-2">
-                <Smartphone className="w-6 h-6" />
-                Client Apps
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                <Tool className="w-6 h-6" />
+                Admin App for Management
               </h2>
               <div className="flex flex-col sm:flex-row gap-4">
                 <AppStoreButton
                   store="Google Play"
                   logo={GoogleImage}
-                  link="https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"
+                  link="https://play.google.com/store/apps/details?id=com.HostelhubbAdmin.HostelhubbAdmin"
                 />
                 <AppStoreButton
                   store="App Store"
                   logo={AppleImage}
-                  link="https://apps.apple.com/us/app/hostelhubb/id6738483533"
+                  link="https://apps.apple.com/us/app/hostelhubb-admin/id6738576378"
                 />
               </div>
             </div>

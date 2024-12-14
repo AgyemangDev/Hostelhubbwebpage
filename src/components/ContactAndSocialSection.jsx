@@ -69,7 +69,7 @@ export default function ContactUs() {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-2xl font-bold text-center text-secondary md:text-left">
-          Contact Us
+          Contact Us /Send Your Review
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
