@@ -1,16 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 
-const Navbar = () => {
-  const ctaRef = useRef(null);
-  const featuresRef = useRef(null);
-  const testimonialsRef = useRef(null);
-
+const Navbar = ({ heroRef, featuresRef, testimonialsRef, ctaRef }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State to control the dropdown menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,40 +17,19 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleScrollToCTA = () => {
-    if (ctaRef.current) {
-      console.log("Scrolling to CTA...");
-      ctaRef.current.scrollIntoView({ behavior: "smooth" });
-    } else {
-      console.warn("CTA reference not set!");
-    }
-  };
-
-  const handleScrollToFeatures = () => {
-    if (featuresRef.current) {
-      featuresRef.current.scrollIntoView({ behavior: "smooth" });
-      setActiveTab("Features");
-    }
-  };
-
-  const handleScrollToTestimonials = () => {
-    if (testimonialsRef.current) {
-      testimonialsRef.current.scrollIntoView({ behavior: "smooth" });
-      setActiveTab("Discover");
-    }
-  };
-
+  // Function to handle tab click and scrolling
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
     if (tabName === "Home") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      heroRef?.current?.scrollIntoView({ behavior: "smooth" });
     } else if (tabName === "Features") {
-      handleScrollToFeatures();
+      featuresRef?.current?.scrollIntoView({ behavior: "smooth" });
     } else if (tabName === "Discover") {
-      handleScrollToTestimonials();
+      testimonialsRef?.current?.scrollIntoView({ behavior: "smooth" });
+    } else if (tabName === "Contact") {
+      ctaRef?.current?.scrollIntoView({ behavior: "smooth" });
     }
-    // Close the menu after selecting a tab
-    setIsMenuOpen(false);
+    setIsMenuOpen(false); // Close menu after selection
   };
 
   return (
@@ -65,7 +40,7 @@ const Navbar = () => {
         }`}
       >
         <button
-          className="p-2 bg-accent rounded-full w-50 hover:bg-gray-800 transition-colors"
+          className="p-2 bg-accent rounded-full hover:bg-gray-800 transition-colors"
           onClick={() => handleTabClick("Home")}
           aria-label="Home"
         >
@@ -92,7 +67,7 @@ const Navbar = () => {
 
         <button
           className="hidden md:block px-6 py-2 transition-colors"
-          onClick={handleScrollToCTA}
+          onClick={() => handleTabClick("Contact")}
         >
           Contact
         </button>
@@ -127,7 +102,7 @@ const Navbar = () => {
           ))}
           <button
             className="w-full text-left px-4 py-2 transition-colors"
-            onClick={handleScrollToCTA}
+            onClick={() => handleTabClick("Contact")}
           >
             Contact
           </button>

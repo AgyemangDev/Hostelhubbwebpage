@@ -12,13 +12,19 @@ import TransactionPolicy from "./components/TransactionPolicy";
 import TermsPage from "./components/TermsPage";
 
 const App = () => {
+  // Refs for each section
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
   const testimonialsRef = useRef(null);
   const ctaRef = useRef(null);
   const footerRef = useRef(null);
 
-  // Scroll to the next section
+  // Function to scroll to a specific section
+  const scrollToSection = (sectionRef) => {
+    sectionRef?.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Scroll to the next section logic
   const scrollToNextSection = () => {
     const sections = [heroRef, featuresRef, testimonialsRef, ctaRef, footerRef];
     const currentSectionIndex = sections.findIndex(
@@ -28,10 +34,10 @@ const App = () => {
 
     const nextSectionIndex = currentSectionIndex + 1;
     if (nextSectionIndex >= sections.length) {
-      heroRef.current?.scrollIntoView({ behavior: "smooth" });
+      heroRef.current?.scrollIntoView({ behavior: "smooth" }); // Go back to top
     } else if (nextSectionIndex < sections.length) {
       const nextSection = sections[nextSectionIndex];
-      nextSection?.current?.scrollIntoView({ behavior: "smooth" });
+      scrollToSection(nextSection);
     }
   };
 
@@ -46,9 +52,10 @@ const App = () => {
               <>
                 {/* Navbar */}
                 <Navbar
-                  ctaRef={ctaRef}
+                  heroRef={heroRef}
                   featuresRef={featuresRef}
                   testimonialsRef={testimonialsRef}
+                  ctaRef={ctaRef}
                 />
 
                 {/* Sections */}
