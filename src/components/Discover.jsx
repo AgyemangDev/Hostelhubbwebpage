@@ -79,15 +79,16 @@ const Discover = () => {
               Discover HostelHubb
             </h1>
             <p className="text-base sm:text-lg">
-              Your all-in-one platform for seamless hostel booking, real-time
-              notifications, comprehensive management tools, secure payments,
-              and personalized recommendations for an unforgettable stay.
+            Your all-in-one platform for seamless hostel booking,
+             real-time notifications, comprehensive management 
+             tools, secure payments, and an exceptional experience 
+             tailored just for you.
             </p>
             <div className="space-y-4">
               
               <h2 className="text-xl font-semibold pt-4 flex items-center gap-2">
                 <Smartphone className="w-6 h-6" />
-                Booking Apps for Clients
+                STUDENT BOOKING APP
               </h2>
               <div className="flex flex-col sm:flex-row gap-4">
                 <AppStoreButton
@@ -103,7 +104,7 @@ const Discover = () => {
               </div>
               <h2 className="text-xl font-semibold flex items-center gap-2">
                 <Tool className="w-6 h-6" />
-                Admin App for Management
+                HOSTEL MANAGEMENT APP
               </h2>
               <div className="flex flex-col sm:flex-row gap-4">
                 <AppStoreButton
@@ -129,14 +130,14 @@ const Discover = () => {
               icon={Users}
             />
             <StatCard
-              value="4.9 Stars"
+              value="5.0 Stars"
               label="User Satisfaction"
               gradient="bg-gradient-to-br from-[#6a0dad] to-[#dda0dd]"
               shadow="shadow-purple-300"
               icon={Star}
             />
             <StatCard
-              value="400+"
+              value="20+"
               label="Hostels Available"
               gradient="bg-gradient-to-br from-[#20b2aa] to-[#3cb371]"
               shadow="shadow-teal-300"

@@ -26,7 +26,7 @@ const featuresData = [
   {
     title: "Happy Clients",
     description:
-      "Over 241+ happy clients have experienced the HostelHubb difference.",
+      "Over 1100+ happy clients have experienced the HostelHubb difference.",
     icon: Users,
   },
   {
