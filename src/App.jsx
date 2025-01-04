@@ -5,6 +5,7 @@ import HeroSection from "./components/HeroSection";
 import FeaturesSection from "./components/FeaturesSection";
 import Discover from "./components/Discover";
 import ContactAndSocialSection from "./components/ContactAndSocialSection";
+import WhatsAppChannel from "./components/WhatsAppChannel"; // New Component
 import Footer from "./components/Footer";
 import "./index.css";
 import PrivacyPolicy from "./components/PrivacyPolicy";
@@ -17,6 +18,7 @@ const App = () => {
   const featuresRef = useRef(null);
   const testimonialsRef = useRef(null);
   const ctaRef = useRef(null);
+  const whatsAppRef = useRef(null); // New WhatsApp Channel Section Ref
   const footerRef = useRef(null);
 
   // Function to scroll to a specific section
@@ -26,7 +28,14 @@ const App = () => {
 
   // Scroll to the next section logic
   const scrollToNextSection = () => {
-    const sections = [heroRef, featuresRef, testimonialsRef, ctaRef, footerRef];
+    const sections = [
+      heroRef,
+      featuresRef,
+      testimonialsRef,
+      ctaRef,
+      whatsAppRef, // Include WhatsApp Section in Scroll Logic
+      footerRef,
+    ];
     const currentSectionIndex = sections.findIndex(
       (section) =>
         section.current && section.current.getBoundingClientRect().top >= 0
@@ -68,9 +77,13 @@ const App = () => {
                 <div ref={testimonialsRef}>
                   <Discover />
                 </div>
+                <div ref={whatsAppRef}>
+                  <WhatsAppChannel scrollToNextSection={scrollToNextSection} />
+                </div>
                 <div ref={ctaRef}>
                   <ContactAndSocialSection />
                 </div>
+
                 <div ref={footerRef}>
                   <Footer />
                 </div>
