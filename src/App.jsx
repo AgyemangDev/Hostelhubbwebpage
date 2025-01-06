@@ -5,6 +5,7 @@ import HeroSection from "./components/HeroSection";
 import FeaturesSection from "./components/FeaturesSection";
 import Discover from "./components/Discover";
 import ContactAndSocialSection from "./components/ContactAndSocialSection";
+import WhatsAppChannel from "./components/WhatsAppChannel"; // New Component
 import Footer from "./components/Footer";
 import "./index.css";
 import PrivacyPolicy from "./components/PrivacyPolicy";
@@ -12,15 +13,29 @@ import TransactionPolicy from "./components/TransactionPolicy";
 import TermsPage from "./components/TermsPage";
 
 const App = () => {
+  // Refs for each section
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
   const testimonialsRef = useRef(null);
   const ctaRef = useRef(null);
+  const whatsAppRef = useRef(null); // New WhatsApp Channel Section Ref
   const footerRef = useRef(null);
 
-  // Scroll to the next section
+  // Function to scroll to a specific section
+  const scrollToSection = (sectionRef) => {
+    sectionRef?.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Scroll to the next section logic
   const scrollToNextSection = () => {
-    const sections = [heroRef, featuresRef, testimonialsRef, ctaRef, footerRef];
+    const sections = [
+      heroRef,
+      featuresRef,
+      testimonialsRef,
+      ctaRef,
+      whatsAppRef, // Include WhatsApp Section in Scroll Logic
+      footerRef,
+    ];
     const currentSectionIndex = sections.findIndex(
       (section) =>
         section.current && section.current.getBoundingClientRect().top >= 0
@@ -28,10 +43,10 @@ const App = () => {
 
     const nextSectionIndex = currentSectionIndex + 1;
     if (nextSectionIndex >= sections.length) {
-      heroRef.current?.scrollIntoView({ behavior: "smooth" });
+      heroRef.current?.scrollIntoView({ behavior: "smooth" }); // Go back to top
     } else if (nextSectionIndex < sections.length) {
       const nextSection = sections[nextSectionIndex];
-      nextSection?.current?.scrollIntoView({ behavior: "smooth" });
+      scrollToSection(nextSection);
     }
   };
 
@@ -46,9 +61,10 @@ const App = () => {
               <>
                 {/* Navbar */}
                 <Navbar
-                  ctaRef={ctaRef}
+                  heroRef={heroRef}
                   featuresRef={featuresRef}
                   testimonialsRef={testimonialsRef}
+                  ctaRef={ctaRef}
                 />
 
                 {/* Sections */}
@@ -61,9 +77,13 @@ const App = () => {
                 <div ref={testimonialsRef}>
                   <Discover />
                 </div>
+                <div ref={whatsAppRef}>
+                  <WhatsAppChannel scrollToNextSection={scrollToNextSection} />
+                </div>
                 <div ref={ctaRef}>
                   <ContactAndSocialSection />
                 </div>
+
                 <div ref={footerRef}>
                   <Footer />
                 </div>
