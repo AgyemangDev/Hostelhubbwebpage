@@ -9,6 +9,8 @@ export default function ContactUs() {
   const [formData, setFormData] = useState({
     from_name: "",
     email: "",
+    phone: "",
+    price_range: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,15 +18,13 @@ export default function ContactUs() {
   const bannerRef = useRef(null);
 
   // Validation logic
-  const isEmailValid = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isEmailValid = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isFormValid =
     formData.from_name.trim() !== "" &&
     isEmailValid(formData.email) &&
     formData.message.trim() !== "";
 
-  const handleInputChange = (e
-  ) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -36,15 +36,21 @@ export default function ContactUs() {
     emailjs
       .send(
         "service_ncxubhl",
-        "template_nx3hieg",
+        "template_nx3hieg", // Your EmailJS template ID
         formData,
-        "dskMrGvegne1xkNw5"
+        "dskMrGvegne1xkNw5" // Your EmailJS public key
       )
       .then(
         () => {
           setSubmitStatus("Message sent successfully!");
           setIsSubmitting(false);
-          setFormData({ from_name: "", email: "", message: "" });
+          setFormData({
+            from_name: "",
+            email: "",
+            phone: "",
+            price_range: "",
+            message: "",
+          });
         },
         () => {
           setSubmitStatus("Failed to send message.");
@@ -69,15 +75,19 @@ export default function ContactUs() {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-2xl font-bold text-center text-secondary md:text-left">
-          Contact Us /Send Your Review
+          Contact Us / Send Your Review
         </h2>
+        <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+          <span className="font-semibold">Note:</span> If you are seeking
+          accommodation, please fill in all the required fields.
+        </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="from_name"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              Name
+              Name <span className="text-red-500">*</span>
             </label>
             <input
               id="from_name"
@@ -94,7 +104,7 @@ export default function ContactUs() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               id="email"
@@ -108,10 +118,44 @@ export default function ContactUs() {
           </div>
           <div>
             <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Phone Number (Optional)
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleInputChange}
+              placeholder="Your phone number"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="price_range"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Price Range (Optional)
+            </label>
+            <input
+              id="price_range"
+              name="price_range"
+              value={formData.price_range}
+              onChange={handleInputChange}
+              placeholder="Your price range"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              type="text"
+            />
+          </div>
+          <div>
+            <label
               htmlFor="message"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              Message
+              Message <span className="text-red-500">*</span>
             </label>
             <textarea
               id="message"
@@ -126,7 +170,9 @@ export default function ContactUs() {
           <button
             type="submit"
             className={`w-full py-2 px-4 bg-secondary text-white rounded-md shadow-lg hover:bg-opacity-80 transition duration-300 ${
-              isSubmitting || !isFormValid ? "opacity-50 cursor-not-allowed" : ""
+              isSubmitting || !isFormValid
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
             disabled={isSubmitting || !isFormValid}
           >
