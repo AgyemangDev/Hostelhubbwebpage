@@ -53,7 +53,7 @@ const WhatsAppPage = () => {
 
         {/* Join Button */}
         <motion.a
-          href="https://chat.whatsapp.com/channel/0029Vavl8Yv5fM5e7ydw7i1W" // Replace with your WhatsApp invite link
+          href="https://whatsapp.com/channel/0029Vavl8Yv5fM5e7ydw7i1W" // Replace with your WhatsApp invite link
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block bg-green-500 text-white text-lg font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
