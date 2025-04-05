@@ -11,6 +11,7 @@ import "./index.css";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TransactionPolicy from "./components/TransactionPolicy";
 import TermsPage from "./components/TermsPage";
+import HostelRedirect from "./components/HostelRedirect";
 
 const App = () => {
   // Refs for each section
@@ -95,6 +96,7 @@ const App = () => {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/cookie-policy" element={<TransactionPolicy />} />
+          <Route path="/hostel-redirect" element={<HostelRedirect />} />
         </Routes>
       </div>
     </Router>
