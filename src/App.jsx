@@ -96,7 +96,7 @@ const App = () => {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/cookie-policy" element={<TransactionPolicy />} />
-          <Route path="/hostel-redirect" element={<HostelRedirect />} />
+          <Route path="/hostel/:hostelId" element={<HostelRedirect />} />
         </Routes>
       </div>
     </Router>

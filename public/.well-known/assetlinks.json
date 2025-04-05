@@ -1,0 +1,8 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.Hostelhubb.Hostelhubb",
+      "sha256_cert_fingerprints": ["0E:F6:6A:56:1E:BF:E8:56:44:69:A7:CB:43:05:05:73:A0:B4:AE:6D:C2:88:F0:AF:C9:56:13:6E:8C:1F:AE:8D"]
+    }
+  }]
