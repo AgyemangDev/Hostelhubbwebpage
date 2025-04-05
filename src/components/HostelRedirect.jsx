@@ -13,70 +13,73 @@ export default function HostelRedirect() {
 
 
   useEffect(() => {
-    // Parse URL parameters
     const params = new URLSearchParams(window.location.search)
     const hostelId = params.get("id")
-
-
-    // Determine platform and set appropriate store URL
+  
     const isAndroid = /android/i.test(navigator.userAgent)
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
-
+  
     const generatedFallbackUrl = isAndroid
       ? "https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb"
       : "https://apps.apple.com/us/app/hostelhubb/id6738483533"
-
+  
     setFallbackUrl(generatedFallbackUrl)
-
+  
+    let fallbackTimeout = null
+  
     // Start countdown
     const countdownInterval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(countdownInterval)
+          // If app hasn't opened yet, go to store
+          if (redirectStatus !== "redirecting") {
+            window.location.href = generatedFallbackUrl
+            setRedirectStatus("failed")
+          }
           return 0
         }
         return prev - 1
       })
     }, 1000)
-
-    // Try to open the app after a short delay
+  
+    // Try to open the app after slight delay
     setTimeout(() => {
       if (!hostelId) {
         setRedirectStatus("failed")
         return
       }
-
+  
       const deepLink = `hostelhubb://hostel/${hostelId}`
       setRedirectStatus("redirecting")
-
-      // Try to open the app
-      const now = Date.now()
-      const timeoutDuration = 1500
-
-      // This technique detects if the app was opened by checking if the page lost focus
+  
+      // Detect blur (app opened)
       window.addEventListener("blur", function onBlur() {
         clearTimeout(fallbackTimeout)
         window.removeEventListener("blur", onBlur)
       })
-
-      // Create a hidden iframe to try opening the app
+  
+      // Attempt to open app
       const iframe = document.createElement("iframe")
       iframe.style.display = "none"
       iframe.src = deepLink
       document.body.appendChild(iframe)
-
-      // Fallback to store after timeout
-      const fallbackTimeout = setTimeout(() => {
+  
+      fallbackTimeout = setTimeout(() => {
         document.body.removeChild(iframe)
         setRedirectStatus("failed")
-      }, timeoutDuration)
-
-      // Also try with window.location
+      }, 1500)
+  
+      // Backup method
       window.location.href = deepLink
     }, 1000)
-
-    return () => clearInterval(countdownInterval)
+  
+    return () => {
+      clearInterval(countdownInterval)
+      clearTimeout(fallbackTimeout)
+    }
   }, [])
+  
 
   // Handle manual redirect to app store
   const goToAppStore = () => {
