@@ -10,6 +10,9 @@ const HeroSection = ({ scrollToNextSection }) => {
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
       style={{
         backgroundImage: `url(${backgroundImage})`,
+        backgroundAttachment: 'fixed', // Ensures the background stays fixed on scroll
+        backgroundPosition: 'center',
+        backgroundSize: 'cover'
       }}
     >
       {/* Dark Overlay with Animated Gradient Flicker Effect */}
