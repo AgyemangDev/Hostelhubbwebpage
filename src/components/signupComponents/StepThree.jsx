@@ -1,42 +1,31 @@
-const StepThree = ({
-  formData,
-  handleFileChange,
-  passportPhotoName,
-  idCardPhotoName,
-}) => {
+import React from 'react';
+
+const StepThree = ({ formData, handleFileChange, passportPhotoName, idCardPhotoName }) => {
   return (
-    <>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Passport Photo</label>
+    <div>
+      <h2 className="text-lg font-bold mb-4">Step 3: Upload Documents</h2>
+      <div className="mb-4">
+        <label className="block text-gray-700 mb-2">Passport Photo</label>
         <input
           type="file"
           name="passportPhoto"
-          accept="image/*"
           onChange={handleFileChange}
-          className="mt-1 block w-full"
-          required
+          className="w-full border px-4 py-2 rounded"
         />
-        {passportPhotoName && (
-          <p className="text-xs text-gray-500 mt-1">Selected: {passportPhotoName}</p>
-        )}
+        {passportPhotoName && <p className="text-sm text-gray-500 mt-2">{passportPhotoName}</p>}
       </div>
-
       <div>
-        <label className="block text-sm font-medium text-gray-700">Student ID / National ID</label>
+        <label className="block text-gray-700 mb-2">ID Card Photo</label>
         <input
           type="file"
           name="idCardPhoto"
-          accept="image/*"
           onChange={handleFileChange}
-          className="mt-1 block w-full"
-          required
+          className="w-full border px-4 py-2 rounded"
         />
-        {idCardPhotoName && (
-          <p className="text-xs text-gray-500 mt-1">Selected: {idCardPhotoName}</p>
-        )}
+        {idCardPhotoName && <p className="text-sm text-gray-500 mt-2">{idCardPhotoName}</p>}
       </div>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default StepThree
+export default StepThree;

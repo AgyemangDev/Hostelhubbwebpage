@@ -1,25 +1,20 @@
-import { motion } from "framer-motion"
+import React from 'react';
 
 const ProgressBar = ({ currentStep }) => {
-  const stepTitles = ["Personal Information", "Academic Details", "Document Upload"]
-  const percentage = (currentStep / 3) * 100
+  const steps = [1, 2, 3];
 
   return (
-    <div className="mb-8">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-medium text-gray-700">Step {currentStep} of 3</span>
-        <span className="text-sm text-gray-500">{stepTitles[currentStep - 1]}</span>
-      </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${percentage}%` }}
-          transition={{ duration: 0.3 }}
-          className="bg-[#610b0c] h-2 rounded-full"
-        />
-      </div>
+    <div className="flex items-center justify-between mb-6">
+      {steps.map((step) => (
+        <div
+          key={step}
+          className={`w-1/3 h-2 rounded-full ${
+            step <= currentStep ? 'bg-[#610b0c]' : 'bg-gray-300'
+          }`}
+        ></div>
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default ProgressBar
+export default ProgressBar;

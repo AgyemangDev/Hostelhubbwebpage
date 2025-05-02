@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Lock, User, Loader2, EyeOff, Eye, ChevronRight, Shield } from "lucide-react"
+import { Lock, User, Loader2, EyeOff, Eye, ChevronRight, Shield, File, Mail } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const Login = () => {
-  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -14,8 +14,8 @@ const Login = () => {
   const navigate = useNavigate()
 
   const handleLogin = () => {
-    if (!username || !password) {
-      alert("Please enter username and password")
+    if (!email || !password) {
+      alert("Please enter email and password")
       return
     }
 
@@ -24,8 +24,8 @@ const Login = () => {
     // Simulate login logic with delay
     setTimeout(() => {
       setIsLoading(false)
-      alert(`Logged in as ${username}`)
-      setUsername("")
+      alert(`Logged in as ${email}`)
+      setEmail("")
       setPassword("")
 
       // Navigate to agent dashboard
@@ -87,19 +87,19 @@ const Login = () => {
           <h2 className="text-2xl font-bold mb-2 text-gray-800">Login</h2>
           <p className="text-gray-500 mb-6">Enter your credentials to access your account</p>
 
-          {/* Username Input */}
+          {/* email Input */}
           <div className="mb-5">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
-                id="username"
+                id="email"
                 type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#610b0c] focus:border-transparent transition-all"
               />
             </div>

@@ -21,12 +21,8 @@ import HowAffiliateWorks from "./components/HowAffiliateWorks";
 import AgentDashboardLayout from "./components/AgentDashboard/AgentDashboardLayout"; // NEW
 
 import "./index.css";
-import DashboardEarnings from "./components/AgentDashboard/Bookings";
-import Referall from "./components/AgentDashboard/Referall";
-import Settings from "./components/AgentDashboard/DashboardSettings";
-import BookingStatsPage from "./components/AgentDashboard/Bookings";
-import Earnings from "./components/AgentDashboard/Earnings";
 import Login from "./components/Login";
+import AffiliateApplications from "./components/AgentDashboard/AffiliateApplications";
 
 const App = () => {
   const heroRef = useRef(null);
@@ -118,16 +114,13 @@ const App = () => {
           <Route path="/affiliate-page" element={<AffiliatePage />} />
           <Route path="/get-started" element={<HowAffiliateWorks />} />
           <Route path="/affiliate-success" element={<AffiliateSuccess />} />
+          <Route path="/affiliate-application" element={<AffiliateApplications />} />
           <Route path="/agent-application-success" element={<AgentApplicationSuccess />} />
           <Route path="/agent-application-failure" element={<AgentApplicationFailure />} />
 
           {/* Agent Dashboard with Sidebar Layout */}
           <Route path="/agent-dashboard" element={<AgentDashboardLayout />}>
             <Route index element={<AgentDashboard />} />
-            <Route path="agent-dashboard/booking" element={<BookingStatsPage />} />
-            <Route path="agent-dashboard/earnings" element={<Earnings />} />
-            <Route path="agent-dashboard/referral" element={<Referall />} />
-            <Route path="agent-dashboard/settings" element={<Settings />} />
             <Route path=":id" element={<AgentDashboard />} />
             <Route path=":id/:token" element={<AgentDashboard />} />
             <Route path=":id/:token/:referralCode" element={<AgentDashboard />} />

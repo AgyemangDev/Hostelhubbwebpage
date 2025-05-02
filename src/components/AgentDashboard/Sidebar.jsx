@@ -16,22 +16,11 @@ const navItems = [
     title: "Main",
     links: [
       { to: "/agent-dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { to: "agent-dashboard/booking", label: "Bookings", icon: CalendarDays },
+      ,
     ],
   },
-  {
-    title: "Affiliate",
-    links: [
-      { to: "agent-dashboard/referral", label: "Referrals", icon: Share2 },
-      { to: "agent-dashboard/earnings", label: "Earnings", icon: Wallet },
-    ],
-  },
-  {
-    title: "Account",
-    links: [
-      { to: "agent-dashboard/settings", label: "Settings", icon: UserCircle },
-    ],
-  },
+  
+
 ];
 
 const Sidebar = () => {

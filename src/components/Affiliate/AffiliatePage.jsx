@@ -13,17 +13,18 @@ const AffiliatePage = () => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    program: "",
-    startDate: "",
-    endDate: "",
-    currentYear: "",
-    passportPhoto: null,
-    idCardPhoto: null,
-  })
+ const [formData, setFormData] = useState({
+  fullName: "",
+  email: "",
+  password: "", // ← Add this
+  phone: "",
+  program: "",
+  startDate: "",
+  endDate: "",
+  currentYear: "",
+  passportPhoto: null,
+  idCardPhoto: null,
+})
 
   const [passportPhotoName, setPassportPhotoName] = useState("")
   const [idCardPhotoName, setIdCardPhotoName] = useState("")
@@ -81,9 +82,14 @@ const AffiliatePage = () => {
           <ProgressBar currentStep={currentStep} />
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {currentStep === 1 && (
-              <StepOne formData={formData} handleInputChange={handleInputChange} />
-            )}
+                  {currentStep === 1 && (
+          <StepOne
+            formData={formData}
+            handleInputChange={handleInputChange}
+            nextStep={nextStep}
+          />
+        )}
+
             {currentStep === 2 && (
               <StepTwo formData={formData} handleInputChange={handleInputChange} />
             )}
