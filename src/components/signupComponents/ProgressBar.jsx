@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ProgressBar = ({ currentStep }) => {
-  const steps = [1, 2, 3];
+  const steps = [1, 2, 3,4];
 
   return (
     <div className="flex items-center justify-between mb-6">

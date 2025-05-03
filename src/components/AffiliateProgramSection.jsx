@@ -62,9 +62,10 @@ const AffiliateProgramSection = () => {
             transition={{ delay: 1, duration: 1 }}
             className="text-xl text-gray-200 max-w-2xl mx-auto"
           >
-            It's simple! Register to be an Affiliateif accepted into our Affiliate Program,
-            and start earning commissions by convincing students to book their hostels through us.
-            And recieve a commission for every booking made through yous. 
+It's easy — sign up to become an affiliate and, once approved, start 
+earning commissions by referring students to book their hostels through 
+HostelHubb. For every successful booking made through your referral, 
+you’ll receive a commission. It's a rewarding way to share and earn!
           </motion.p>
 
           {/* CTA Button with Animated Gradient and Pulse */}

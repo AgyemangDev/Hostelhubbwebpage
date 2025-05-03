@@ -31,10 +31,13 @@ export default function AffiliateProgram() {
     faq: useRef(null)
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   // Animation trigger on component mount
   useEffect(() => {
     setIsVisible(true);
-    
+
     // Animated step sequence
     const stepInterval = setInterval(() => {
       setActiveStep((prev) => (prev >= 2 ? 0 : prev + 1));
@@ -132,15 +135,6 @@ export default function AffiliateProgram() {
             <p className="text-2xl font-bold">30%</p>
             <p className="text-sm text-gray-500">Avg. Conversion</p>
           </div>
-        </div>
-        
-        <div className="flex justify-center gap-4 mt-8">
-          <Link href="/affiliate-page">
-            <button className="bg-[#610b0c] hover:bg-[#7e1f24] text-white font-semibold px-6 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:transform hover:scale-105">
-              Apply Now
-            </button>
-          </Link>
-          
         </div>
       </div>
       

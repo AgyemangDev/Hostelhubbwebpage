@@ -1,29 +1,45 @@
 import React from 'react';
 
-const StepThree = ({ formData, handleFileChange, passportPhotoName, idCardPhotoName }) => {
+const departments = [
+  "Receptionist",
+  "Hostel Agent",
+  "Storage Assistance",
+  "Advertisement Team",
+  "Video/Graphic Editor",
+];
+
+const StepThree = ({ formData, handleInputChange }) => {
   return (
     <div>
-      <h2 className="text-lg font-bold mb-4">Step 3: Upload Documents</h2>
-      <div className="mb-4">
-        <label className="block text-gray-700 mb-2">Passport Photo</label>
-        <input
-          type="file"
-          name="passportPhoto"
-          onChange={handleFileChange}
-          className="w-full border px-4 py-2 rounded"
-        />
-        {passportPhotoName && <p className="text-sm text-gray-500 mt-2">{passportPhotoName}</p>}
+      <h2 className="text-lg font-bold mb-4">Step 3: Department Interest</h2>
+
+      <label className="block mb-2 font-medium">Choose a Department</label>
+      <div className="space-y-2 mb-4">
+        {departments.map((dept) => (
+          <label key={dept} className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="department"
+              value={dept}
+              checked={formData.department === dept}
+              onChange={handleInputChange}
+            />
+            <span>{dept}</span>
+          </label>
+        ))}
       </div>
-      <div>
-        <label className="block text-gray-700 mb-2">ID Card Photo</label>
-        <input
-          type="file"
-          name="idCardPhoto"
-          onChange={handleFileChange}
-          className="w-full border px-4 py-2 rounded"
-        />
-        {idCardPhotoName && <p className="text-sm text-gray-500 mt-2">{idCardPhotoName}</p>}
-      </div>
+
+      <label className="block mb-2 font-medium">
+        What do you hope to gain or contribute?
+      </label>
+      <textarea
+        name="expectations"
+        value={formData.expectations}
+        onChange={handleInputChange}
+        placeholder="Share your goals or expectations, elaborate..."
+        className="w-full border px-4 py-2 rounded"
+        rows={4}
+      />
     </div>
   );
 };

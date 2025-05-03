@@ -26,7 +26,7 @@ const featuresData = [
   {
     title: "Happy Clients",
     description:
-      "Over 1100+ happy clients have experienced the HostelHubb difference.",
+      "Over 10K+ happy clients have experienced the HostelHubb difference.",
     icon: Users,
   },
   {
@@ -79,7 +79,7 @@ const Features = () => {
           </div>
           <h3 className="text-2xl md:text-3xl font-semibold">Why Choose Us?</h3>
           <p className="mt-2 text-sm md:text-base">
-            With over 1100+ active clients and a consistent 5.0-star rating, our
+            With over 10K+ active clients and a consistent 5.0-star rating, our
             applications prioritize user satisfaction and deliver exceptional
             results. Join the community experiencing the HostelHubb difference
             today!

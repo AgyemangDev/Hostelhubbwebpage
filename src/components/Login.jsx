@@ -177,10 +177,8 @@ const Login = () => {
           {/* Sign up option */}
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Don't have an account?{" "}
-              <a href="#" className="font-medium text-[#610b0c] hover:text-[#4d0909]">
-                Sign up
-              </a>
+              Don't have an account? Download Hostelhubb app and create an account.
+             
             </p>
           </div>
         </motion.div>

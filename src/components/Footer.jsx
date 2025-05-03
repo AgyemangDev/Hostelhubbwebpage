@@ -99,8 +99,7 @@ const Footer = () => {
           transition={{ delay: 0.7, duration: 0.8 }}
           className="text-xs text-gray-400 text-center sm:text-left space-y-2"
         >
-          <p>© 2024 HostelHubb. All Rights Reserved.</p>
-          <Link
+<p>© {new Date().getFullYear()} HostelHubb. All Rights Reserved.</p>          <Link
             to="/terms"
             className="text-gray-300 font-bold text-sm sm:text-base hover:underline underline-offset-4 decoration-wine-500"
             style={{ display: "block", marginTop: "5px" }}
