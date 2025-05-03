@@ -36,7 +36,6 @@ const AffiliatePage = () => {
       [name]: value,
     }))
   }
-  
   const handleFileChange = (e) => {
     const { name, files } = e.target;
  
