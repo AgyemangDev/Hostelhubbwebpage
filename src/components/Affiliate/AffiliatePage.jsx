@@ -13,10 +13,10 @@ const AffiliatePage = () => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
- const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
   fullName: "",
   email: "",
-  password: "", // ← Add this
+  password: "",
   phone: "",
   program: "",
   startDate: "",
@@ -24,10 +24,13 @@ const AffiliatePage = () => {
   currentYear: "",
   passportPhoto: null,
   idCardPhoto: null,
-})
+  reason: "", // ✅ add this
+});
+
 
   const [passportPhotoName, setPassportPhotoName] = useState("")
   const [idCardPhotoName, setIdCardPhotoName] = useState("")
+  const [formIsValid, setFormIsValid] = useState(false)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -40,13 +43,24 @@ const AffiliatePage = () => {
   const handleFileChange = (e) => {
     const { name, files } = e.target
     if (files && files[0]) {
-      setFormData((prev) => ({
-        ...prev,
+      const updatedFormData = {
+        ...formData,
         [name]: files[0],
-      }))
-      name === "passportPhoto"
-        ? setPassportPhotoName(files[0].name)
-        : setIdCardPhotoName(files[0].name)
+      }
+      
+      setFormData(updatedFormData)
+      
+      if (name === "passportPhoto") {
+        setPassportPhotoName(files[0].name)
+      } else {
+        setIdCardPhotoName(files[0].name)
+      }
+      
+      // Check if both photos are selected
+      setFormIsValid(
+        (name === "passportPhoto" ? true : !!updatedFormData.passportPhoto) && 
+        (name === "idCardPhoto" ? true : !!updatedFormData.idCardPhoto)
+      )
     }
   }
 
@@ -62,11 +76,15 @@ const AffiliatePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      navigate("/affiliate-success")
-    }, 1500)
+    
+    // Only process submission when explicitly submitting on step 3
+    if (currentStep === 3) {
+      setIsLoading(true)
+      setTimeout(() => {
+        setIsLoading(false)
+        navigate("/affiliate-success")
+      }, 1500)
+    }
   }
 
   return (
@@ -81,26 +99,41 @@ const AffiliatePage = () => {
         >
           <ProgressBar currentStep={currentStep} />
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-                  {currentStep === 1 && (
-          <StepOne
-            formData={formData}
-            handleInputChange={handleInputChange}
-            nextStep={nextStep}
-          />
-        )}
-
-            {currentStep === 2 && (
-              <StepTwo formData={formData} handleInputChange={handleInputChange} />
-            )}
-            {currentStep === 3 && (
-              <StepThree
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={(e) => {
+              // Prevent form submission on Enter key for any step
+              if (e.key === "Enter") {
+                e.preventDefault()
+              }
+            }}
+            className="space-y-5"
+          >
+            {currentStep === 1 && (
+              <StepOne
                 formData={formData}
-                handleFileChange={handleFileChange}
-                passportPhotoName={passportPhotoName}
-                idCardPhotoName={idCardPhotoName}
+                handleInputChange={handleInputChange}
+                nextStep={nextStep}
               />
             )}
+
+            {currentStep === 2 && (
+              <StepTwo
+                formData={formData}
+                handleInputChange={handleInputChange}
+              />
+            )}
+
+          {currentStep === 3 && (
+  <StepThree
+    formData={formData}
+    handleFileChange={handleFileChange}
+    passportPhotoName={passportPhotoName}
+    idCardPhotoName={idCardPhotoName}
+    handleInputChange={handleInputChange}
+  />
+)}
+
 
             <div className="flex justify-between pt-4">
               {currentStep > 1 && (
@@ -123,7 +156,12 @@ const AffiliatePage = () => {
               ) : (
                 <button
                   type="submit"
-                  className="bg-[#610b0c] text-white px-6 py-2 rounded-lg hover:bg-[#4e090a] transition"
+                  disabled={!formIsValid}
+                  className={`${
+                    formIsValid 
+                      ? "bg-[#610b0c] hover:bg-[#4e090a]" 
+                      : "bg-gray-400 cursor-not-allowed"
+                  } text-white px-6 py-2 rounded-lg transition`}
                 >
                   {isLoading ? "Submitting..." : "Submit"}
                 </button>

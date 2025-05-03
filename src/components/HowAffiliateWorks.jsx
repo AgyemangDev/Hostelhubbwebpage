@@ -135,7 +135,7 @@ export default function AffiliateProgram() {
         </div>
         
         <div className="flex justify-center gap-4 mt-8">
-          <Link href="/affiliate-page">
+          <Link to={"/affiliate-page"}>
             <button className="bg-[#610b0c] hover:bg-[#7e1f24] text-white font-semibold px-6 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:transform hover:scale-105">
               Apply Now
             </button>

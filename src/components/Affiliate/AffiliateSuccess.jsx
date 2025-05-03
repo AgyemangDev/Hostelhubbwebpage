@@ -8,7 +8,7 @@ const AffiliateSuccess = () => {
       <p className="text-gray-600 mb-8 text-center max-w-md">
         Thank you for applying! Our team will review your application and contact you shortly.
       </p>
-      <Link to="/affiliate-application" className="text-[#610b0c] underline">Return to Home</Link>
+      <Link to="/affiliate-application" className="text-[#610b0c] underline">Check Application Status</Link>
     </div>
   );
 };

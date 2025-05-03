@@ -28,7 +28,7 @@ const PublicAffiliatePage = () => {
         // Simulate API response (would come from your backend)
         const demoResponse = {
           // Try changing this to "pending", "approved", or "rejected" to see different states
-          status: "pending",
+          status: "approved",
           user: {
             name: "John Doe",
             email: "john@example.com",
@@ -68,6 +68,11 @@ const PublicAffiliatePage = () => {
     );
   }
 
+  if (applicationStatus === "approved") {
+    window.location.href = "/agent-dashboard";
+    return null; // Prevent rendering anything while redirecting
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
@@ -76,8 +81,6 @@ const PublicAffiliatePage = () => {
           <p className="mt-1 text-sm">Join our program to earn commissions</p>
         </div>
         
-
-
           {applicationStatus === "pending" && (
             <div className="text-center">
               <Clock size={48} className="mx-auto text-yellow-500 mb-4" />
@@ -99,28 +102,6 @@ const PublicAffiliatePage = () => {
             </div>
           )}
 
-          {applicationStatus === "approved" && (
-            <div className="text-center">
-              <CheckCircle size={48} className="mx-auto text-green-500 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900">Application Approved!</h3>
-              <div className="mt-2 bg-green-50 border border-green-200 rounded-md p-4">
-                <p className="text-green-700">
-                  Congratulations {user?.name}! Your application has been approved.
-                </p>
-              </div>
-              <p className="mt-4 text-gray-600">
-                You can now access your affiliate dashboard to get your referral links and track your earnings.
-              </p>
-              <button
-                className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-              >
-                <Link to={'/agent-dashboard'}>
-                Login to Dashboard
-                </Link>
-              </button>
-            </div>
-          )}
-
           {applicationStatus === "rejected" && (
             <div className="text-center">
               <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
@@ -134,8 +115,7 @@ const PublicAffiliatePage = () => {
                 Please contact support for more information or to apply again after 30 days.
               </p>
               <button
-               
-                className="mt-4 w-full bg-[#610b0c] text-white py-2 px-4 rounded"
+                className="mt-4 w-full bg-[#610b0c] text-white py-2 px-4 rounded hover:opacity-90"
               >
                 <Link to={'/login'}>
                 Apply Again
