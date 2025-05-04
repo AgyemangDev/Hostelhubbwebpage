@@ -1,87 +1,132 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowUpRight, ArrowDownRight, Users, ShoppingCart, DollarSign,
-  Calendar, Wallet, ArrowDownCircle, CreditCard, ChevronRight,
-  X, Star, MessageSquare, Clock, Filter, Loader2
-} from "lucide-react"
+  ArrowUpRight,
+  ArrowDownRight,
+  Users,
+  ShoppingCart,
+  DollarSign,
+  Calendar,
+  Wallet,
+  ArrowDownCircle,
+  CreditCard,
+  ChevronRight,
+  X,
+  Star,
+  MessageSquare,
+  Clock,
+  Filter,
+  Loader2,
+} from "lucide-react";
 
 const Dashboard = () => {
-  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false)
-  const [withdrawAmount, setWithdrawAmount] = useState("")
-  const [isWithdrawing, setIsWithdrawing] = useState(false)
-  const [activeTab, setActiveTab] = useState("transactions")
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [activeTab, setActiveTab] = useState("transactions");
 
   // Mock data
   const stats = {
-    totalReferrals: 48, previousReferrals: 36,
-    conversions: 12, previousConversions: 8,
-    earnings: 180.0, previousEarnings: 120.0,
-    currency: "GHC"
-  }
+    totalReferrals: 48,
+    previousReferrals: 36,
+    conversions: 12,
+    previousConversions: 8,
+    earnings: 180.0,
+    previousEarnings: 120.0,
+    currency: "GHC",
+  };
 
   // Calculate percentage changes
-  const referralChange = ((stats.totalReferrals - stats.previousReferrals) / stats.previousReferrals) * 100
-  const conversionChange = ((stats.conversions - stats.previousConversions) / stats.previousConversions) * 100
-  const earningsChange = ((stats.earnings - stats.previousEarnings) / stats.previousEarnings) * 100
+  const referralChange =
+    ((stats.totalReferrals - stats.previousReferrals) /
+      stats.previousReferrals) *
+    100;
+  const conversionChange =
+    ((stats.conversions - stats.previousConversions) /
+      stats.previousConversions) *
+    100;
+  const earningsChange =
+    ((stats.earnings - stats.previousEarnings) / stats.previousEarnings) * 100;
 
   const [transactions] = useState([
     { id: 1, date: "Apr 30, 2025", amount: 120, status: "completed" },
     { id: 2, date: "Apr 25, 2025", amount: 90, status: "completed" },
     { id: 3, date: "Apr 20, 2025", amount: 75, status: "completed" },
     { id: 4, date: "Apr 15, 2025", amount: 60, status: "completed" },
-    { id: 5, date: "Apr 10, 2025", amount: 45, status: "completed" }
-  ])
+    { id: 5, date: "Apr 10, 2025", amount: 45, status: "completed" },
+  ]);
 
   const [reviews] = useState([
     {
-      id: 1, name: "Sarah Johnson", date: "May 2, 2025", rating: 5,
-      comment: "The agent was incredibly helpful and found me the perfect hostel near campus. Highly recommend!"
+      id: 1,
+      name: "Sarah Johnson",
+      date: "May 2, 2025",
+      rating: 5,
+      comment:
+        "The agent was incredibly helpful and found me the perfect hostel near campus. Highly recommend!",
     },
     {
-      id: 2, name: "Michael Chen", date: "Apr 28, 2025", rating: 4,
-      comment: "Great service and quick responses. The hostel was exactly as described."
+      id: 2,
+      name: "Michael Chen",
+      date: "Apr 28, 2025",
+      rating: 4,
+      comment:
+        "Great service and quick responses. The hostel was exactly as described.",
     },
     {
-      id: 3, name: "Priya Patel", date: "Apr 22, 2025", rating: 5,
-      comment: "Made my transition to university so much easier. Thank you for finding me affordable accommodation!"
+      id: 3,
+      name: "Priya Patel",
+      date: "Apr 22, 2025",
+      rating: 5,
+      comment:
+        "Made my transition to university so much easier. Thank you for finding me affordable accommodation!",
     },
     {
-      id: 4, name: "James Wilson", date: "Apr 15, 2025", rating: 4,
-      comment: "Very professional service. Would use again next semester."
-    }
-  ])
+      id: 4,
+      name: "James Wilson",
+      date: "Apr 15, 2025",
+      rating: 4,
+      comment: "Very professional service. Would use again next semester.",
+    },
+  ]);
 
-  const total = transactions.reduce((sum, entry) => sum + entry.amount, 0)
+  const total = transactions.reduce((sum, entry) => sum + entry.amount, 0);
 
   const handleWithdraw = () => {
-    const amt = Number.parseFloat(withdrawAmount)
+    const amt = Number.parseFloat(withdrawAmount);
     if (!amt || amt <= 0) {
-      alert("Please enter a valid amount")
-      return
+      alert("Please enter a valid amount");
+      return;
     }
 
     if (amt > total) {
-      alert("Withdrawal amount cannot exceed your available balance")
-      return
+      alert("Withdrawal amount cannot exceed your available balance");
+      return;
     }
 
-    setIsWithdrawing(true)
+    setIsWithdrawing(true);
 
     // Simulate API call
     setTimeout(() => {
-      setIsWithdrawing(false)
-      alert(`Withdrawal initiated for GHC ${amt.toFixed(2)}`)
-      setWithdrawAmount("")
-      setWithdrawModalOpen(false)
-    }, 1500)
-  }
+      setIsWithdrawing(false);
+      alert(`Withdrawal initiated for GHC ${amt.toFixed(2)}`);
+      setWithdrawAmount("");
+      setWithdrawModalOpen(false);
+    }, 1500);
+  };
 
   // Simplified StatCard component
-  const StatCard = ({ title, value, change, icon, prefix = "", suffix = "" }) => {
-    const isPositive = change >= 0
+  const StatCard = ({
+    title,
+    value,
+    change,
+    icon,
+    prefix = "",
+    suffix = "",
+  }) => {
+    const isPositive = change >= 0;
 
     return (
       <motion.div
@@ -93,28 +138,47 @@ const Dashboard = () => {
         <div className="absolute top-0 right-0 bg-gradient-to-br from-red-200 to-red-400 w-16 h-16 rounded-bl-3xl opacity-20"></div>
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
-            <div className="p-3 rounded-lg bg-red-50">{React.cloneElement(icon, { className: "text-[#610b0c]" })}</div>
-            <div className={`flex items-center ${isPositive ? "text-green-600" : "text-red-600"} text-sm font-medium`}>
-              {isPositive ? <ArrowUpRight className="mr-1" size={16} /> : <ArrowDownRight className="mr-1" size={16} />}
+            <div className="p-3 rounded-lg bg-red-50">
+              {React.cloneElement(icon, { className: "text-[#610b0c]" })}
+            </div>
+            <div
+              className={`flex items-center ${
+                isPositive ? "text-green-600" : "text-red-600"
+              } text-sm font-medium`}
+            >
+              {isPositive ? (
+                <ArrowUpRight className="mr-1" size={16} />
+              ) : (
+                <ArrowDownRight className="mr-1" size={16} />
+              )}
               <span>{Math.abs(change).toFixed(1)}%</span>
             </div>
           </div>
           <h2 className="text-lg font-medium text-gray-700 mb-2">{title}</h2>
           <p className="text-3xl font-bold mb-1 text-[#610b0c]">
-            {prefix}{value.toLocaleString()}{suffix}
+            {prefix}
+            {value.toLocaleString()}
+            {suffix}
           </p>
           <p className="text-sm text-gray-500">vs previous period</p>
         </div>
       </motion.div>
-    )
-  }
+    );
+  };
 
   // Render star ratings
-  const renderStars = (rating) => (
-    Array(5).fill(0).map((_, i) => (
-      <Star key={i} size={16} className={i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"} />
-    ))
-  )
+  const renderStars = (rating) =>
+    Array(5)
+      .fill(0)
+      .map((_, i) => (
+        <Star
+          key={i}
+          size={16}
+          className={
+            i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
+          }
+        />
+      ));
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -172,7 +236,10 @@ const Dashboard = () => {
                   <Wallet className="h-5 w-5" />
                   Withdraw Funds
                 </p>
-                <motion.div whileHover={{ rotate: 15 }} className="bg-white/10 p-3 rounded-full">
+                <motion.div
+                  whileHover={{ rotate: 15 }}
+                  className="bg-white/10 p-3 rounded-full"
+                >
                   <CreditCard className="h-6 w-6 text-white" />
                 </motion.div>
               </div>
@@ -248,7 +315,9 @@ const Dashboard = () => {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.1 * index, duration: 0.4 }}
-                          whileHover={{ backgroundColor: "rgba(97, 11, 12, 0.05)" }}
+                          whileHover={{
+                            backgroundColor: "rgba(97, 11, 12, 0.05)",
+                          }}
                           className="flex justify-between items-center p-3 rounded-lg border-b border-gray-100 hover:cursor-pointer"
                         >
                           <div className="flex items-center gap-3">
@@ -256,12 +325,18 @@ const Dashboard = () => {
                               <DollarSign className="h-4 w-4 text-[#610b0c]" />
                             </div>
                             <div>
-                              <p className="text-gray-700 font-medium">Booking Commission</p>
-                              <p className="text-xs text-gray-500">{transaction.date}</p>
+                              <p className="text-gray-700 font-medium">
+                                Booking Commission
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {transaction.date}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center">
-                            <span className="font-semibold text-gray-800">GHC {transaction.amount.toFixed(2)}</span>
+                            <span className="font-semibold text-gray-800">
+                              GHC {transaction.amount.toFixed(2)}
+                            </span>
                             <ChevronRight className="h-4 w-4 text-gray-400 ml-2" />
                           </div>
                         </motion.div>
@@ -301,10 +376,16 @@ const Dashboard = () => {
                           className="p-4 border border-gray-100 rounded-lg hover:border-red-200 transition-colors"
                         >
                           <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-medium text-gray-800">{review.name}</h3>
-                            <div className="flex items-center gap-1">{renderStars(review.rating)}</div>
+                            <h3 className="font-medium text-gray-800">
+                              {review.name}
+                            </h3>
+                            <div className="flex items-center gap-1">
+                              {renderStars(review.rating)}
+                            </div>
                           </div>
-                          <p className="text-gray-600 text-sm mb-2">{review.comment}</p>
+                          <p className="text-gray-600 text-sm mb-2">
+                            {review.comment}
+                          </p>
                           <div className="flex items-center text-xs text-gray-500">
                             <Clock className="h-3 w-3 mr-1" />
                             {review.date}
@@ -365,7 +446,9 @@ const Dashboard = () => {
                   Enter the amount you want to withdraw to your bank account.
                 </p>
                 <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">GHC</div>
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    GHC
+                  </div>
                   <input
                     type="number"
                     placeholder="0.00"
@@ -381,7 +464,9 @@ const Dashboard = () => {
 
                 <div className="flex justify-between text-sm mt-3">
                   <span className="text-gray-500">Available</span>
-                  <span className="font-medium text-gray-700">GHC {total.toFixed(2)}</span>
+                  <span className="font-medium text-gray-700">
+                    GHC {total.toFixed(2)}
+                  </span>
                 </div>
               </div>
 
@@ -390,7 +475,9 @@ const Dashboard = () => {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => !isWithdrawing && setWithdrawModalOpen(false)}
+                    onClick={() =>
+                      !isWithdrawing && setWithdrawModalOpen(false)
+                    }
                     disabled={isWithdrawing}
                     className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
                   >
@@ -419,7 +506,7 @@ const Dashboard = () => {
         )}
       </AnimatePresence>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

@@ -8,10 +8,14 @@ const AgentDashboard = () => {
 
   return (
     <div className="bg-gradient-to-br from-white to-red-50 text-gray-800 min-h-screen p-6">
-      <div className="mb-6 text-sm text-[#610b0c] font-medium">Dashboard / Home</div>
+      <div className="mb-6 text-sm text-[#610b0c] font-medium">
+        Dashboard / Home
+      </div>
 
       <div className="mb-8 bg-gradient-to-r from-white to-red-50 rounded-xl p-6 shadow-lg border border-red-200">
-        <h2 className="text-2xl text-[#610b0c] font-bold mb-2">Welcome to your Agent Dashboard</h2>
+        <h2 className="text-2xl text-[#610b0c] font-bold mb-2">
+          Welcome to your Agent Dashboard
+        </h2>
         <p className="text-[#610b0c] mb-4">
           Your referral code:{" "}
           <span className="bg-[#610b0c] text-white px-2 py-1 rounded font-mono">
@@ -26,7 +30,7 @@ const AgentDashboard = () => {
           </button>
           <button className="bg-[#610b0c] text-white hover:bg-red-800 py-2 px-4 rounded-lg text-sm font-medium transition-colors">
             View performance
-          </button> 
+          </button>
         </div>
       </div>
 
