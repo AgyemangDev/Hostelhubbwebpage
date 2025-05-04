@@ -17,10 +17,10 @@ const AffiliateProgramSection = () => {
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
       style={{
         backgroundImage: `url(${backgroundImage})`,
-        backgroundColor: "#000", // Fallback color
         backgroundAttachment: "fixed", // Ensures the background stays fixed on scroll
         backgroundPosition: "center",
-        backgroundSize: "cover",
+        backgroundSize: "cover", // Ensures the image covers the entire section
+        backgroundColor: "#000", // Fallback color
       }}
     >
       {/* Dark Overlay with Gradient for Better Contrast */}
