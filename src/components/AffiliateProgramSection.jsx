@@ -11,18 +11,22 @@ const AffiliateProgramSection = () => {
     // Navigate to the affiliate program page
     navigate("/get-started");
   };
+
   return (
     <div
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
       style={{
         backgroundImage: `url(${backgroundImage})`,
+        backgroundColor: "#000", // Fallback color
         backgroundAttachment: "fixed", // Ensures the background stays fixed on scroll
+        backgroundPosition: "center",
+        backgroundSize: "cover",
       }}
     >
-      {/* Dark Overlay with Animated Gradient Flicker Effect */}
+      {/* Dark Overlay with Gradient for Better Contrast */}
       <motion.div
-        className="absolute inset-0 bg-black opacity-60"
-        animate={{ opacity: [0.5, 0.7, 0.5] }}
+        className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/40"
+        animate={{ opacity: [0.4, 0.6, 0.4] }}
         transition={{
           duration: 8,
           repeat: Infinity,

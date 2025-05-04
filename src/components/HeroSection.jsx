@@ -1,7 +1,7 @@
 import React from "react";
 import { Typewriter } from "react-simple-typewriter";
 import { motion } from "framer-motion";
-import backgroundImage from "../assets/mainmage.jpg";
+import backgroundImage from "../assets/mainmage.jpg"; // Ensure this image is optimized
 import { FaArrowDown } from "react-icons/fa";
 
 const HeroSection = ({ scrollToNextSection }) => {
@@ -10,15 +10,16 @@ const HeroSection = ({ scrollToNextSection }) => {
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
       style={{
         backgroundImage: `url(${backgroundImage})`,
+        backgroundColor: "#000", // Fallback color
         backgroundAttachment: "fixed",
         backgroundPosition: "center",
         backgroundSize: "cover",
       }}
     >
-      {/* Dark Overlay with Animated Flicker */}
+      {/* Dark Overlay with Gradient for Better Contrast */}
       <motion.div
-        className="absolute inset-0 bg-black opacity-60"
-        animate={{ opacity: [0.5, 0.7, 0.5] }}
+        className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/40"
+        animate={{ opacity: [0.4, 0.6, 0.4] }}
         transition={{
           duration: 8,
           repeat: Infinity,
@@ -67,7 +68,7 @@ const HeroSection = ({ scrollToNextSection }) => {
             transition={{ delay: 1, duration: 1 }}
             className="text-xl text-gray-200 max-w-2xl mx-auto"
           >
-            Need a hostel or accomodation nearby? Need Storage? Whether it’s
+            Need a hostel or accommodation nearby? Need Storage? Whether it’s
             affordable accommodation or secure storage close to you, we’ve got
             options that fit your budget and your lifestyle.
           </motion.p>
