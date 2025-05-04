@@ -3,16 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Wallet,
-  UserCircle,
-  Share2,
-  CalendarDays,
-  LogOut,
-  Menu,
-  X,
-} from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 
 const navItems = [
   {
@@ -27,32 +18,19 @@ const Sidebar = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Check if viewport is mobile
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setSidebarOpen(true);
-      } else {
-        setSidebarOpen(false);
-      }
+      setSidebarOpen(window.innerWidth >= 768);
     };
 
-    // Initial check
     checkIfMobile();
-
-    // Add resize listener
     window.addEventListener("resize", checkIfMobile);
-
-    // Cleanup
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  // Mobile toggle button
   const MobileToggle = () => (
     <button
       onClick={toggleSidebar}
@@ -69,26 +47,24 @@ const Sidebar = () => {
       <AnimatePresence>
         {sidebarOpen && (
           <>
-            {/* Overlay for mobile */}
             {isMobile && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black z-30"
-                onClick={() => isMobile && setSidebarOpen(false)}
+                onClick={() => setSidebarOpen(false)}
               />
             )}
 
-            {/* Sidebar */}
             <motion.aside
               initial={isMobile ? { x: -280 } : { x: 0 }}
               animate={{ x: 0 }}
               exit={isMobile ? { x: -280 } : { x: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed md:static z-40 h-screen bg-white text-white flex flex-col shadow-lg w-72"
+              className="fixed md:fixed z-40 h-screen bg-white text-white flex flex-col shadow-lg w-72"
             >
-              {/* Branding Header */}
+              {/* Branding */}
               <div className="h-16 flex items-center px-6 bg-[#610b0c]">
                 <div className="flex items-center space-x-3">
                   <div className="h-9 w-9 bg-white rounded-md flex items-center justify-center text-[#610b0c] font-black text-lg">
