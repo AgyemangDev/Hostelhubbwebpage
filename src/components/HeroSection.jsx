@@ -1,7 +1,7 @@
 import React from "react";
 import { Typewriter } from "react-simple-typewriter";
 import { motion } from "framer-motion";
-import backgroundImage from "../assets/background.avif";
+import backgroundImage from "../assets/mainmage.jpg";
 import { FaArrowDown } from "react-icons/fa";
 
 const HeroSection = ({ scrollToNextSection }) => {
@@ -10,9 +10,9 @@ const HeroSection = ({ scrollToNextSection }) => {
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
       style={{
         backgroundImage: `url(${backgroundImage})`,
-        backgroundAttachment: 'fixed',
-        backgroundPosition: 'center',
-        backgroundSize: 'cover'
+        backgroundAttachment: "fixed",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
       }}
     >
       {/* Dark Overlay with Animated Flicker */}
@@ -37,25 +37,24 @@ const HeroSection = ({ scrollToNextSection }) => {
         >
           {/* Optional Badge */}
           <div className="inline-flex items-center px-4 py-1 rounded-full border-2 border-gray-200 bg-white shadow-sm">
-  <span className="flex items-center">
-
-    <span className="text-gray-800 font-semibold text-sm">
-    Make your stay easier & comfortable
-    </span>
-  </span>
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    className="h-4 w-4 ml-1 text-gray-500" 
-    viewBox="0 0 20 20" 
-    fill="currentColor"
-  >
-    <path 
-      fillRule="evenodd" 
-      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
-      clipRule="evenodd" 
-    />
-  </svg>
-</div>
+            <span className="flex items-center">
+              <span className="text-gray-800 font-semibold text-sm">
+                Make your stay easier & comfortable
+              </span>
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 ml-1 text-gray-500"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight">
             Find Accommodation & Storage — Fast, Easy & Secure!
@@ -68,7 +67,9 @@ const HeroSection = ({ scrollToNextSection }) => {
             transition={{ delay: 1, duration: 1 }}
             className="text-xl text-gray-200 max-w-2xl mx-auto"
           >
-Need a hostel or accomodation nearby? Need Storage? Whether it’s affordable accommodation or secure storage close to you, we’ve got options that fit your budget and your lifestyle.
+            Need a hostel or accomodation nearby? Need Storage? Whether it’s
+            affordable accommodation or secure storage close to you, we’ve got
+            options that fit your budget and your lifestyle.
           </motion.p>
 
           {/* CTA Button */}

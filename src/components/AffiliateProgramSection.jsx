@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaArrowDown } from "react-icons/fa";
-import backgroundImage from "../assets/affiliate.jpg"; // Replace with your image
+import backgroundImage from "../assets/student.jpg"; // Replace with your image
 import { useNavigate } from "react-router-dom";
 
 const AffiliateProgramSection = () => {
@@ -10,7 +10,7 @@ const AffiliateProgramSection = () => {
   const handleButtonClick = () => {
     // Navigate to the affiliate program page
     navigate("/get-started");
-  }
+  };
   return (
     <div
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
@@ -62,10 +62,11 @@ const AffiliateProgramSection = () => {
             transition={{ delay: 1, duration: 1 }}
             className="text-xl text-gray-200 max-w-2xl mx-auto"
           >
-It's easy — sign up to become an affiliate and, once approved, start 
-earning commissions by referring students to book their hostels through 
-HostelHubb. For every successful booking made through your referral, 
-you’ll receive a commission. It's a rewarding way to share and earn!
+            It's easy — sign up to become an affiliate and, once approved, start
+            earning commissions by referring students to book their hostels
+            through HostelHubb. For every successful booking made through your
+            referral, you’ll receive a commission. It's a rewarding way to share
+            and earn!
           </motion.p>
 
           {/* CTA Button with Animated Gradient and Pulse */}
@@ -81,11 +82,10 @@ you’ll receive a commission. It's a rewarding way to share and earn!
               repeatType: "mirror",
               ease: "easeInOut",
             }}
-            onClick={handleButtonClick} 
+            onClick={handleButtonClick}
           >
             Learn More
           </motion.button>
-
         </motion.div>
       </div>
     </div>
