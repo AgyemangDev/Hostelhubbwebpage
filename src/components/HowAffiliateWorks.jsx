@@ -306,7 +306,7 @@ export default function JobOpenings() {
                   Apply Now
                 </a>
                 <a
-                  href="tel:+233595116541"
+                  href="tel:+0595116541"
                   className="border border-[#610b0c] text-[#610b0c] hover:bg-[#610b0c]/10 font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center"
                 >
                   <Phone className="w-5 h-5 mr-2" />
