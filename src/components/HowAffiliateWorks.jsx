@@ -16,8 +16,6 @@ import {
 } from "lucide-react";
 
 export default function JobOpenings() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [activePosition, setActivePosition] = useState(0);
   const [visibleSections, setVisibleSections] = useState({
     hero: false,
     openings: false,
@@ -32,18 +30,6 @@ export default function JobOpenings() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
-
-  // Animation trigger on component mount
-  useEffect(() => {
-    setIsVisible(true);
-
-    // Animated position rotation
-    const positionInterval = setInterval(() => {
-      setActivePosition((prev) => (prev >= 5 ? 0 : prev + 1));
-    }, 3000);
-
-    return () => clearInterval(positionInterval);
   }, []);
 
   // Intersection Observer for section animations
@@ -89,7 +75,7 @@ export default function JobOpenings() {
     },
     {
       title: "Student Pickup Assistant",
-      count: "3 per hall",
+      count: "Multiple positions",
       description:
         "Assist students with move-in and pickup services, assigned specifically to individual residence halls.",
       icon: <Truck className="w-8 h-8 text-[#610b0c]" />,
@@ -117,7 +103,6 @@ export default function JobOpenings() {
     },
   ];
 
-  // Why Join reasons
   const whyJoinReasons = [
     {
       title: "Competitive Compensation",
@@ -147,7 +132,7 @@ export default function JobOpenings() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center justify-start overflow-hidden">
-      {/* Hero Section with Animation */}
+      {/* Hero Section */}
       <div
         ref={sectionRefs.hero}
         className={`text-center max-w-3xl mt-16 px-6 transition-all duration-1000 transform ${
@@ -172,24 +157,6 @@ export default function JobOpenings() {
           Be part of our mission to provide premium student accommodations and
           help shape the future of student housing services.
         </p>
-
-        {/* Featured position - rotating */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mt-8 mb-8 transition-all duration-500 transform hover:scale-105">
-          <div className="flex items-center justify-center mb-4">
-            {jobOpenings[activePosition].icon}
-            <h3 className="text-2xl font-bold ml-3 text-[#610b0c]">
-              {jobOpenings[activePosition].title}
-            </h3>
-          </div>
-          <p className="text-gray-600">
-            {jobOpenings[activePosition].description}
-          </p>
-          <div className="mt-4">
-            <span className="bg-[#610b0c]/10 text-[#610b0c] text-sm font-medium py-1 px-3 rounded-full">
-              {jobOpenings[activePosition].count}
-            </span>
-          </div>
-        </div>
 
         <div className="mt-8">
           <a
@@ -219,9 +186,7 @@ export default function JobOpenings() {
           {jobOpenings.map((job, index) => (
             <div
               key={index}
-              className={`bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg ${
-                index === activePosition ? "ring-2 ring-[#610b0c]" : ""
-              }`}
+              className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg"
             >
               <div className="p-6">
                 <div className="flex justify-between items-start">
@@ -286,70 +251,6 @@ export default function JobOpenings() {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <div className="bg-white rounded-xl shadow-md p-8 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-bold text-[#610b0c] mb-4">
-                Ready to Apply?
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Join our team of passionate professionals dedicated to
-                transforming student accommodation experiences.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="/affiliate-page"
-                  className="bg-[#610b0c] hover:bg-[#7a1011] text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center text-lg"
-                >
-                  <Briefcase className="w-5 h-5 mr-2" />
-                  Apply Now
-                </a>
-                <a
-                  href="tel:0595116541"
-                  className="border border-[#610b0c] text-[#610b0c] hover:bg-[#610b0c]/10 font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center"
-                >
-                  <Phone className="w-5 h-5 mr-2" />
-                  Call Us
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Company Values */}
-      <div className="w-full max-w-5xl px-6 my-16">
-        <div className="bg-white rounded-xl shadow-md p-8">
-          <h2 className="text-3xl font-bold text-center mb-8 text-[#610b0c]">
-            Our Company Values
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-[#610b0c]/10 flex items-center justify-center mb-4">
-                <Users className="w-8 h-8 text-[#610b0c]" />
-              </div>
-              <h3 className="font-bold text-gray-800">Teamwork</h3>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-[#610b0c]/10 flex items-center justify-center mb-4">
-                <Award className="w-8 h-8 text-[#610b0c]" />
-              </div>
-              <h3 className="font-bold text-gray-800">Excellence</h3>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-[#610b0c]/10 flex items-center justify-center mb-4">
-                <Megaphone className="w-8 h-8 text-[#610b0c]" />
-              </div>
-              <h3 className="font-bold text-gray-800">Innovation</h3>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-[#610b0c]/10 flex items-center justify-center mb-4">
-                <Gift className="w-8 h-8 text-[#610b0c]" />
-              </div>
-              <h3 className="font-bold text-gray-800">Integrity</h3>
-            </div>
           </div>
         </div>
       </div>
