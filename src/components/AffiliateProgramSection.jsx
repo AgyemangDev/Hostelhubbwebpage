@@ -1,30 +1,61 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaArrowDown } from "react-icons/fa";
-import backgroundImage from "../assets/student.jpg"; // Replace with your image
 import { useNavigate } from "react-router-dom";
+import backgroundImage from "../assets/student.jpg";
 
 const AffiliateProgramSection = () => {
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if the device is mobile based on screen width
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Initial check
+    checkIfMobile();
+
+    // Add event listener for window resize
+    window.addEventListener("resize", checkIfMobile);
+
+    // Clean up
+    return () => window.removeEventListener("resize", checkIfMobile);
+  }, []);
 
   const handleButtonClick = () => {
-    // Navigate to the affiliate program page
     navigate("/get-started");
   };
 
   return (
     <div
-      className="w-full h-screen bg-cover bg-center relative flex items-center justify-center"
+      className="w-full h-screen relative flex items-center justify-center"
       style={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundAttachment: "fixed",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        imageRendering: "auto", // Helps with quality
+        position: "relative",
+        overflow: "hidden",
         backgroundColor: "#000",
       }}
     >
+      {/* Background Image with conditional styling */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          // Remove fixed attachment for mobile
+          backgroundAttachment: isMobile ? "scroll" : "fixed",
+          // Improve image rendering
+          imageRendering: "high-quality",
+          // Add transform for hardware acceleration
+          transform: "translate3d(0, 0, 0)",
+          // Ensure the div covers the container
+          width: "100%",
+          height: "100%",
+        }}
+      />
+
       {/* Dark Overlay with Gradient for Better Contrast */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/40"
@@ -38,7 +69,7 @@ const AffiliateProgramSection = () => {
       />
 
       {/* Affiliate Program Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 md:pt-40">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -56,8 +87,8 @@ const AffiliateProgramSection = () => {
             </h2>
           </motion.div>
 
-          {/* Main Title with Typewriter Effect */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white max-w-4xl mx-auto">
+          {/* Main Title with responsive text sizes */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white max-w-4xl mx-auto">
             Start Earning through Us.
           </h1>
 
@@ -66,18 +97,18 @@ const AffiliateProgramSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 1 }}
-            className="text-xl text-gray-200 max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto"
           >
             It's easy — sign up to become an affiliate and, once approved, start
             earning commissions by referring students to book their hostels
             through HostelHubb. For every successful booking made through your
-            referral, you’ll receive a commission. It's a rewarding way to share
+            referral, you'll receive a commission. It's a rewarding way to share
             and earn!
           </motion.p>
 
           {/* CTA Button with Animated Gradient and Pulse */}
           <motion.button
-            className="mt-8 px-8 py-4 bg-accent text-white text-lg font-medium rounded-full shadow-lg 
+            className="mt-8 px-6 py-3 md:px-8 md:py-4 bg-accent text-white text-lg font-medium rounded-full shadow-lg 
             transition-all duration-300 
             hover:bg-gradient-to-r hover:from-[#610b0c] hover:to-[#7e1f24] hover:text-white 
             transform hover:scale-105"
