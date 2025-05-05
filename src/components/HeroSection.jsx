@@ -7,13 +7,15 @@ import { FaArrowDown } from "react-icons/fa";
 const HeroSection = ({ scrollToNextSection }) => {
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
+      className="min-h-screen relative flex items-center justify-center"
       style={{
         backgroundImage: `url(${backgroundImage})`,
-        backgroundAttachment: "fixed", // Ensures the background stays fixed on scroll
+        backgroundAttachment: "fixed",
         backgroundPosition: "center",
-        backgroundSize: "cover", // Ensures the image covers the entire section
-        backgroundColor: "#000", // Fallback color in case the image fails
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundColor: "#000",
+        imageRendering: "auto", // Ensures high quality
       }}
     >
       {/* Dark Overlay with Animated Flicker */}
