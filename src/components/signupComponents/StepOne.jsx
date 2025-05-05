@@ -5,7 +5,8 @@ const StepOne = ({ formData, handleInputChange, isLoading }) => {
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-gray-800">Sign In</h2>
       <p className="text-gray-600">
-        Please enter your login credentials to continue with your employee application.
+        Please enter your login credentials to continue with your employee application. Ensure you already
+        have an account with hostelhubb mobile application. If not, download and sign up before application
       </p>
       
       <div>

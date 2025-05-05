@@ -67,12 +67,13 @@ export default function JobOpenings() {
       icon: <Phone className="w-8 h-8 text-[#610b0c]" />,
     },
     {
-      title: "Grounds Marketing Personnel",
+      title: "Marketing & Advertising Personnel",
       count: "Multiple positions",
       description:
-        "Conduct on-site advertisement for hostels booking and storage services during peak seasons.",
+        "Lead both on-ground and digital promotional efforts to increase visibility and engagement. Responsibilities include distributing flyers, organizing mini-events, managing social media content, and running ad campaigns across platforms like Instagram, TikTok, and Google Ads.",
       icon: <Megaphone className="w-8 h-8 text-[#610b0c]" />,
-    },
+    }
+,    
     {
       title: "Student Pickup Assistant",
       count: "Multiple positions",
@@ -81,10 +82,10 @@ export default function JobOpenings() {
       icon: <Truck className="w-8 h-8 text-[#610b0c]" />,
     },
     {
-      title: "Hostel Onboarding Specialist",
+      title: "Hostel Agent",
       count: "Multiple positions",
       description:
-        "Assist with uploading more hostels on board, including data collection and verification.",
+        "Assist with uploading more hostels on board, including data collection and verification. Help Students Get hostel accomdation",
       icon: <ClipboardCheck className="w-8 h-8 text-[#610b0c]" />,
     },
     {
