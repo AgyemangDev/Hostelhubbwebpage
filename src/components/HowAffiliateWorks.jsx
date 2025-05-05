@@ -61,7 +61,7 @@ export default function JobOpenings() {
   const jobOpenings = [
     {
       title: "Customer Service Receptionist",
-      count: "2-3 positions",
+      count: "Full",
       description:
         "Handle the dashboard, make calls to hostel managers and students regarding bookings, and intervene to speed up processes when needed.",
       icon: <Phone className="w-8 h-8 text-[#610b0c]" />,
@@ -75,7 +75,7 @@ export default function JobOpenings() {
     }
 ,    
     {
-      title: "Student Pickup Assistant",
+      title: "Storage Pickup Assistant",
       count: "Multiple positions",
       description:
         "Assist students with move-in and pickup services, assigned specifically to individual residence halls.",
