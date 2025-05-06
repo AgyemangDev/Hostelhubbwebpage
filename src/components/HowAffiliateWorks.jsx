@@ -59,13 +59,13 @@ export default function JobOpenings() {
 
   // Job listings data
   const jobOpenings = [
-    {
-      title: "Customer Service Receptionist",
-      count: "Full",
-      description:
-        "Handle the dashboard, make calls to hostel managers and students regarding bookings, and intervene to speed up processes when needed.",
-      icon: <Phone className="w-8 h-8 text-[#610b0c]" />,
-    },
+    // {
+    //   title: "Customer Service Receptionist",
+    //   count: "Full",
+    //   description:
+    //     "Handle the dashboard, make calls to hostel managers and students regarding bookings, and intervene to speed up processes when needed.",
+    //   icon: <Phone className="w-8 h-8 text-[#610b0c]" />,
+    // },
     {
       title: "Marketing & Advertising Personnel",
       count: "Multiple positions",
@@ -88,20 +88,20 @@ export default function JobOpenings() {
         "Assist with uploading more hostels on board, including data collection and verification. Help Students Get hostel accomdation",
       icon: <ClipboardCheck className="w-8 h-8 text-[#610b0c]" />,
     },
-    {
-      title: "Graphic Designer",
-      count: "1 position",
-      description:
-        "Create compelling visual assets for our marketing campaigns across digital and print media.",
-      icon: <Palette className="w-8 h-8 text-[#610b0c]" />,
-    },
-    {
-      title: "Videographer",
-      count: "1 position",
-      description:
-        "Produce high-quality video content showcasing our properties and services for marketing purposes.",
-      icon: <Camera className="w-8 h-8 text-[#610b0c]" />,
-    },
+    // {
+    //   title: "Graphic Designer",
+    //   count: "Full",
+    //   description:
+    //     "Create compelling visual assets for our marketing campaigns across digital and print media.",
+    //   icon: <Palette className="w-8 h-8 text-[#610b0c]" />,
+    // },
+    // {
+    //   title: "Videographer",
+    //   count: "Full",
+    //   description:
+    //     "Produce high-quality video content showcasing our properties and services for marketing purposes.",
+    //   icon: <Camera className="w-8 h-8 text-[#610b0c]" />,
+    // },
   ];
 
   const whyJoinReasons = [

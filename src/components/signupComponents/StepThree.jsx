@@ -4,7 +4,7 @@ const departments = [
   "Hostel Agent",
   "Storage Pickup Assistant",
   "Advertisement Team",
-  "Video/Graphic Editor",
+  // "Video/Graphic Editor",
   "Marketing & Advertising Personnel"
 ];
 
