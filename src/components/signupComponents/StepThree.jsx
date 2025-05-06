@@ -1,9 +1,9 @@
 import React from 'react';
 
 const departments = [
-  "Hostel Agent",
+  // "Hostel Agent",
   "Storage Pickup Assistant",
-  "Advertisement Team",
+  // "Advertisement Team",
   // "Video/Graphic Editor",
   "Marketing & Advertising Personnel"
 ];
