@@ -1,11 +1,12 @@
 import React from 'react';
 
 const departments = [
-  // "Hostel Agent",
+  "Hostel Agent",
   "Storage Pickup Assistant",
-  // "Advertisement Team",
-  // "Video/Graphic Editor",
-  "Marketing & Advertising Personnel"
+  "Advertisement Team",
+  "Video/Graphic Editor",
+  "Marketing & Advertising Personnel",
+  "Customer Service Receptionist"
 ];
 
 const StepThree = ({ formData, handleInputChange }) => {
