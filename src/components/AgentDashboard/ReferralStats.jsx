@@ -11,17 +11,14 @@ import WithdrawModal from "../dashboard/WithdrawModal";
 // Import modular components
 
 
-const ReferralStats  = () => {
+const ReferralStats  = ({user}) => {
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
   // Mock data
   const stats = {
-    totalReferrals: 48,
-    previousReferrals: 36,
-    conversions: 12,
-    previousConversions: 8,
-    earnings: 180.0,
-    previousEarnings: 120.0,
+    totalReferrals: user.totalReferal || 0,
+    conversions: 0,
+    earnings: user.balance || 0,
     currency: "GHC",
   };
 
@@ -99,7 +96,7 @@ const ReferralStats  = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <StatCard
-            title="Successful Bookings"
+            title="Total Referrals"
             value={stats.totalReferrals}
             change={referralChange}
             icon={<Users size={24} />}
@@ -129,6 +126,7 @@ const ReferralStats  = () => {
             transactions={transactions}
             reviews={reviews}
             currency={stats.currency}
+            user={user}
           />
         </div>
       </div>

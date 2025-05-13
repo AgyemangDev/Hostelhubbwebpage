@@ -66,7 +66,14 @@ const Navbar = ({
           </div>
 
           {/* CTA Button Placeholder (optional) */}
-          <div className="hidden md:flex">{/* Add CTA if needed */}</div>
+          <div className="hidden md:flex">
+  <button
+    onClick={() => navigate("/login")}
+    className="px-5 py-2 text-white font-semibold rounded-full bg-[#9a0b0d] hover:bg-[#7c070a] transition-all"
+  >
+    Agent Login
+  </button>
+</div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
@@ -119,6 +126,17 @@ const Navbar = ({
               </button>
             ))}
           </div>
+          <div className="border-t border-gray-100 mt-4 pt-4 px-4">
+  <button
+    onClick={() => {
+      setIsMenuOpen(false);
+      navigate("/login");
+    }}
+    className="w-full px-4 py-2 text-white font-semibold rounded-full bg-[#9a0b0d] hover:bg-[#7c070a] transition-all"
+  >
+    Agent Login
+  </button>
+</div>
         </div>
       )}
     </div>

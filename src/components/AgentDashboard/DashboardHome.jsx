@@ -1,7 +1,7 @@
 import React from "react";
 import ReferralStats from "./ReferralStats";
 
-const DashboardHome = ({ userId, token, referralCode }) => {
+const DashboardHome = ({ user }) => {
   return (
     <section
       id="home"
@@ -10,7 +10,7 @@ const DashboardHome = ({ userId, token, referralCode }) => {
       {/* Responsive container */}
       <div className="max-w-full">
         {/* Stats */}
-        <ReferralStats />
+        <ReferralStats user={user}/>
       </div>
     </section>
   );

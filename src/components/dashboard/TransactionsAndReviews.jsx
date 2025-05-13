@@ -13,18 +13,18 @@ import {
 } from "lucide-react";
 import StarRating from "./StarRating";
 
-
-
-const TransactionsAndReviews  = ({
-  transactions,
-  reviews,
+const TransactionsAndReviews = ({
   currency = "GHC",
+  user,
 }) => {
   const [activeTab, setActiveTab] = useState("transactions");
+  const transactions = []
+const reviews = Array.isArray(user.reviews) ? user.reviews : [];
+  const isHostelAgent = user?.department === "Hostel Agent";
 
   // Calculate average rating
   const averageRating =
-    reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+    reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length || 0;
 
   return (
     <motion.div
@@ -46,16 +46,19 @@ const TransactionsAndReviews  = ({
           >
             Transactions
           </button>
-          <button
-            onClick={() => setActiveTab("reviews")}
-            className={`flex-1 py-4 px-4 text-center font-medium text-sm transition-colors ${
-              activeTab === "reviews"
-                ? "text-[#610b0c] border-b-2 border-[#610b0c]"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Reviews
-          </button>
+
+          {isHostelAgent && (
+            <button
+              onClick={() => setActiveTab("reviews")}
+              className={`flex-1 py-4 px-4 text-center font-medium text-sm transition-colors ${
+                activeTab === "reviews"
+                  ? "text-[#610b0c] border-b-2 border-[#610b0c]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Reviews
+            </button>
+          )}
         </div>
 
         {/* Tab Content */}
@@ -118,7 +121,7 @@ const TransactionsAndReviews  = ({
             </div>
           )}
 
-          {activeTab === "reviews" && (
+          {activeTab === "reviews" && isHostelAgent && (
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-800">

@@ -29,18 +29,7 @@ const StatCard = ({
           <div className="p-3 rounded-lg bg-red-50">
             {React.cloneElement(icon, { className: "text-[#610b0c]" })}
           </div>
-          <div
-            className={`flex items-center ${
-              isPositive ? "text-green-600" : "text-red-600"
-            } text-sm font-medium`}
-          >
-            {isPositive ? (
-              <ArrowUpRight className="mr-1" size={16} />
-            ) : (
-              <ArrowDownRight className="mr-1" size={16} />
-            )}
-            <span>{Math.abs(change).toFixed(1)}%</span>
-          </div>
+         
         </div>
         <h2 className="text-lg font-medium text-gray-700 mb-2">{title}</h2>
         <p className="text-3xl font-bold mb-1 text-[#610b0c]">
@@ -48,7 +37,6 @@ const StatCard = ({
           {value.toLocaleString()}
           {suffix}
         </p>
-        <p className="text-sm text-gray-500">vs previous period</p>
       </div>
     </motion.div>
   );
