@@ -15,16 +15,16 @@ const AgentDashboard = () => {
 
   // Editable fields
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [about, setAbout] = useState("");
+  const [expectations, setExpectation] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
+  const [agentLocation, setAgentLocation] = useState("");
 
   useEffect(() => {
     if (user) {
       setPhoneNumber(user.phoneNumber || "");
-      setEmail(user.email || "");
-      setAbout(user.about || "");
+      setExpectation(user.expectations || "");
       setProfilePicture(user.agentProfilePicture || "");
+      setAgentLocation(user.location || "");
     }
   }, [user]);
 
@@ -83,8 +83,7 @@ HostelHubb is available on the App Store, Play Store, or visit 🌐 https://host
       const employeeRef = doc(db, "Employees", user.uid);
       await updateDoc(employeeRef, {
         phoneNumber,
-        email,
-        about,
+        expectations,
         agentProfilePicture: profilePicture,
       });
       alert("Profile updated successfully!");
@@ -208,23 +207,35 @@ HostelHubb is available on the App Store, Play Store, or visit 🌐 https://host
               />
             </div>
 
+            {/* Dropdown section */}
             <div>
               <label className="text-sm font-medium text-[#610b0c]">
-                Email
+                Location
               </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-red-200 p-2 rounded mt-1"
-              />
+              <select
+                value={agentLocation}
+                onChange={(e) => setAgentLocation(e.target.value)}
+                className="w-full border border-red-200 p-2 rounded mt-1 bg-white"
+              >
+                <option value="">Select your location</option>
+                <option value="Kumasi">Kumasi</option>
+                <option value="Accra">Accra</option>
+                <option value="Sunyani">Sunyani</option>
+                <option value="Tamale">Tamale</option>
+                <option value="Takoradi">Takoradi</option>
+                <option value="Cape Coast">Cape Coast</option>
+                <option value="Ho">Ho</option>
+                <option value="Bolgatanga">Bolgatanga</option>
+                <option value="Wa">Wa</option>
+                <option value="Koforidua">Koforidua</option>
+              </select>
             </div>
 
             <div>
               <label className="text-sm font-medium text-[#610b0c]">Bio</label>
               <textarea
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
+                value={expectations}
+                onChange={(e) => setExpectation(e.target.value)}
                 className="w-full border border-red-200 p-2 rounded mt-1"
                 rows={4}
               />
