@@ -16,15 +16,17 @@ import StarRating from "./StarRating";
 const TransactionsAndReviews = ({
   currency = "GHC",
   user,
+  reviews,
+  transactions,
 }) => {
   const [activeTab, setActiveTab] = useState("transactions");
-  const transactions = []
-const reviews = Array.isArray(user.reviews) ? user.reviews : [];
+
   const isHostelAgent = user?.department === "Hostel Agent";
 
   // Calculate average rating
   const averageRating =
-    reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length || 0;
+    reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length ||
+    0;
 
   return (
     <motion.div
