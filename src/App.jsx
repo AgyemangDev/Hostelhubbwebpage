@@ -7,9 +7,12 @@ import Discover from "./components/Discover";
 import ContactAndSocialSection from "./components/ContactAndSocialSection";
 import WhatsAppChannel from "./components/WhatsAppChannel";
 import Footer from "./components/Footer";
+
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TransactionPolicy from "./components/TransactionPolicy";
+import StorageTermsAgreement from "./components/Terms/StorageTermsAgreement";
 import TermsPage from "./components/TermsPage";
+
 import HostelRedirect from "./components/HostelRedirect";
 import AffiliatePage from "./components/Affiliate/AffiliatePage";
 import AffiliateSuccess from "./components/Affiliate/AffiliateSuccess";
@@ -107,6 +110,7 @@ const App = () => {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/cookie-policy" element={<TransactionPolicy />} />
+          <Route path="/storage-terms" element={<StorageTermsAgreement />} />
           <Route path="/hostel/:hostelId" element={<HostelRedirect />} />
           <Route path="/login" element={<Login />} />
 
