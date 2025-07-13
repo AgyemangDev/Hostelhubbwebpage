@@ -7,6 +7,7 @@ import Discover from "./components/Discover";
 import ContactAndSocialSection from "./components/ContactAndSocialSection";
 import WhatsAppChannel from "./components/WhatsAppChannel";
 import Footer from "./components/Footer";
+import HostelhubbWork from "./components/HowWeWork/HostelhubbWork"
 
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TransactionPolicy from "./components/TransactionPolicy";
@@ -30,6 +31,7 @@ import AffiliateApplications from "./components/AgentDashboard/AffiliateApplicat
 const App = () => {
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
+  const howweworkRef = useRef(null);
   const testimonialsRef = useRef(null);
   const ctaRef = useRef(null);
   const whatsAppRef = useRef(null);
@@ -76,6 +78,7 @@ const App = () => {
                 <Navbar
                   heroRef={heroRef}
                   featuresRef={featuresRef}
+                  howweworkRef={howweworkRef}
                   testimonialsRef={testimonialsRef}
                   ctaRef={ctaRef}
                   affiliateRef={affiliateRef}
@@ -83,6 +86,9 @@ const App = () => {
                 />
                 <div ref={heroRef}>
                   <HeroSection scrollToNextSection={scrollToNextSection} />
+                </div>
+                <div ref={howweworkRef}>
+                  <HostelhubbWork/>
                 </div>
                 <div ref={featuresRef}>
                   <FeaturesSection />

@@ -100,8 +100,8 @@ const AffiliateProgramSection = () => {
             className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto"
           >
             It's easy — sign up to become an affiliate and, once approved, start
-            earning commissions by referring students to book their hostels
-            through HostelHubb. For every successful booking made through your
+            earning commissions by referring students to book their hostels, accommodation
+            and reserve storage spaces through HostelHubb. For every successful booking made through your
             referral, you'll receive a commission. It's a rewarding way to share
             and earn!
           </motion.p>

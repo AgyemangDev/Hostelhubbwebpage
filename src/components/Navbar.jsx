@@ -10,6 +10,7 @@ const Navbar = ({
   testimonialsRef,
   ctaRef,
   affiliateRef,
+  howweworkRef
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeRoute, setActiveRoute] = useState("home");
@@ -18,6 +19,7 @@ const Navbar = ({
 
   const navItems = [
     { displayName: "Home", routeName: "home", ref: heroRef },
+        { displayName: "How We Work", routeName: "howwework", ref: howweworkRef },
     { displayName: "Features", routeName: "features", ref: featuresRef },
     { displayName: "Affiliate", routeName: "affiliate", ref: affiliateRef },
     { displayName: "Discover", routeName: "discover", ref: testimonialsRef },
