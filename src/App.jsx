@@ -13,6 +13,7 @@ import PrivacyPolicy from "./components/PrivacyPolicy";
 import TransactionPolicy from "./components/TransactionPolicy";
 import StorageTermsAgreement from "./components/Terms/StorageTermsAgreement";
 import TermsPage from "./components/TermsPage";
+import Download from "./components/download/Download";
 
 import HostelRedirect from "./components/HostelRedirect";
 import AffiliatePage from "./components/Affiliate/AffiliatePage";
@@ -127,6 +128,8 @@ const App = () => {
           <Route path="/affiliate-application" element={<AffiliateApplications />} />
           <Route path="/agent-application-success" element={<AgentApplicationSuccess />} />
           <Route path="/agent-application-failure" element={<AgentApplicationFailure />} />
+
+          <Route path="/download" element={<Download />} />
 
           {/* Agent Dashboard with Sidebar Layout */}
           <Route path="/agent-dashboard" element={<AgentDashboardLayout />}>
