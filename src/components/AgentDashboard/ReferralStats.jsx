@@ -11,28 +11,42 @@ import WithdrawModal from "../dashboard/WithdrawModal";
 // Import modular components
 
 
-const ReferralStats  = ({user}) => {
-  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+const ReferralStats = ({ user = {} }) => {
+    const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
-  // Mock data
-  const stats = {
-    totalReferrals: user.totalReferal || 0,
-    conversions: 0,
-    earnings: user.balance || 0,
-    currency: "GHC",
-  };
+    // Safe defaults
+    const stats = {
+        totalReferrals: user?.totalReferal || 0,  // match your backend spelling
+        conversions: 0,
+        earnings: user?.balance || 0,
+        currency: "GHC",
+        previousReferrals: user?.previousReferrals || 0,
+        previousConversions: user?.previousConversions || 0,
+        previousEarnings: user?.previousEarnings || 0,
+    };
 
-  // Calculate percentage changes
-  const referralChange =
-    ((stats.totalReferrals - stats.previousReferrals) /
-      stats.previousReferrals) *
-    100;
-  const conversionChange =
-    ((stats.conversions - stats.previousConversions) /
-      stats.previousConversions) *
-    100;
-  const earningsChange =
-    ((stats.earnings - stats.previousEarnings) / stats.previousEarnings) * 100;
+    // Avoid division by 0
+    const referralChange =
+        stats.previousReferrals > 0
+            ? ((stats.totalReferrals - stats.previousReferrals) /
+                stats.previousReferrals) *
+            100
+            : 0;
+
+    const conversionChange =
+        stats.previousConversions > 0
+            ? ((stats.conversions - stats.previousConversions) /
+                stats.previousConversions) *
+            100
+            : 0;
+
+    const earningsChange =
+        stats.previousEarnings > 0
+            ? ((stats.earnings - stats.previousEarnings) /
+                stats.previousEarnings) *
+            100
+            : 0;
+
 
   const transactions = [
     { id: 1, date: "Apr 30, 2025", amount: 120, status: "completed" },

@@ -10,6 +10,7 @@ const navItems = [
     title: "Main",
     links: [
       { to: "/agent-dashboard", label: "Dashboard", icon: LayoutDashboard },
+        { to: "/agent-dashboard/session", label: "Session", icon: LayoutDashboard },
     ],
   },
 ];

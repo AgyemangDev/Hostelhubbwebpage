@@ -21,13 +21,16 @@ import AffiliateSuccess from "./components/Affiliate/AffiliateSuccess";
 import AgentApplicationSuccess from "./components/Affiliate/AgentApplicationSuccess";
 import AgentApplicationFailure from "./components/Affiliate/AgentApplicationFailure";
 import AgentDashboard from "./components/AgentDashboard/AgentDashboard";
+import AgentSession from "./components/AgentDashboard/AgentSession";
 import AffiliateProgramSection from "./components/AffiliateProgramSection";
 import HowAffiliateWorks from "./components/HowAffiliateWorks";
 import AgentDashboardLayout from "./components/AgentDashboard/AgentDashboardLayout"; // NEW
+import PrivateRoute from "./firebase/PrivateRoute";
 
 import "./index.css";
 import Login from "./components/Login";
 import AffiliateApplications from "./components/AgentDashboard/AffiliateApplications";
+import {AuthProvider} from "./firebase/AuthContext";
 
 const App = () => {
   const heroRef = useRef(null);
@@ -68,6 +71,7 @@ const App = () => {
   };
 
   return (
+      <AuthProvider>
     <Router>
       <div className="font-sans overflow-x-hidden scroll-smooth relative">
         <Routes>
@@ -132,15 +136,24 @@ const App = () => {
           <Route path="/download" element={<Download />} />
 
           {/* Agent Dashboard with Sidebar Layout */}
-          <Route path="/agent-dashboard" element={<AgentDashboardLayout />}>
+            <Route
+                path="/agent-dashboard"
+                element={
+                    <PrivateRoute>
+                        <AgentDashboardLayout />
+                    </PrivateRoute>
+                }
+            >
             <Route index element={<AgentDashboard />} />
             <Route path=":id" element={<AgentDashboard />} />
             <Route path=":id/:token" element={<AgentDashboard />} />
             <Route path=":id/:token/:referralCode" element={<AgentDashboard />} />
+              <Route path="session" element={<AgentSession />} />
           </Route>
         </Routes>
       </div>
     </Router>
+      </AuthProvider>
   );
 };
 
