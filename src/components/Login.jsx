@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { doc, getDoc } from "firebase/firestore"
 import { auth,db } from "../firebase/FirebaseConfig"
+import { saveAgentData, clearAgentData } from "../utils/agentStorage"
 import InputField from "./AgentDashboard/inputField"
 import RememberMe from "./AgentDashboard/RememberMe"
 import LoginButton from "./AgentDashboard/LoginButton"
@@ -61,7 +62,17 @@ const Login = () => {
         const employeeSnap = await getDoc(employeeRef)
         const employeeData = employeeSnap.exists() ? employeeSnap.data() : {}
 
-        const combined = { ...studentData, ...employeeData }
+        // Combine student and employee data
+        const combined = { 
+          ...studentData, 
+          ...employeeData,
+          uid: userId,
+          email: userCredential.user.email
+        }
+        
+        // Save agent data to browser storage for future use
+        saveAgentData(combined)
+        
         navigate("/agent-dashboard", { state: { user: combined } })
       } else if (studentData.isEmployeeApplied && !studentData.isAccepted) {
         alert("Your application is under review. Kindly contact Hostelhubb support.")
@@ -71,6 +82,8 @@ const Login = () => {
     } catch (err) {
       console.error(err)
       alert("Login failed. Please check your credentials.")
+      // Clear any existing agent data on login failure
+      clearAgentData()
     } finally {
       setIsLoading(false)
     }

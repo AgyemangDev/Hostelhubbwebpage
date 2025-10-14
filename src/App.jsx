@@ -22,6 +22,7 @@ import AgentApplicationSuccess from "./components/Affiliate/AgentApplicationSucc
 import AgentApplicationFailure from "./components/Affiliate/AgentApplicationFailure";
 import AgentDashboard from "./components/AgentDashboard/AgentDashboard";
 import AgentSession from "./components/AgentDashboard/AgentSession";
+import SessionReports from "./components/AgentDashboard/SessionReports";
 import AffiliateProgramSection from "./components/AffiliateProgramSection";
 import HowAffiliateWorks from "./components/HowAffiliateWorks";
 import AgentDashboardLayout from "./components/AgentDashboard/AgentDashboardLayout"; // NEW
@@ -149,6 +150,7 @@ const App = () => {
             <Route path=":id/:token" element={<AgentDashboard />} />
             <Route path=":id/:token/:referralCode" element={<AgentDashboard />} />
               <Route path="session" element={<AgentSession />} />
+              <Route path="reports" element={<SessionReports />} />
           </Route>
         </Routes>
       </div>

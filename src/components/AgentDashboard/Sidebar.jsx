@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { LayoutDashboard, LogOut, Menu, X , FolderOpen, FileText} from "lucide-react";
+import { logoutUser } from "../../utils/logout";
 
 const navItems = [
   {
     title: "Main",
     links: [
       { to: "/agent-dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { to: "/agent-dashboard/session", label: "Session", icon: FolderOpen },
+      { to: "/agent-dashboard/session", label: "Create Session", icon: FolderOpen },
+      { to: "/agent-dashboard/reports", label: "Session Reports", icon: FileText },
     ],
   },
 ];
@@ -18,6 +20,16 @@ const navItems = [
 const Sidebar = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const success = await logoutUser();
+    if (success) {
+      navigate("/login");
+    } else {
+      alert("Error logging out. Please try again.");
+    }
+  };
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -103,13 +115,13 @@ const Sidebar = () => {
 
               {/* Logout */}
               <div className="px-6 py-4">
-                <Link
-                  to="/logout"
-                  className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition-colors"
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition-colors w-full text-left"
                 >
                   <LogOut className="h-5 w-5" />
                   <span className="text-sm font-medium">Logout</span>
-                </Link>
+                </button>
               </div>
             </motion.aside>
           </>

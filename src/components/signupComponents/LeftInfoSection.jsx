@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock, User, Loader2, EyeOff, Eye, ChevronRight, Shield, File, Mail } from "lucide-react"
+import {  Shield } from "lucide-react"
 import { motion } from "framer-motion"
 
 const LeftInfoSection = () => {

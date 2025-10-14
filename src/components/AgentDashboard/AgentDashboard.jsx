@@ -5,6 +5,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/FirebaseConfig";
 import { useAuth } from "../../firebase/AuthContext"; // ✅ Import auth context
+import { updateAgentData } from "../../utils/agentStorage"; // ✅ Import storage utilities
 
 const AgentDashboard = () => {
     const { user } = useAuth(); // ✅ get current logged in user
@@ -64,6 +65,9 @@ HostelHubb is available on the App Store, Play Store, or visit 🌐 https://host
                 agentProfilePicture: downloadURL,
             });
 
+            // Update cached agent data with new profile picture
+            updateAgentData({ agentProfilePicture: downloadURL });
+            
             setProfilePicture(downloadURL);
             alert("Profile picture updated successfully!");
         } catch (error) {
@@ -79,11 +83,18 @@ HostelHubb is available on the App Store, Play Store, or visit 🌐 https://host
 
         try {
             const employeeRef = doc(db, "Employees", user.uid);
-            await updateDoc(employeeRef, {
+            const updates = {
                 phoneNumber,
                 expectations,
                 agentProfilePicture: profilePicture,
-            });
+                location: agentLocation
+            };
+            
+            await updateDoc(employeeRef, updates);
+            
+            // Update cached agent data with new profile info
+            updateAgentData(updates);
+            
             alert("Profile updated successfully!");
             setEditMode(false);
         } catch (error) {
