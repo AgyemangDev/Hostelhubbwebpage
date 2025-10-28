@@ -1,29 +1,22 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
 
-const StatCard = ({ value, label, gradient, shadow, icon: Icon }) => {
-  const { ref, inView } = useInView({
-    triggerOnce: false,
-    threshold: 0.3,
-  });
-
+const StatCard = ({ stat, index }) => {
+  const Icon = stat.icon;
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`p-4 sm:p-6 rounded-3xl shadow-lg ${shadow} transform transition-transform hover:scale-105 ${gradient} 
-                  h-[120px] sm:h-[200px] w-full sm:w-auto flex flex-col justify-between`}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white rounded-xl p-6 shadow-md shadow-gray-200/50 border border-gray-100 hover:shadow-xl hover:shadow-gray-300/50 hover:-translate-y-1 transition-all duration-300"
     >
-      <Icon className="w-8 h-8 sm:w-10 sm:h-10 text-white opacity-80" />
-      <div>
-        <div className="text-2xl sm:text-4xl md:text-5xl font-bold text-white">
-          {value}
-        </div>
-        <p className="mt-1 text-sm sm:text-lg font-semibold text-gray-100">{label}</p>
+      <div className="w-12 h-12 bg-gradient-to-br from-[#610b0c] to-[#8b1214] rounded-lg flex items-center justify-center mb-4 shadow-lg">
+        <Icon className="w-6 h-6 text-white" />
       </div>
+      <div className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
+        {stat.value}
+      </div>
+      <div className="text-sm text-gray-500 font-medium">{stat.label}</div>
     </motion.div>
   );
 };

@@ -1,4 +1,5 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+
 import { auth } from "./FirebaseConfig";
 
 export const loginUser = async (email, password) => {
@@ -15,3 +16,12 @@ export const loginUser = async (email, password) => {
     }
   };
   
+export const registerUser = async (email, password) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw error;
+  }
+};

@@ -7,10 +7,11 @@ import { useNavigate } from "react-router-dom";
 const Navbar = ({
   heroRef,
   featuresRef,
+  sellerRef,
   testimonialsRef,
   ctaRef,
   affiliateRef,
-  howweworkRef
+  howweworkRef,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeRoute, setActiveRoute] = useState("home");
@@ -19,11 +20,10 @@ const Navbar = ({
 
   const navItems = [
     { displayName: "Home", routeName: "home", ref: heroRef },
-        { displayName: "How We Work", routeName: "howwework", ref: howweworkRef },
-    { displayName: "Features", routeName: "features", ref: featuresRef },
+    { displayName: "Seller", routeName: "seller", ref: sellerRef },
+    // { displayName: "Features", routeName: "features", ref: featuresRef },
+    { displayName: "How We Work", routeName: "howwework", ref: howweworkRef },
     { displayName: "Affiliate", routeName: "affiliate", ref: affiliateRef },
-    { displayName: "Discover", routeName: "discover", ref: testimonialsRef },
-    { displayName: "Contact", routeName: "contact", ref: ctaRef },
   ];
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const Navbar = ({
   };
 
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[95%] max-w-7xl h-[100px] rounded-full bg-white border border-gray-200 shadow-xl">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[80%] max-w-5xl h-[65px] rounded-2xl bg-white border border-gray-200 shadow-xl">
       <div className="container mx-auto px-4 h-full">
         <div className="flex items-center justify-between h-full px-6">
           {/* Logo */}
@@ -69,13 +69,13 @@ const Navbar = ({
 
           {/* CTA Button Placeholder (optional) */}
           <div className="hidden md:flex">
-  <button
-    onClick={() => navigate("/login")}
-    className="px-5 py-2 text-white font-semibold rounded-full bg-[#9a0b0d] hover:bg-[#7c070a] transition-all"
-  >
-    Agent Login
-  </button>
-</div>
+            <button
+              onClick={() => navigate("/login")}
+              className="px-5 py-2 text-white font-semibold rounded-full bg-[#9a0b0d] hover:bg-[#7c070a] transition-all"
+            >
+              Agent Login
+            </button>
+          </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
@@ -129,16 +129,16 @@ const Navbar = ({
             ))}
           </div>
           <div className="border-t border-gray-100 mt-4 pt-4 px-4">
-  <button
-    onClick={() => {
-      setIsMenuOpen(false);
-      navigate("/login");
-    }}
-    className="w-full px-4 py-2 text-white font-semibold rounded-full bg-[#9a0b0d] hover:bg-[#7c070a] transition-all"
-  >
-    Agent Login
-  </button>
-</div>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                navigate("/login");
+              }}
+              className="w-full px-4 py-2 text-white font-semibold rounded-full bg-[#9a0b0d] hover:bg-[#7c070a] transition-all"
+            >
+              Agent Login
+            </button>
+          </div>
         </div>
       )}
     </div>

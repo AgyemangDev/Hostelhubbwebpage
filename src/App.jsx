@@ -7,7 +7,7 @@ import Discover from "./components/Discover";
 import ContactAndSocialSection from "./components/ContactAndSocialSection";
 import WhatsAppChannel from "./components/WhatsAppChannel";
 import Footer from "./components/Footer";
-import HostelhubbWork from "./components/HowWeWork/HostelhubbWork"
+import HostelhubbWork from "./components/HowWeWork/HostelhubbWork";
 
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TransactionPolicy from "./components/TransactionPolicy";
@@ -31,12 +31,23 @@ import PrivateRoute from "./firebase/PrivateRoute";
 import "./index.css";
 import Login from "./components/Login";
 import AffiliateApplications from "./components/AgentDashboard/AffiliateApplications";
-import {AuthProvider} from "./firebase/AuthContext";
+import { AuthProvider } from "./firebase/AuthContext";
+import SellerSection from "./components/SellerComponents/SellerSection";
+
+// Seller Imports
+import SellerDashboard from "./components/SellerComponents/SellerDashboard";
+import SellerDashboardLayout from "./components/SellerComponents/SellerDashboardLayout";
+import SellerPage from "./components/SellerComponents/Seller/SellerPage";
+import SellerSuccess from "./components/SellerComponents/Seller/SellerSuccess";
+import SellerApplications from "./components/SellerComponents/SellerApplications";
+import SellerApplicationSuccess from "./components/SellerComponents/Seller/SellerApplicationSuccess";
+import AboutMarketPlace from "./components/SellerComponents/Seller/AboutMarketPlace";
 
 const App = () => {
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
   const howweworkRef = useRef(null);
+  const sellerRef = useRef(null);
   const testimonialsRef = useRef(null);
   const ctaRef = useRef(null);
   const whatsAppRef = useRef(null);
@@ -51,15 +62,16 @@ const App = () => {
     const sections = [
       heroRef,
       featuresRef,
+      sellerRef,
       testimonialsRef,
       ctaRef,
       whatsAppRef,
       footerRef,
-      affiliateRef
+      affiliateRef,
     ];
     const currentSectionIndex = sections.findIndex(
       (section) =>
-        section.current && section.current.getBoundingClientRect().top >= 0
+        section.current && section.current.getBoundingClientRect().top >= 0,
     );
 
     const nextSectionIndex = currentSectionIndex + 1;
@@ -72,90 +84,148 @@ const App = () => {
   };
 
   return (
-      <AuthProvider>
-    <Router>
-      <div className="font-sans overflow-x-hidden scroll-smooth relative">
-        <Routes>
-          {/* Main Landing Page */}
-          <Route
-            path="/"
-            element={
-              <>
-                <Navbar
-                  heroRef={heroRef}
-                  featuresRef={featuresRef}
-                  howweworkRef={howweworkRef}
-                  testimonialsRef={testimonialsRef}
-                  ctaRef={ctaRef}
-                  affiliateRef={affiliateRef}
-                  whatsAppRef={whatsAppRef}
-                />
-                <div ref={heroRef}>
-                  <HeroSection scrollToNextSection={scrollToNextSection} />
-                </div>
-                <div ref={howweworkRef}>
-                  <HostelhubbWork/>
-                </div>
-                <div ref={featuresRef}>
-                  <FeaturesSection />
-                </div>
-                <div ref={affiliateRef}>
-                  <AffiliateProgramSection />
-                </div>
-                <div ref={testimonialsRef}>
-                  <Discover />
-                </div>
-                <div ref={whatsAppRef}>
-                  <WhatsAppChannel scrollToNextSection={scrollToNextSection} />
-                </div>
-                <div ref={ctaRef}>
-                  <ContactAndSocialSection />
-                </div>
-                <div ref={footerRef}>
-                  <Footer />
-                </div>
-              </>
-            }
-          />
-
-          {/* Policy Pages */}
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/cookie-policy" element={<TransactionPolicy />} />
-          <Route path="/storage-terms" element={<StorageTermsAgreement />} />
-          <Route path="/hostel/:hostelId" element={<HostelRedirect />} />
-          <Route path="/login" element={<Login />} />
-
-          {/* Affiliate Pages */}
-          <Route path="/affiliate-page" element={<AffiliatePage />} />
-          <Route path="/get-started" element={<HowAffiliateWorks />} />
-          <Route path="/affiliate-success" element={<AffiliateSuccess />} />
-          <Route path="/affiliate-application" element={<AffiliateApplications />} />
-          <Route path="/agent-application-success" element={<AgentApplicationSuccess />} />
-          <Route path="/agent-application-failure" element={<AgentApplicationFailure />} />
-
-          <Route path="/download" element={<Download />} />
-
-          {/* Agent Dashboard with Sidebar Layout */}
+    <AuthProvider>
+      <Router>
+        <div className="font-sans overflow-x-hidden scroll-smooth relative">
+          <Routes>
+            {/* Main Landing Page */}
             <Route
-                path="/agent-dashboard"
-                element={
-                    <PrivateRoute>
-                        <AgentDashboardLayout />
-                    </PrivateRoute>
-                }
+              path="/"
+              element={
+                <>
+                  <Navbar
+                    heroRef={heroRef}
+                    featuresRef={featuresRef}
+                    howweworkRef={howweworkRef}
+                    sellerRef={sellerRef}
+                    testimonialsRef={testimonialsRef}
+                    ctaRef={ctaRef}
+                    affiliateRef={affiliateRef}
+                    whatsAppRef={whatsAppRef}
+                  />
+                  <div ref={heroRef}>
+                    <HeroSection scrollToNextSection={scrollToNextSection} />
+                  </div>
+
+                  <div ref={sellerRef}>
+                    <SellerSection />
+                  </div>
+
+                  {/* <div ref={featuresRef}>
+                    <FeaturesSection />
+                  </div>*/}
+                  <div ref={howweworkRef}>
+                    <HostelhubbWork />
+                  </div>
+
+                  <div ref={affiliateRef}>
+                    <AffiliateProgramSection />
+                  </div>
+                  <div ref={testimonialsRef}>
+                    <Discover />
+                  </div>
+                  <div ref={whatsAppRef}>
+                    <WhatsAppChannel
+                      scrollToNextSection={scrollToNextSection}
+                    />
+                  </div>
+                  <div ref={ctaRef}>
+                    <ContactAndSocialSection />
+                  </div>
+                  <div ref={footerRef}>
+                    <Footer />
+                  </div>
+                </>
+              }
+            />
+
+            {/* Policy Pages */}
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/cookie-policy" element={<TransactionPolicy />} />
+            <Route path="/storage-terms" element={<StorageTermsAgreement />} />
+            <Route path="/hostel/:hostelId" element={<HostelRedirect />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* Affiliate Pages */}
+            <Route path="/affiliate-page" element={<AffiliatePage />} />
+            <Route path="/get-started" element={<HowAffiliateWorks />} />
+            <Route path="/affiliate-success" element={<AffiliateSuccess />} />
+            <Route
+              path="/affiliate-application"
+              element={<AffiliateApplications />}
+            />
+            <Route
+              path="/agent-application-success"
+              element={<AgentApplicationSuccess />}
+            />
+            <Route
+              path="/agent-application-failure"
+              element={<AgentApplicationFailure />}
+            />
+
+            <Route path="/download" element={<Download />} />
+
+            {/* Agent Dashboard with Sidebar Layout */}
+            <Route
+              path="/agent-dashboard"
+              element={
+                <PrivateRoute>
+                  <AgentDashboardLayout />
+                </PrivateRoute>
+              }
             >
-            <Route index element={<AgentDashboard />} />
-            <Route path=":id" element={<AgentDashboard />} />
-            <Route path=":id/:token" element={<AgentDashboard />} />
-            <Route path=":id/:token/:referralCode" element={<AgentDashboard />} />
+              <Route index element={<AgentDashboard />} />
+              <Route path=":id" element={<AgentDashboard />} />
+              <Route path=":id/:token" element={<AgentDashboard />} />
+              <Route
+                path=":id/:token/:referralCode"
+                element={<AgentDashboard />}
+              />
               <Route path="session" element={<AgentSession />} />
               <Route path="reports" element={<SessionReports />} />
-          </Route>
-        </Routes>
-      </div>
-    </Router>
-      </AuthProvider>
+            </Route>
+
+            {/* Seller Routes*/}
+            <Route path="/signup-page" element={<SellerPage />} />
+            <Route path="/become-a-seller" element={<AboutMarketPlace />} />
+            <Route path="/seller-success" element={<SellerSuccess />} />
+            <Route
+              path="/seller-application"
+              element={<SellerApplications />}
+            />
+            <Route
+              path="/seller-application-success"
+              element={<SellerApplicationSuccess />}
+            />
+            <Route
+              path="/seller-application-failure"
+              element={<AgentApplicationFailure />}
+            />
+
+            <Route path="/download" element={<Download />} />
+
+            {/* Agent Dashboard with Sidebar Layout */}
+            <Route
+              path="/seller-dashboard"
+              element={
+                <PrivateRoute>
+                  <SellerDashboardLayout />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<SellerDashboard />} />
+              <Route path=":id" element={<SellerDashboard />} />
+              <Route path=":id/:token" element={<SellerDashboard />} />
+              <Route
+                path=":id/:token/:referralCode"
+                element={<SellerDashboard />}
+              />
+            </Route>
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 };
 
