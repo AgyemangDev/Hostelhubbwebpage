@@ -20,6 +20,9 @@ const uploadFile = async (uid, path, file) => {
 /* ======================================================
    🔸 SELLER APPLICATION
 ====================================================== */
+/* ======================================================
+   🔸 SELLER APPLICATION
+====================================================== */
 export const createSellerApplication = async (uid, sellerData, documents) => {
   try {
     const documentURLs = {};
@@ -53,7 +56,7 @@ export const createSellerApplication = async (uid, sellerData, documents) => {
         documents.businessRegistration,
       );
 
-    // Save seller application in Firestore
+    // Save application
     await setDoc(doc(db, "sellerApplications", uid), {
       ...sellerData,
       documents: documentURLs,
@@ -61,26 +64,51 @@ export const createSellerApplication = async (uid, sellerData, documents) => {
       status: "pending",
     });
 
-    // Create/update user profile
-    await setDoc(
-      doc(db, "users", uid),
-      {
-        uid,
-        email: sellerData.email,
-        fullName: sellerData.fullName,
-        phone: sellerData.phone,
-        role: "seller",
-        applicationStatus: "pending",
-        createdAt: serverTimestamp(),
-      },
-      { merge: true },
-    );
+    // Extend existing user profile with seller info
+    await updateDoc(doc(db, "users", uid), {
+      role: "seller",
+      businessInfo: sellerData,
+      applicationStatus: "pending",
+      approved: false,
+      updatedAt: serverTimestamp(),
+    });
 
     return true;
   } catch (error) {
     console.error("Error creating seller application:", error);
     throw error;
   }
+};
+
+/* ======================================================
+   🔸 SELLER APPROVAL / REJECTION (Admin Only)
+====================================================== */
+export const approveSeller = async (uid) => {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, {
+    approved: true,
+    applicationStatus: "approved",
+    approvedAt: serverTimestamp(),
+  });
+
+  await updateDoc(doc(db, "sellerApplications", uid), {
+    status: "approved",
+    approvedAt: serverTimestamp(),
+  });
+};
+
+export const rejectSeller = async (uid, reason) => {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, {
+    approved: false,
+    applicationStatus: "rejected",
+    rejectionReason: reason,
+  });
+
+  await updateDoc(doc(db, "sellerApplications", uid), {
+    status: "rejected",
+    rejectionReason: reason,
+  });
 };
 
 /* ======================================================

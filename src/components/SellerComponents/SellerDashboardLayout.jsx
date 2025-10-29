@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
-
-const AgentDashboardLayout = () => {
+const SellerDashboardLayout = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -31,4 +30,4 @@ const AgentDashboardLayout = () => {
   );
 };
 
-export default AgentDashboardLayout;
+export default SellerDashboardLayout;

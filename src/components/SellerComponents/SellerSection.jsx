@@ -10,6 +10,10 @@ export default function SellerSection() {
   const handleSignUpButtonClick = () => {
     navigate("/become-a-seller");
   };
+
+  const handleLoginButtonClick = () => {
+    navigate("/seller-login");
+  };
   return (
     <section className="flex flex-col md:flex-row justify-between items-center bg-white p-10 rounded-3xl shadow-lg border border-gray-200 max-w-7xl mx-auto my-10">
       {/* Left Side */}
@@ -30,7 +34,10 @@ export default function SellerSection() {
           >
             Signup Today
           </button>
-          <button className="border border-[#610b0c] text-[#610b0c] px-6 py-3 rounded-xl text-lg font-medium hover:bg-[#610b0c] hover:text-white transition-all duration-300">
+          <button
+            className="border border-[#610b0c] text-[#610b0c] px-6 py-3 rounded-xl text-lg font-medium hover:bg-[#610b0c] hover:text-white transition-all duration-300"
+            onClick={handleLoginButtonClick}
+          >
             Login
           </button>
         </div>

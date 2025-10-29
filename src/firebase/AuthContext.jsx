@@ -3,78 +3,112 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "./FirebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { getAgentData, saveAgentData, clearAgentData } from "../utils/agentStorage";
+import {
+  getAgentData,
+  saveAgentData,
+  clearAgentData,
+} from "../utils/agentStorage";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [userType, setUserType] = useState(null); // "student", "employee", "seller"
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Listen for authentication state changes
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                // First check if we have cached agent data
-                const cachedAgentData = getAgentData();
-                
-                if (cachedAgentData && cachedAgentData.uid === currentUser.uid) {
-                    // Use cached data if it exists and matches current user
-                    setUser(cachedAgentData);
-                    setLoading(false);
-                } else {
-                    // Fetch fresh data if no cache or different user
-                    try {
-                        const studentRef = doc(db, "Student_Users", currentUser.uid);
-                        const studentSnap = await getDoc(studentRef);
-                        
-                        if (studentSnap.exists()) {
-                            const studentData = studentSnap.data();
-                            
-                            if (studentData.isEmployeeApplied && studentData.isAccepted) {
-                                const employeeRef = doc(db, "Employees", currentUser.uid);
-                                const employeeSnap = await getDoc(employeeRef);
-                                const employeeData = employeeSnap.exists() ? employeeSnap.data() : {};
-                                
-                                const combined = {
-                                    ...studentData,
-                                    ...employeeData,
-                                    uid: currentUser.uid,
-                                    email: currentUser.email
-                                };
-                                
-                                // Cache the agent data
-                                saveAgentData(combined);
-                                setUser(combined);
-                            } else {
-                                setUser(currentUser);
-                            }
-                        } else {
-                            setUser(currentUser);
-                        }
-                    } catch (error) {
-                        console.error("Error fetching user data:", error);
-                        setUser(currentUser);
-                    }
-                    setLoading(false);
-                }
-            } else {
-                // User is not authenticated, clear cached data
-                clearAgentData();
-                setUser(null);
-                setLoading(false);
-            }
-        });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) {
+        clearAgentData();
+        setUser(null);
+        setUserType(null);
+        setLoading(false);
+        return;
+      }
 
-        return () => unsubscribe();
-    }, []);
+      try {
+        // ✅ Check local cache first
+        const cachedData = getAgentData();
+        if (cachedData && cachedData.uid === currentUser.uid) {
+          setUser(cachedData);
+          setUserType(cachedData.userType || null);
+          setLoading(false);
+          return;
+        }
 
-    return (
-        <AuthContext.Provider value={{ user, loading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+        // ✅ Fetch from Firestore
+        const studentRef = doc(db, "Student_Users", currentUser.uid);
+        const employeeRef = doc(db, "Employees", currentUser.uid);
+        const sellerRef = doc(db, "Sellers", currentUser.uid);
+
+        const [studentSnap, employeeSnap, sellerSnap] = await Promise.all([
+          getDoc(studentRef),
+          getDoc(employeeRef),
+          getDoc(sellerRef),
+        ]);
+
+        let combinedData = null;
+
+        if (sellerSnap.exists()) {
+          // 🧾 Seller account detected
+          const sellerData = sellerSnap.data();
+          combinedData = {
+            ...sellerData,
+            uid: currentUser.uid,
+            email: currentUser.email,
+            userType: "seller",
+          };
+          setUserType("seller");
+        } else if (employeeSnap.exists()) {
+          // 🧾 Employee account detected
+          const employeeData = employeeSnap.data();
+          combinedData = {
+            ...employeeData,
+            uid: currentUser.uid,
+            email: currentUser.email,
+            userType: "employee",
+          };
+          setUserType("employee");
+        } else if (studentSnap.exists()) {
+          // 🧾 Student account detected
+          const studentData = studentSnap.data();
+          combinedData = {
+            ...studentData,
+            uid: currentUser.uid,
+            email: currentUser.email,
+            userType: "student",
+          };
+          setUserType("student");
+        } else {
+          // fallback if user exists but no Firestore record
+          combinedData = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            userType: "unknown",
+          };
+        }
+
+        // ✅ Cache and set
+        if (combinedData) {
+          saveAgentData(combinedData);
+          setUser(combinedData);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setUser(currentUser);
+      }
+
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, userType, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// custom hook
 export const useAuth = () => useContext(AuthContext);

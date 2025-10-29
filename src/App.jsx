@@ -42,6 +42,7 @@ import SellerSuccess from "./components/SellerComponents/Seller/SellerSuccess";
 import SellerApplications from "./components/SellerComponents/SellerApplications";
 import SellerApplicationSuccess from "./components/SellerComponents/Seller/SellerApplicationSuccess";
 import AboutMarketPlace from "./components/SellerComponents/Seller/AboutMarketPlace";
+import SellerLogin from "./components/SellerComponents/SellerLogin";
 
 const App = () => {
   const heroRef = useRef(null);
@@ -146,6 +147,8 @@ const App = () => {
             <Route path="/storage-terms" element={<StorageTermsAgreement />} />
             <Route path="/hostel/:hostelId" element={<HostelRedirect />} />
             <Route path="/login" element={<Login />} />
+
+            <Route path="/seller-login" element={<SellerLogin />} />
 
             {/* Affiliate Pages */}
             <Route path="/affiliate-page" element={<AffiliatePage />} />
