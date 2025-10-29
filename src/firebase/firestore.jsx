@@ -57,7 +57,7 @@ export const createSellerApplication = async (uid, sellerData, documents) => {
       );
 
     // Save application
-    await setDoc(doc(db, "sellerApplications", uid), {
+    await setDoc(doc(db, "Seller_Applications", uid), {
       ...sellerData,
       documents: documentURLs,
       createdAt: serverTimestamp(),
@@ -91,7 +91,7 @@ export const approveSeller = async (uid) => {
     approvedAt: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, "sellerApplications", uid), {
+  await updateDoc(doc(db, "Seller_Applications", uid), {
     status: "approved",
     approvedAt: serverTimestamp(),
   });
@@ -105,7 +105,7 @@ export const rejectSeller = async (uid, reason) => {
     rejectionReason: reason,
   });
 
-  await updateDoc(doc(db, "sellerApplications", uid), {
+  await updateDoc(doc(db, "Seller_Applications", uid), {
     status: "rejected",
     rejectionReason: reason,
   });

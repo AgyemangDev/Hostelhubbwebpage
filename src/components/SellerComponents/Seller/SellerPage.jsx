@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import SellerLeftInfo from "../../SellerAuthComponents/SellerLeftInfo";
 import SellerProgressBar from "../../SellerAuthComponents/SellerProgressBar";
-import SellerStepOne from "../../SellerAuthComponents/SellerStepOne";
 import SellerStepTwo from "../../SellerAuthComponents/SellerStepTwo";
 import { loginUser } from "../../../firebase/auth";
+import { db } from "../../../firebase/FirebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 import { useFirebaseSellerApplication } from "../../../assets/hooks/useFirebaseSellerApplication";
 
 const SellerSignupPage = () => {
@@ -34,6 +35,8 @@ const SellerSignupPage = () => {
     proofOfOwnership: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -47,76 +50,141 @@ const SellerSignupPage = () => {
     }
   };
 
-  // Step 1 validation (login)
-  const handleLoginStep = async () => {
-    const { email, password } = formData;
-    if (!email || !password) {
-      alert("Please enter your email and password.");
-      return;
-    }
+const fetchStudentUserData = async (uid) => {
+  try {
+    const docRef = doc(db, "Student_Users", uid);
+    const docSnap = await getDoc(docRef);
 
-    try {
-      setIsLoading(true);
-      const user = await loginUser(email, password);
-      if (user?.uid) {
-        setFormData((prev) => ({ ...prev, uid: user.uid }));
-        setCurrentStep(2);
-      } else {
-        alert("Invalid credentials. Please sign up in the mobile app first.");
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+
+      // Check if the user already has a business application
+      if (data.isBusinessAccepted !== undefined) {
+        if (data.isBusinessAccepted === false) {
+          alert(
+            "Your business application is still under review. Kindly contact HostelHubb support for more information."
+          );
+          return false; // Stop progression
+        } else if (data.isBusinessAccepted === true) {
+          alert(
+            "You already have an active business account. Kindly log in instead."
+          );
+          return false; // Stop progression
+        }
       }
-    } catch (error) {
-      alert(
-        "Invalid login. Please sign up in the HostelHubb mobile app first.",
-      );
-    } finally {
-      setIsLoading(false);
+
+      // Build full name
+      const fullName = `${data.firstName} ${data.surname}`;
+
+      // Update formData with fetched data
+      setFormData((prev) => ({
+        ...prev,
+        uid: data.id,
+        fullName,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        institution: data.institution || [],
+        gender: data.gender,
+      }));
+
+      return true; // Allow progression
+    } else {
+      console.warn("No user document found!");
+      return true; // Proceed anyway
     }
-  };
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return true; // Proceed anyway
+  }
+};
 
-  // Step 2 validation (documents)
-  const validateStepTwo = () => {
-    const {
-      ghanaCardFront,
-      ghanaCardBack,
-      businessType,
-      businessRegistration,
-      proofOfOwnership,
-    } = formData;
+  // Step 1 validation (login)
+const handleLoginStep = async () => {
+  const { email, password } = formData;
+  if (!email || !password) {
+    alert("Please enter your email and password.");
+    return;
+  }
 
-    if (!ghanaCardFront || !ghanaCardBack) {
-      alert("Please upload both sides of your Ghana Card.");
-      return false;
-    }
-
-    if (businessType === "registered" && !businessRegistration) {
-      alert(
-        "Business registration document is required for registered businesses.",
-      );
-      return false;
-    }
-
-    if (businessType === "personal" && !proofOfOwnership) {
-      // Optional: Warn but not block
-      console.warn("Proof of ownership skipped (personal business).");
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateStepTwo()) return;
-
+  try {
     setIsLoading(true);
-    try {
-      await submitSellerApplication(formData);
-      navigate("/seller-success");
-    } catch (error) {
-      alert("Failed to submit application: " + error.message);
-    } finally {
-      setIsLoading(false);
+    const user = await loginUser(email, password);
+
+    if (user?.uid) {
+      // Fetch student info from Firestore and check business status
+      const canProceed = await fetchStudentUserData(user.uid);
+      if (!canProceed) return; // Stop if business exists or is under review
+
+      // Proceed to step 2
+      setCurrentStep(2);
+    } else {
+      alert("Invalid credentials. Please sign up in the mobile app first.");
     }
-  };
+  } catch (error) {
+    alert(
+      "Invalid login. Please sign up in the HostelHubb mobile app first."
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Step 2 validation (documents + all required fields)
+const validateStepTwo = () => {
+  const requiredFields = [
+    "fullName",
+    "email",
+    "phoneNumber",
+    "businessName",
+    "businessType",
+    "businessAddress",
+    "ghanaCardFront",
+    "ghanaCardBack"
+  ];
+
+  for (const field of requiredFields) {
+    if (!formData[field]) {
+      alert(`Please provide ${field.replace(/([A-Z])/g, " $1").toLowerCase()}.`);
+      return false;
+    }
+  }
+
+  // Business-specific checks
+  if (formData.businessType === "registered" && !formData.businessRegistration) {
+    alert("Business registration document is required for registered businesses.");
+    return false;
+  }
+
+  if (formData.businessType === "personal" && !formData.proofOfOwnership) {
+    console.warn("Proof of ownership skipped for personal business.");
+  }
+
+  return true;
+};
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Validate Step 2 fields before submission
+  if (!validateStepTwo()) return;
+
+  try {
+    setIsLoading(true);
+
+    // Submit the seller application (this handles file uploads internally)
+    await submitSellerApplication(formData);
+
+    // Navigate to success page when everything is done
+    navigate("/seller-success");
+  } catch (error) {
+    console.error("Error during submission:", error);
+    alert("Failed to submit application: " + error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -163,11 +231,11 @@ const SellerSignupPage = () => {
                 </button>
 
                 <p className="text-sm text-gray-600">
-                  Don’t have an account? Sign up on the HostelHubb mobile app
+                  Don't have an account? Sign up on the HostelHubb mobile app
                   first.
                 </p>
               </div>
-            )}
+            )}(
 
             {currentStep === 2 && (
               <SellerStepTwo
@@ -175,6 +243,8 @@ const SellerSignupPage = () => {
                 handleFileChange={handleFileChange}
                 handleInputChange={handleInputChange}
                 fileNames={fileNames}
+                errors={errors}
+                setErrors={setErrors}
               />
             )}
 

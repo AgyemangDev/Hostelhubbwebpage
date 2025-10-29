@@ -15,7 +15,7 @@ const SellerStatusPage = () => {
     const fetchSellerStatus = async (uid) => {
       try {
         // 🔹 Fetch seller application info
-        const sellerRef = doc(db, "sellerApplications", uid);
+        const sellerRef = doc(db, "Seller_Applications", uid);
         const sellerSnap = await getDoc(sellerRef);
 
         if (sellerSnap.exists()) {

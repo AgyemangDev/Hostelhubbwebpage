@@ -4,34 +4,35 @@ import {
   UserPlus,
   CheckCircle,
   LayoutDashboard,
-  Smartphone,
+  ShoppingCart,
 } from "lucide-react";
+
 
 export default function AboutMarketPlace() {
   const steps = [
     {
       icon: UserPlus,
-      title: "Register Your Hostel",
+      title: "Create Your Account",
       description:
-        "Sign up on our platform and submit your hostel details for review.",
+        "Download the Hostelhubb app on App Store or Play Store and sign up to get started.",
+    },
+    {
+      icon: LayoutDashboard,
+      title: "Set Up Your Store",
+      description:
+        "Access our web platform and create your store with all necessary details.",
     },
     {
       icon: CheckCircle,
       title: "Get Approved",
       description:
-        "Our team verifies your information to ensure quality and authenticity.",
+        "Our team reviews your store information to ensure quality and authenticity.",
     },
     {
-      icon: LayoutDashboard,
-      title: "Access Your Dashboard",
+      icon: ShoppingCart,
+      title: "Start Selling",
       description:
-        "Manage your listings, bookings, and payments from your personalized dashboard.",
-    },
-    {
-      icon: Smartphone,
-      title: "Go Live on the App",
-      description:
-        "Your hostel appears instantly on the HostelHubb app for students to discover.",
+        "Add your products and start selling instantly to buyers on Hostelhubb.",
     },
   ];
 
