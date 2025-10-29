@@ -99,7 +99,7 @@ const fetchStudentUserData = async (uid) => {
 };
 
   // Step 1 validation (login)
-const handleLoginStep = async () => {
+const handleLoginStep = async () => { 
   const { email, password } = formData;
   if (!email || !password) {
     alert("Please enter your email and password.");
