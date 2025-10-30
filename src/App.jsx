@@ -43,6 +43,10 @@ import SellerApplications from "./components/SellerComponents/SellerApplications
 import SellerApplicationSuccess from "./components/SellerComponents/Seller/SellerApplicationSuccess";
 import AboutMarketPlace from "./components/SellerComponents/Seller/AboutMarketPlace";
 import SellerLogin from "./components/SellerComponents/SellerLogin";
+import Notifications from "./components/SellerComponents/Seller-tabs/Notifications";
+import Analytics from "./components/SellerComponents/Seller-tabs/Analytics";
+import AddProduct from "./components/SellerComponents/Seller-tabs/AddProducts";
+import Subscription from "./components/SellerComponents/Seller-tabs/Subscription";
 
 const App = () => {
   const heroRef = useRef(null);
@@ -224,6 +228,10 @@ const App = () => {
                 path=":id/:token/:referralCode"
                 element={<SellerDashboard />}
               />
+              <Route path="add-product" element={<AddProduct />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="subscriptions" element={<Subscription />} />
             </Route>
           </Routes>
         </div>

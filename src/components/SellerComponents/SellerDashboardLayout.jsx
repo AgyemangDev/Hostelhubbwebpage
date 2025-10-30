@@ -1,29 +1,48 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
 const SellerDashboardLayout = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-    return () => window.removeEventListener("resize", checkIfMobile);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar
+        isMobile={isMobile}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-gray-50 min-h-screen p-4 md:ml-72">
+      <main
+        className={`flex-1 transition-all duration-300 ${
+          isMobile ? "p-4" : "ml-72 p-6"
+        }`}
+      >
+        {/* Top Nav for mobile */}
+        {isMobile && (
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-xl font-semibold text-[#610b0c]">
+              Seller Dashboard
+            </h1>
+            <button
+              className="p-2 rounded-lg bg-[#610b0c] text-white"
+              onClick={() => setSidebarOpen(true)}
+            >
+              ☰
+            </button>
+          </div>
+        )}
+
         <Outlet />
       </main>
     </div>
