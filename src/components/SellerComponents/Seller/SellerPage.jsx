@@ -17,9 +17,13 @@ const SellerSignupPage = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  // Separate state just for login
+const [loginCredentials, setLoginCredentials] = useState({
+  email: "",
+  password: ""
+});
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
     businessType: "",
     businessName: "",
     businessAddress: "",
@@ -83,7 +87,6 @@ const fetchStudentUserData = async (uid) => {
         fullName,
         email: data.email,
         phoneNumber: data.phoneNumber,
-        institution: data.institution || [],
         gender: data.gender,
       }));
 
@@ -100,7 +103,7 @@ const fetchStudentUserData = async (uid) => {
 
   // Step 1 validation (login)
 const handleLoginStep = async () => { 
-  const { email, password } = formData;
+  const { email, password } = loginCredentials;
   if (!email || !password) {
     alert("Please enter your email and password.");
     return;
@@ -108,26 +111,28 @@ const handleLoginStep = async () => {
 
   try {
     setIsLoading(true);
-    const user = await loginUser(email, password);
+    const user = await loginUser(email, password); // firebase auth only
 
     if (user?.uid) {
-      // Fetch student info from Firestore and check business status
+      // fetch student info
       const canProceed = await fetchStudentUserData(user.uid);
-      if (!canProceed) return; // Stop if business exists or is under review
+      if (!canProceed) return;
 
-      // Proceed to step 2
+      // store email in formData (needed for seller application)
+      setFormData(prev => ({ ...prev, email }));
+
+      // move to step 2
       setCurrentStep(2);
     } else {
       alert("Invalid credentials. Please sign up in the mobile app first.");
     }
   } catch (error) {
-    alert(
-      "Invalid login. Please sign up in the HostelHubb mobile app first."
-    );
+    alert("Invalid login. Please sign up in the HostelHubb mobile app first.");
   } finally {
     setIsLoading(false);
   }
 };
+
 
 // Step 2 validation (documents + all required fields)
 const validateStepTwo = () => {
@@ -204,22 +209,24 @@ const handleSubmit = async (e) => {
                 <h2 className="text-2xl font-semibold text-[#610b0c]">
                   Login with your HostelHubb Account
                 </h2>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full border rounded-lg p-3"
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="w-full border rounded-lg p-3"
-                />
+<input
+  type="email"
+  placeholder="Email"
+  value={loginCredentials.email}
+  onChange={(e) =>
+    setLoginCredentials(prev => ({ ...prev, email: e.target.value }))
+  }
+/>
+
+<input
+  type="password"
+  placeholder="Password"
+  value={loginCredentials.password}
+  onChange={(e) =>
+    setLoginCredentials(prev => ({ ...prev, password: e.target.value }))
+  }
+/>
+
 
                 <button
                   type="button"

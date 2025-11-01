@@ -28,36 +28,3 @@ export const loginUser = async (email, password) => {
   }
 };
 
-/**
- * 🔹 Login for approved sellers accessing dashboard
- */
-export const loginSeller = async (email, password) => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
-    const user = userCredential.user;
-
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (!userDoc.exists()) {
-      throw new Error("User not found in system.");
-    }
-
-    const userData = userDoc.data();
-
-    if (userData.role !== "seller") {
-      throw new Error("Access denied. Not registered as a seller.");
-    }
-
-    if (!userData.approved) {
-      throw new Error("Your seller account is pending admin approval.");
-    }
-
-    return { ...user, ...userData, role: "seller" };
-  } catch (error) {
-    console.error("Seller login error:", error.message);
-    throw error;
-  }
-};

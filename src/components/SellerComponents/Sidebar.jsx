@@ -1,67 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   X,
   LayoutDashboard,
-  Package,
   PlusSquare,
   CreditCard,
   LogOut,
   Crown,
   Bell,
   BarChart3,
-  Loader2,
   AlertCircle,
 } from "lucide-react";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../../firebase/FirebaseConfig"; // Adjust path as needed
 
 const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
-  const [subscriptionStatus, setSubscriptionStatus] = useState("free");
+  // 🔹 Replace Firebase data with local mock state
+  const [subscriptionStatus, setSubscriptionStatus] = useState("free"); // "free" or "premium"
   const [productCount, setProductCount] = useState(0);
-  const [weeklyNotifications, setWeeklyNotifications] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [weeklyNotifications, setWeeklyNotifications] = useState(2);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Fetch user subscription data
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        const user = auth.currentUser;
-
-        if (!user) {
-          throw new Error("User not authenticated");
-        }
-
-        // Fetch user document from Firestore
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-
-          // Set subscription status (default to 'free' if not set)
-          setSubscriptionStatus(userData.subscriptionStatus || "free");
-
-          // Set product count
-          setProductCount(userData.productCount || 0);
-
-          // Set weekly notifications count
-          setWeeklyNotifications(userData.weeklyNotifications || 0);
-        } else {
-          throw new Error("User data not found");
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
 
   const navItems = [
     {
@@ -95,13 +52,15 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("seller_data");
+    // Dummy logout logic
+    console.log("Logged out");
     window.location.href = "/seller-login";
   };
 
   const handleUpgrade = () => {
-    // Navigate to subscription/payment page
-    window.location.href = "/seller-dashboard/subscription";
+    // Dummy upgrade logic
+    console.log("Navigate to subscription upgrade page");
+    window.location.href = "/seller-dashboard/subscriptions";
   };
 
   return (
@@ -146,7 +105,6 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
           {/* Subscription Badge */}
           {loading ? (
             <div className="px-4 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border-b flex items-center justify-center">
-              <Loader2 className="w-4 h-4 animate-spin text-gray-600" />
               <span className="ml-2 text-sm text-gray-600">Loading...</span>
             </div>
           ) : error ? (
@@ -168,7 +126,9 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-700">
-                    {subscriptionStatus === "premium" ? "Premium" : "Free Plan"}
+                    {subscriptionStatus === "premium"
+                      ? "Premium"
+                      : "Free Plan"}
                   </span>
                 </div>
                 {subscriptionStatus === "free" && (
@@ -213,15 +173,12 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
                     disabled
                       ? "text-gray-400 cursor-not-allowed bg-gray-50"
                       : isActive
-                        ? "bg-[#610b0c] text-white shadow-md"
-                        : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-[#610b0c] text-white shadow-md"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`
                 }
                 onClick={(e) => {
-                  if (disabled) {
-                    e.preventDefault();
-                    return;
-                  }
+                  if (disabled) e.preventDefault();
                   if (isMobile) setSidebarOpen(false);
                 }}
               >
@@ -230,22 +187,15 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
                   {name}
                 </div>
 
-                {/* Badge or Lock Icon */}
                 {badge && !lockIcon && (
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
-                      disabled
-                        ? "bg-gray-200 text-gray-500"
-                        : "bg-gray-200 text-gray-700"
-                    }`}
-                  >
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-700">
                     {badge}
                   </span>
                 )}
 
                 {lockIcon && <Crown className="w-4 h-4 text-gray-400" />}
               </NavLink>
-            ),
+            )
           )}
         </nav>
 

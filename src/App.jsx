@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
-import FeaturesSection from "./components/FeaturesSection";
 import Discover from "./components/Discover";
 import ContactAndSocialSection from "./components/ContactAndSocialSection";
 import WhatsAppChannel from "./components/WhatsAppChannel";
@@ -26,12 +25,14 @@ import SessionReports from "./components/AgentDashboard/SessionReports";
 import AffiliateProgramSection from "./components/AffiliateProgramSection";
 import HowAffiliateWorks from "./components/HowAffiliateWorks";
 import AgentDashboardLayout from "./components/AgentDashboard/AgentDashboardLayout"; // NEW
-import PrivateRoute from "./firebase/PrivateRoute";
+import PrivateRoute from "./routes/PrivateRoute";
+import SellerPrivateRoute from "./routes/SellerPrivateRoute";
 
 import "./index.css";
 import Login from "./components/Login";
 import AffiliateApplications from "./components/AgentDashboard/AffiliateApplications";
 import { AuthProvider } from "./firebase/AuthContext";
+import { SellerProvider } from "./context/SellerContext";
 import SellerSection from "./components/SellerComponents/SellerSection";
 
 // Seller Imports
@@ -47,6 +48,7 @@ import Notifications from "./components/SellerComponents/Seller-tabs/Notificatio
 import Analytics from "./components/SellerComponents/Seller-tabs/Analytics";
 import AddProduct from "./components/SellerComponents/Seller-tabs/AddProducts";
 import Subscription from "./components/SellerComponents/Seller-tabs/Subscription";
+
 
 const App = () => {
   const heroRef = useRef(null);
@@ -90,6 +92,7 @@ const App = () => {
 
   return (
     <AuthProvider>
+      <SellerProvider>
       <Router>
         <div className="font-sans overflow-x-hidden scroll-smooth relative">
           <Routes>
@@ -216,9 +219,9 @@ const App = () => {
             <Route
               path="/seller-dashboard"
               element={
-                <PrivateRoute>
+                <SellerPrivateRoute>
                   <SellerDashboardLayout />
-                </PrivateRoute>
+                </SellerPrivateRoute>
               }
             >
               <Route index element={<SellerDashboard />} />
@@ -236,6 +239,7 @@ const App = () => {
           </Routes>
         </div>
       </Router>
+      </SellerProvider>
     </AuthProvider>
   );
 };

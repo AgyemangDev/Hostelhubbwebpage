@@ -1,129 +1,107 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSeller } from "../../context/SellerContext";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../../firebase/FirebaseConfig";
-import { saveSellerData, clearSellerData } from "../../utils/sellerStorage";
-import InputField from "./inputField";
-import RememberMe from "./RememberMe";
-import LoginButton from "./LoginButton";
+import Catalogue from "../../assets/Catalogue.gif";
 
 const SellerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { loginSeller, loading } = useSeller();
   const navigate = useNavigate();
 
-  // Pre-fill saved credentials
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("email");
-    const savedPassword = localStorage.getItem("password");
-    if (savedEmail && savedPassword) {
-      setEmail(savedEmail);
-      setPassword(savedPassword);
-      setRememberMe(true);
-    }
-  }, []);
-
   const handleLogin = async () => {
-    if (!email || !password) {
-      alert("Please enter email and password");
-      return;
+    if (!email || !password) return alert("Enter email and password");
+
+    const result = await loginSeller(email, password);
+
+    if (!result.success) {
+      switch (result.reason) {
+        case "underReview":
+          alert("Your business application is under review. Contact support.");
+          break;
+        case "becomeSeller":
+          alert("You have not applied to be a seller yet. Redirecting to application page.");
+          navigate("/become-a-seller");
+          break;
+        case "authError":
+          alert("Login failed. Check your email and password.");
+          break;
+        default:
+          alert("Login failed. Unknown error.");
+      }
+      return; // stop further execution
     }
 
-    setIsLoading(true);
-
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const userId = userCredential.user.uid;
-
-      if (rememberMe) {
-        localStorage.setItem("email", email);
-        localStorage.setItem("password", password);
-      } else {
-        localStorage.removeItem("email");
-        localStorage.removeItem("password");
-      }
-
-      const studentRef = doc(db, "Student_Users", userId);
-      const studentSnap = await getDoc(studentRef);
-
-      if (!studentSnap.exists()) {
-        alert(
-          "You are not qualified to log in. Kindly apply through our website.",
-        );
-        setIsLoading(false);
-        return;
-      }
-
-      const studentData = studentSnap.data();
-
-      if (studentData.isEmployeeApplied && studentData.isAccepted) {
-        const employeeRef = doc(db, "Employees", userId);
-        const employeeSnap = await getDoc(employeeRef);
-        const employeeData = employeeSnap.exists() ? employeeSnap.data() : {};
-
-        // Combine student and employee data
-        const combined = {
-          ...studentData,
-          ...employeeData,
-          uid: userId,
-          email: userCredential.user.email,
-        };
-
-        // Save agent data to browser storage for future use
-        saveSellerData(combined);
-
-        navigate("/seller-dashboard", { state: { user: combined } });
-      } else if (studentData.isEmployeeApplied && !studentData.isAccepted) {
-        alert(
-          "Your application is under review. Kindly contact Hostelhubb support.",
-        );
-      } else {
-        alert(
-          "You are not qualified to log in. Kindly apply through our website.",
-        );
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Login failed. Please check your credentials.");
-      // Clear any existing agent data on login failure
-      clearSellerData();
-    } finally {
-      setIsLoading(false);
+    // If login successful
+    if (rememberMe) {
+      localStorage.setItem("hostelhubb_seller_data", JSON.stringify(result.data));
     }
+
+    alert("Login successful! Redirecting to your dashboard.");
+    navigate("/seller-dashboard");
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold text-center text-[#610b0c] mb-6">
-        Login to Hostelhubb
-      </h2>
+    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12">
+        <img src={Catalogue} alt="E-commerce shopping" className="w-full h-full rounded-lg" />
+      </div>
 
-      <InputField
-        label="Email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter your email"
-      />
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6">
+        <div className="block lg:hidden mb-6 flex justify-center">
+          <img src={Catalogue} alt="E-commerce animation" className="w-52 h-52 rounded-lg object-cover" />
+        </div>
 
-      <InputField
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter your password"
-      />
+        <div className="w-full max-w-md">
+          <div className="p-8">
+            <h2 className="text-3xl font-bold text-center text-[#610b0c] mb-8">
+              Login to Seller Account
+            </h2>
 
-      <RememberMe rememberMe={rememberMe} setRememberMe={setRememberMe} />
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-semibold mb-2">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#610b0c] focus:border-transparent transition"
+              />
+            </div>
 
-      <LoginButton isLoading={isLoading} onClick={handleLogin} />
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#610b0c] focus:border-transparent transition"
+              />
+            </div>
+
+            <div className="mb-6 flex items-center">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 text-[#610b0c] border-gray-300 rounded focus:ring-[#610b0c]"
+              />
+              <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700">Remember me</label>
+            </div>
+
+            <button
+              onClick={handleLogin}
+              disabled={loading}
+              className="w-full bg-[#610b0c] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#7a0e0f] disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
