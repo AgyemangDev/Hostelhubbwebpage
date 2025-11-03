@@ -26,7 +26,7 @@ import {
 import { auth } from "../../firebase/FirebaseConfig";
 import { getSellerSubscription } from "../../firebase/subscriptionUtils";
 import { getSellerProducts } from "../../firebase/productUtils";
-import { getSellerAnalytics } from "../../firebase/productUtils";
+import { getSellerAnalytics } from "../../firebase/analyticsUtils";
 import PremiumFeature from "./DashboardComponents/PremiumFeature";
 import StatCard from "./DashboardComponents/StatCard";
 import FeatureBadge from "./DashboardComponents/FeatureBadge";
@@ -65,7 +65,14 @@ const Dashboard = () => {
 
         // Fetch products
         const productsData = await getSellerProducts(user.uid);
-        setProducts(productsData);
+        // Sort products by creation date, newest first
+        const sortedProducts = productsData.sort((a, b) => {
+          if (a.createdAt && b.createdAt) {
+            return b.createdAt.toDate() - a.createdAt.toDate();
+          }
+          return 0;
+        });
+        setProducts(sortedProducts);
 
         // Fetch analytics
         const analyticsData = await getSellerAnalytics(user.uid);

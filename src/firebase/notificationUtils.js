@@ -1,8 +1,14 @@
+/**
+ * @file This file contains utility functions for sending and managing push notifications.
+ */
+
 import { db } from "./FirebaseConfig";
+import { updateAnalytics } from "./analyticsUtils";
 import {
   collection,
   addDoc,
-  getDocs,
+  doc,
+  getDoc,
   query,
   where,
   updateDoc,
@@ -12,7 +18,11 @@ import {
 } from "firebase/firestore";
 
 /**
- * 🔹 Send push notification via Expo
+ * 🔹 Send a push notification via Expo and update analytics.
+ *
+ * @param {string} sellerId - The ID of the seller sending the notification.
+ * @param {object} notificationData - The notification data (title, message, etc.).
+ * @returns {Promise<object>} - A promise that resolves to an object with the results of the send operation.
  */
 export const sendPushNotification = async (sellerId, notificationData) => {
   try {
@@ -65,6 +75,7 @@ export const sendPushNotification = async (sellerId, notificationData) => {
 
     // Calculate successful deliveries
     const successCount = pushTokens.length - errors.length;
+    const failureCount = errors.length;
 
     // Save notification to history
     await addDoc(collection(db, "Notification_History"), {
@@ -74,14 +85,19 @@ export const sendPushNotification = async (sellerId, notificationData) => {
       targetAudience,
       priority,
       delivered: successCount,
-      failed: errors.length,
+      failed: failureCount,
       sentAt: serverTimestamp(),
     });
+
+    // Update analytics
+    await updateAnalytics(sellerId, null, "notificationsSent", 1);
+    await updateAnalytics(sellerId, null, "notificationsDelivered", successCount);
+    await updateAnalytics(sellerId, null, "notificationsFailed", failureCount);
 
     return {
       success: true,
       delivered: successCount,
-      failed: errors.length,
+      failed: failureCount,
       total: pushTokens.length,
     };
   } catch (error) {
@@ -91,7 +107,11 @@ export const sendPushNotification = async (sellerId, notificationData) => {
 };
 
 /**
- * 🔹 Get push tokens based on target audience
+ * 🔹 Get an array of push tokens based on the selected target audience.
+ *
+ * @param {string} targetAudience - The target audience ("all", "students", etc.).
+ * @param {string} sellerId - The ID of the seller (for targeting specific user groups).
+ * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
  */
 const getTargetAudiencePushTokens = async (targetAudience, sellerId) => {
   try {
@@ -133,19 +153,26 @@ const getTargetAudiencePushTokens = async (targetAudience, sellerId) => {
 };
 
 /**
- * 🔹 Get all user push tokens
+ * 🔹 Get all user push tokens from the `Student_Users` collection.
+ *
+ * @param {boolean} [includeUserId=false] - Whether to include the user ID in the returned array.
+ * @returns {Promise<string[]|object[]>} - A promise that resolves to an array of tokens or token-ID objects.
  */
-const getAllUserPushTokens = async () => {
+const getAllUserPushTokens = async (includeUserId = false) => {
   try {
     const usersRef = collection(db, "Student_Users");
     const q = query(usersRef, where("expoPushToken", "!=", null));
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDoc(q);
 
     const tokens = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       if (data.expoPushToken) {
-        tokens.push(data.expoPushToken);
+        if (includeUserId) {
+          tokens.push({ token: data.expoPushToken, userId: doc.id });
+        } else {
+          tokens.push(data.expoPushToken);
+        }
       }
     });
 
@@ -157,7 +184,9 @@ const getAllUserPushTokens = async () => {
 };
 
 /**
- * 🔹 Get student push tokens only
+ * 🔹 Get push tokens for verified students only.
+ *
+ * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
  */
 const getStudentPushTokens = async () => {
   try {
@@ -167,7 +196,7 @@ const getStudentPushTokens = async () => {
       where("expoPushToken", "!=", null),
       where("isVerified", "==", true), // Assuming you have a verification field
     );
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDoc(q);
 
     const tokens = [];
     querySnapshot.forEach((doc) => {
@@ -185,10 +214,16 @@ const getStudentPushTokens = async () => {
 };
 
 /**
- * 🔹 Get push tokens of users who viewed seller's products recently
+ * 🔹 Get push tokens of users who have recently viewed a seller's products.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
  */
 const getRecentViewersPushTokens = async (sellerId) => {
   try {
+    // Get all users with push tokens first
+    const allUserTokens = await getAllUserPushTokens(true); // Get tokens with user IDs
+
     // Get product views from the last 7 days
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -200,7 +235,7 @@ const getRecentViewersPushTokens = async (sellerId) => {
       where("viewedAt", ">=", sevenDaysAgo),
     );
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDoc(q);
     const userIds = new Set();
 
     querySnapshot.forEach((doc) => {
@@ -210,20 +245,10 @@ const getRecentViewersPushTokens = async (sellerId) => {
       }
     });
 
-    // Get push tokens for these users
-    const tokens = [];
-    for (const userId of userIds) {
-      const userRef = collection(db, "Student_Users");
-      const userQuery = query(userRef, where("uid", "==", userId));
-      const userSnapshot = await getDocs(userQuery);
-
-      userSnapshot.forEach((doc) => {
-        const userData = doc.data();
-        if (userData.expoPushToken) {
-          tokens.push(userData.expoPushToken);
-        }
-      });
-    }
+    // Filter the tokens based on the user IDs
+    const tokens = allUserTokens
+      .filter((user) => userIds.has(user.userId))
+      .map((user) => user.token);
 
     return tokens;
   } catch (error) {
@@ -234,15 +259,21 @@ const getRecentViewersPushTokens = async (sellerId) => {
 };
 
 /**
- * 🔹 Get push tokens of users who liked/saved seller's products
+ * 🔹 Get push tokens of users who have liked a seller's products.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
  */
 const getInterestedUsersPushTokens = async (sellerId) => {
   try {
+    // Get all users with push tokens first
+    const allUserTokens = await getAllUserPushTokens(true); // Get tokens with user IDs
+
     // Get users who liked seller's products
     const likesRef = collection(db, "Product_Likes");
     const q = query(likesRef, where("sellerId", "==", sellerId));
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDoc(q);
     const userIds = new Set();
 
     querySnapshot.forEach((doc) => {
@@ -252,20 +283,10 @@ const getInterestedUsersPushTokens = async (sellerId) => {
       }
     });
 
-    // Get push tokens for these users
-    const tokens = [];
-    for (const userId of userIds) {
-      const userRef = collection(db, "Student_Users");
-      const userQuery = query(userRef, where("uid", "==", userId));
-      const userSnapshot = await getDocs(userQuery);
-
-      userSnapshot.forEach((doc) => {
-        const userData = doc.data();
-        if (userData.expoPushToken) {
-          tokens.push(userData.expoPushToken);
-        }
-      });
-    }
+    // Filter the tokens based on the user IDs
+    const tokens = allUserTokens
+      .filter((user) => userIds.has(user.userId))
+      .map((user) => user.token);
 
     return tokens;
   } catch (error) {
@@ -276,7 +297,11 @@ const getInterestedUsersPushTokens = async (sellerId) => {
 };
 
 /**
- * 🔹 Get notification history for a seller
+ * 🔹 Get the notification history for a seller.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @param {number} [limitCount=10] - The maximum number of history items to fetch.
+ * @returns {Promise<object[]>} - A promise that resolves to an array of notification history objects.
  */
 export const getNotificationHistory = async (sellerId, limitCount = 10) => {
   try {
@@ -288,7 +313,7 @@ export const getNotificationHistory = async (sellerId, limitCount = 10) => {
       limit(limitCount),
     );
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDoc(q);
     const history = [];
 
     querySnapshot.forEach((doc) => {
@@ -306,13 +331,18 @@ export const getNotificationHistory = async (sellerId, limitCount = 10) => {
 };
 
 /**
- * 🔹 Save user's Expo push token (to be called from mobile app)
+ * 🔹 Save a user's Expo push token to their document in the `Student_Users` collection.
+ * This function is intended to be called from the mobile app.
+ *
+ * @param {string} userId - The ID of the user.
+ * @param {string} expoPushToken - The user's Expo push token.
+ * @returns {Promise<boolean>} - A promise that resolves to `true` if the token was saved successfully.
  */
 export const saveExpoPushToken = async (userId, expoPushToken) => {
   try {
     const userRef = collection(db, "Student_Users");
     const q = query(userRef, where("uid", "==", userId));
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDoc(q);
 
     if (!querySnapshot.empty) {
       const userDoc = querySnapshot.docs[0];
@@ -331,7 +361,12 @@ export const saveExpoPushToken = async (userId, expoPushToken) => {
 };
 
 /**
- * 🔹 Track product view (for targeting recent viewers)
+ * 🔹 Track a product view event for analytics and notification targeting.
+ *
+ * @param {string} productId - The ID of the viewed product.
+ * @param {string} userId - The ID of the user who viewed the product.
+ * @param {string} sellerId - The ID of the product's seller.
+ * @returns {Promise<void>}
  */
 export const trackProductView = async (productId, userId, sellerId) => {
   try {
@@ -347,7 +382,12 @@ export const trackProductView = async (productId, userId, sellerId) => {
 };
 
 /**
- * 🔹 Track product like (for targeting interested users)
+ * 🔹 Track a product like event for analytics and notification targeting.
+ *
+ * @param {string} productId - The ID of the liked product.
+ * @param {string} userId - The ID of the user who liked the product.
+ * @param {string} sellerId - The ID of the product's seller.
+ * @returns {Promise<void>}
  */
 export const trackProductLike = async (productId, userId, sellerId) => {
   try {
@@ -363,7 +403,13 @@ export const trackProductLike = async (productId, userId, sellerId) => {
 };
 
 /**
- * 🔹 Schedule notification (for future implementation)
+ * 🔹 Schedule a notification to be sent at a future time.
+ * NOTE: This requires a backend service (e.g., Cloud Function) to process the scheduled notifications.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @param {object} notificationData - The notification data.
+ * @param {Date} scheduledTime - The time to send the notification.
+ * @returns {Promise<object>} - A promise that resolves to a success message.
  */
 export const scheduleNotification = async (
   sellerId,
@@ -393,37 +439,42 @@ export const scheduleNotification = async (
 };
 
 /**
- * 🔹 Get notification analytics
+ * 🔹 Get notification analytics for a seller from the pre-aggregated analytics collection.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @returns {Promise<object>} - A promise that resolves to an object with notification analytics.
  */
 export const getNotificationAnalytics = async (sellerId) => {
   try {
-    const historyRef = collection(db, "Notification_History");
-    const q = query(historyRef, where("sellerId", "==", sellerId));
+    const analyticsRef = doc(db, "Analytics", sellerId, "total", "all");
+    const analyticsSnap = await getDoc(analyticsRef);
 
-    const querySnapshot = await getDocs(q);
+    if (analyticsSnap.exists()) {
+      const data = analyticsSnap.data();
+      const totalSent = data.notificationsSent || 0;
+      const totalDelivered = data.notificationsDelivered || 0;
+      const totalFailed = data.notificationsFailed || 0;
 
-    let totalSent = 0;
-    let totalDelivered = 0;
-    let totalFailed = 0;
+      const deliveryRate =
+        totalDelivered + totalFailed > 0
+          ? ((totalDelivered / (totalDelivered + totalFailed)) * 100).toFixed(1)
+          : 0;
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      totalSent += 1;
-      totalDelivered += data.delivered || 0;
-      totalFailed += data.failed || 0;
-    });
-
-    const deliveryRate =
-      totalSent > 0
-        ? ((totalDelivered / (totalDelivered + totalFailed)) * 100).toFixed(1)
-        : 0;
-
-    return {
-      totalSent,
-      totalDelivered,
-      totalFailed,
-      deliveryRate: `${deliveryRate}%`,
-    };
+      return {
+        totalSent,
+        totalDelivered,
+        totalFailed,
+        deliveryRate: `${deliveryRate}%`,
+      };
+    } else {
+      // Return default values if no analytics document exists
+      return {
+        totalSent: 0,
+        totalDelivered: 0,
+        totalFailed: 0,
+        deliveryRate: "0%",
+      };
+    }
   } catch (error) {
     console.error("Error fetching notification analytics:", error);
     return {

@@ -1,27 +1,21 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Upload,
   X,
   AlertCircle,
-  Crown,
   Loader2,
   CheckCircle,
   Tag,
   MapPin,
 } from "lucide-react";
 import { auth } from "../../../firebase/FirebaseConfig";
-import {
-  canPostProduct,
-  incrementProductCount,
-} from "../../../firebase/subscriptionUtils";
-import { createProduct } from "../../../firebase/productUtils";
+import { getProductById, updateProduct } from "../../../firebase/productUtils";
 
-const AddProduct = () => {
+const EditProduct = () => {
   const navigate = useNavigate();
+  const { productId } = useParams();
   const [loading, setLoading] = useState(false);
-  const [checkingLimit, setCheckingLimit] = useState(true);
-  const [canPost, setCanPost] = useState({ allowed: false, reason: "" });
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const [formData, setFormData] = useState({
@@ -61,28 +55,27 @@ const AddProduct = () => {
   ];
 
   useEffect(() => {
-    const checkProductLimit = async () => {
+    const fetchProduct = async () => {
       try {
-        setCheckingLimit(true);
-        const user = auth.currentUser;
-        if (!user) {
-          navigate("/seller-login");
-          return;
-        }
-        const result = await canPostProduct(user.uid);
-        setCanPost(result);
-      } catch (error) {
-        console.error("Error checking product limit:", error);
-        setCanPost({
-          allowed: false,
-          reason: "Unable to verify posting limits. Please try again.",
+        const product = await getProductById(productId);
+        setFormData({
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          category: product.category,
+          location: product.location,
+          tags: product.tags || [],
+          images: product.images || [],
+          previewImages: product.images || [],
         });
-      } finally {
-        setCheckingLimit(false);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        navigate("/seller-dashboard/products");
       }
     };
-    checkProductLimit();
-  }, [navigate]);
+
+    fetchProduct();
+  }, [productId, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -172,30 +165,20 @@ const AddProduct = () => {
       const productData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        price: formData.price ? parseFloat(formData.price) : 0,
+        price: parseFloat(formData.price),
         category: formData.category,
         location: formData.location.trim(),
         tags: formData.tags,
-        sellerId: user.uid,
-        status: "active",
       };
 
-      console.log("Creating product with data:", productData);
+      await updateProduct(productId, productData);
 
-      const productId = await createProduct(
-        user.uid,
-        productData,
-        formData.images,
-        setUploadProgress
-      );
-
-      await incrementProductCount(user.uid);
-      alert("Product added successfully!");
+      alert("Product updated successfully!");
       navigate("/seller-dashboard/products");
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error("Error updating product:", error);
       setErrors({
-        submit: error.message || "Failed to create product. Please try again.",
+        submit: error.message || "Failed to update product. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -203,42 +186,11 @@ const AddProduct = () => {
     }
   };
 
-  if (checkingLimit) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-[#610b0c]" />
-      </div>
-    );
-  }
-
-  if (!canPost.allowed) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-lg w-full bg-amber-50 border-2 border-amber-200 rounded-xl p-8 text-center">
-          <AlertCircle className="h-16 w-16 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Product Limit Reached
-          </h2>
-          <p className="text-gray-600 mb-6">{canPost.reason}</p>
-          <button
-            onClick={() => navigate("/seller-dashboard/subscriptions")}
-            className="px-6 py-3 bg-[#610b0c] text-white rounded-lg hover:bg-[#4a0809] transition-colors flex items-center gap-2 mx-auto"
-          >
-            <Crown className="h-5 w-5" />
-            Upgrade to Premium
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Add New Product
-        </h1>
-        <p className="text-gray-600">List your product for sale</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Product</h1>
+        <p className="text-gray-600">Update your product details</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -426,11 +378,11 @@ const AddProduct = () => {
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" /> Uploading...
+                <Loader2 className="w-5 h-5 animate-spin" /> Updating...
               </>
             ) : (
               <>
-                <CheckCircle className="w-5 h-5" /> Publish Product
+                <CheckCircle className="w-5 h-5" /> Update Product
               </>
             )}
           </button>
@@ -448,4 +400,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   X,
   LayoutDashboard,
@@ -9,6 +9,7 @@ import {
   Crown,
   Bell,
   BarChart3,
+  ShoppingCart,
   AlertCircle,
 } from "lucide-react";
 
@@ -19,12 +20,17 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
   const [weeklyNotifications, setWeeklyNotifications] = useState(2);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   const navItems = [
     {
       name: "Dashboard",
       path: "/seller-dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      name: "Products",
+      path: "/seller-dashboard/products",
+      icon: ShoppingCart,
     },
     {
       name: "Add Product",
@@ -54,13 +60,13 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
   const handleLogout = () => {
     // Dummy logout logic
     console.log("Logged out");
-    window.location.href = "/seller-login";
+    navigate("/seller-login");
   };
 
   const handleUpgrade = () => {
     // Dummy upgrade logic
     console.log("Navigate to subscription upgrade page");
-    window.location.href = "/seller-dashboard/subscriptions";
+    navigate("/seller-dashboard/subscriptions");
   };
 
   return (

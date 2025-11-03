@@ -1,0 +1,47 @@
+{
+  "rules": {
+    "Products": {
+      "$productId": {
+        ".read": true,
+        ".write": "auth != null && (data.exists() ? data.child('sellerId').val() == auth.uid : newData.child('sellerId').val() == auth.uid)"
+      }
+    },
+    "Analytics": {
+      "$sellerId": {
+        ".read": "auth != null && auth.uid == $sellerId",
+        // Restrict write access to server-side logic (e.g., Cloud Functions)
+        ".write": "auth.token.admin == true"
+      }
+    },
+    "Notification_History": {
+      "$notificationId": {
+        ".read": "auth != null && data.child('sellerId').val() == auth.uid",
+        // Restrict write access to server-side logic
+        ".write": "auth.token.admin == true"
+      }
+    },
+    "Product_Views": {
+      // Allow users to create views, but not read/update/delete
+      ".write": "auth != null",
+      ".read": false
+    },
+    "Product_Likes": {
+      // Allow users to create likes, but not read/update/delete
+      ".write": "auth != null",
+      ".read": false
+    },
+    "Student_Users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        "expoPushToken": {
+          ".write": "auth != null && auth.uid == $uid"
+        },
+        // Allow server-side updates for subscription status
+        "subscriptionStatus": {
+          ".write": "auth.token.admin == true"
+        }
+      }
+    }
+  }
+}

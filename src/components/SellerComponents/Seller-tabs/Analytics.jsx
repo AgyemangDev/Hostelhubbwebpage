@@ -1,24 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  TrendingUp,
-  TrendingDown,
   Eye,
   Heart,
   ShoppingCart,
   DollarSign,
   Package,
   Users,
-  Calendar,
   Download,
   Loader2,
   AlertCircle,
   BarChart3,
-  ArrowUpRight,
-  ArrowDownRight,
 } from "lucide-react";
 import { auth } from "../../../firebase/FirebaseConfig";
-import { getSellerAnalytics } from "../../../firebase/productUtils";
+import { getSellerAnalytics } from "../../../firebase/analyticsUtils";
 import { getNotificationAnalytics } from "../../../firebase/notificationUtils";
 import InsightCard from "./AnaliticComponents/InsightCard";
 import TopProductItem from "./AnaliticComponents/TopProductItem";
@@ -160,6 +155,22 @@ const Analytics = () => {
 
   const currentData = getCurrentData();
 
+  if (!analytics || analytics.total?.views === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            No Analytics Data Yet
+          </h2>
+          <p className="text-gray-600">
+            As you get more views, sales, and likes, your analytics will show up here.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
@@ -224,28 +235,28 @@ const Analytics = () => {
         <StatCard
           icon={Eye}
           label="Total Views"
-          value={currentData.views || 0}
-          trend={currentData.trend}
+          value={currentData?.views || 0}
+          trend={currentData?.trend}
           color="blue"
         />
         <StatCard
           icon={ShoppingCart}
           label="Total Sales"
-          value={currentData.sales || 0}
-          trend={currentData.trend}
+          value={currentData?.sales || 0}
+          trend={currentData?.trend}
           color="green"
         />
         <StatCard
           icon={DollarSign}
           label="Total Revenue"
-          value={`GH₵${(currentData.revenue || 0).toLocaleString()}`}
-          trend={currentData.trend}
+          value={`GH₵${(currentData?.revenue || 0).toLocaleString()}`}
+          trend={currentData?.trend}
           color="purple"
         />
         <StatCard
           icon={Heart}
           label="Total Likes"
-          value={analytics.total.likes || 0}
+          value={analytics?.total?.likes || 0}
           color="red"
         />
       </div>
@@ -264,19 +275,19 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Active Products</span>
               <span className="text-lg font-bold text-gray-900">
-                {analytics.total.products}
+                {analytics?.total?.products || 0}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Total Views</span>
               <span className="text-lg font-bold text-gray-900">
-                {analytics.total.views.toLocaleString()}
+                {(analytics?.total?.views || 0).toLocaleString()}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Avg. Views/Product</span>
               <span className="text-lg font-bold text-gray-900">
-                {analytics.total.products > 0
+                {analytics?.total?.products > 0
                   ? Math.round(analytics.total.views / analytics.total.products)
                   : 0}
               </span>
@@ -296,13 +307,13 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Total Sales</span>
               <span className="text-lg font-bold text-gray-900">
-                {analytics.total.sales}
+                {analytics?.total?.sales || 0}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Conversion Rate</span>
               <span className="text-lg font-bold text-gray-900">
-                {analytics.total.views > 0
+                {analytics?.total?.views > 0
                   ? (
                       (analytics.total.sales / analytics.total.views) *
                       100
@@ -315,7 +326,7 @@ const Analytics = () => {
               <span className="text-sm text-gray-600">Avg. Order Value</span>
               <span className="text-lg font-bold text-gray-900">
                 GH₵
-                {analytics.total.sales > 0
+                {analytics?.total?.sales > 0
                   ? (analytics.total.revenue / analytics.total.sales).toFixed(0)
                   : 0}
               </span>
@@ -364,23 +375,23 @@ const Analytics = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ComparisonCard
             label="Weekly Performance"
-            views={analytics.weekly.views}
-            sales={analytics.weekly.sales}
-            revenue={analytics.weekly.revenue}
-            trend={analytics.weekly.trend}
+            views={analytics?.weekly?.views}
+            sales={analytics?.weekly?.sales}
+            revenue={analytics?.weekly?.revenue}
+            trend={analytics?.weekly?.trend}
           />
           <ComparisonCard
             label="Monthly Performance"
-            views={analytics.monthly.views}
-            sales={analytics.monthly.sales}
-            revenue={analytics.monthly.revenue}
-            trend={analytics.monthly.trend}
+            views={analytics?.monthly?.views}
+            sales={analytics?.monthly?.sales}
+            revenue={analytics?.monthly?.revenue}
+            trend={analytics?.monthly?.trend}
           />
           <ComparisonCard
             label="All Time"
-            views={analytics.total.views}
-            sales={analytics.total.sales}
-            revenue={analytics.total.revenue}
+            views={analytics?.total?.views}
+            sales={analytics?.total?.sales}
+            revenue={analytics?.total?.revenue}
           />
         </div>
       </div>
@@ -430,13 +441,13 @@ const Analytics = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InsightCard
             title="Boost Your Visibility"
-            description={`Your products have ${analytics.total.views} total views. Consider using push notifications to reach more customers.`}
+            description={`Your products have ${analytics?.total?.views || 0} total views. Consider using push notifications to reach more customers.`}
             actionText="Send Notification"
             actionLink="/seller-dashboard/notifications"
           />
           <InsightCard
             title="Add More Products"
-            description={`You have ${analytics.total.products} product(s) listed. Adding more products can increase your revenue potential.`}
+            description={`You have ${analytics?.total?.products || 0} product(s) listed. Adding more products can increase your revenue potential.`}
             actionText="Add Product"
             actionLink="/seller-dashboard/add-product"
           />

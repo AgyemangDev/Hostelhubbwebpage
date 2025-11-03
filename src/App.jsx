@@ -48,6 +48,8 @@ import Notifications from "./components/SellerComponents/Seller-tabs/Notificatio
 import Analytics from "./components/SellerComponents/Seller-tabs/Analytics";
 import AddProduct from "./components/SellerComponents/Seller-tabs/AddProducts";
 import Subscription from "./components/SellerComponents/Seller-tabs/Subscription";
+import Products from "./components/SellerComponents/Seller-tabs/Products";
+import EditProduct from "./components/SellerComponents/Seller-tabs/EditProduct";
 
 
 const App = () => {
@@ -235,6 +237,8 @@ const App = () => {
               <Route path="notifications" element={<Notifications />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="subscriptions" element={<Subscription />} />
+              <Route path="products" element={<Products />} />
+              <Route path="edit-product/:productId" element={<EditProduct />} />
             </Route>
           </Routes>
         </div>

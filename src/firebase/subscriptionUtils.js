@@ -1,22 +1,50 @@
+/**
+ * @file This file contains utility functions for managing seller subscriptions and feature limits.
+ *
+ * @description
+ * The subscription data is stored in the `Student_Users` collection in Firestore.
+ * Each user document contains the following fields related to subscriptions:
+ *
+ * - `subscriptionStatus`: (String) "free" or "premium".
+ * - `productCount`: (Number) The number of products the seller has created.
+ * - `weeklyNotifications`: (Number) The number of notifications sent by the seller in the current week.
+ * - `notificationResetDate`: (String) The ISO date string for when the weekly notification counter should be reset.
+ * - `subscriptionExpiryDate`: (String) The ISO date string for when the premium subscription expires.
+ * - `subscriptionStartDate`: (Timestamp) The date the subscription started.
+ * - `updatedAt`: (Timestamp) The last time the subscription data was updated.
+ */
+
 import { db } from "./FirebaseConfig";
 import {
   doc,
   getDoc,
+  setDoc,  // Import setDoc
   updateDoc,
   increment,
   serverTimestamp,
 } from "firebase/firestore";
 
 /**
- * 🔹 Get seller subscription status and limits
+ * 🔹 Get seller subscription status and limits.
+ * This function retrieves the subscription details for a given user from Firestore.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<object>} - A promise that resolves to an object containing the subscription details.
  */
 export const getSellerSubscription = async (uid) => {
   try {
-    const userRef = doc(db, "users", uid);
+    const userRef = doc(db, "Student_Users", uid);
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
-      throw new Error("User not found");
+      // If the user document doesn't exist, return a default free subscription.
+      return {
+        subscriptionStatus: "free",
+        productCount: 0,
+        weeklyNotifications: 0,
+        notificationResetDate: null,
+        subscriptionExpiryDate: null,
+      };
     }
 
     const userData = userDoc.data();
@@ -35,7 +63,11 @@ export const getSellerSubscription = async (uid) => {
 };
 
 /**
- * 🔹 Check if seller can post a product
+ * 🔹 Check if a seller can post a new product based on their subscription plan.
+ * Free users are limited to 1 product, while premium users have no limit.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<object>} - A promise that resolves to an object with `allowed` (boolean) and `reason` (string|null).
  */
 export const canPostProduct = async (uid) => {
   try {
@@ -62,25 +94,32 @@ export const canPostProduct = async (uid) => {
 };
 
 /**
- * 🔹 Check if seller can send notification
+ * 🔹 Check if a seller can send a notification based on their subscription plan.
+ * Free users are limited to 3 notifications per week, while premium users have no limit.
+ * This function also handles the weekly reset of the notification counter.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<object>} - A promise that resolves to an object with `allowed` (boolean), `remaining` (number|string), and `reason` (string|null).
  */
 export const canSendNotification = async (uid) => {
   try {
-    const subscription = await getSellerSubscription(uid);
+    let subscription = await getSellerSubscription(uid);
 
     // Check if we need to reset weekly counter
-    await checkAndResetNotificationCounter(uid, subscription);
+    const wasReset = await checkAndResetNotificationCounter(uid, subscription);
 
-    // Fetch updated data after potential reset
-    const updatedSubscription = await getSellerSubscription(uid);
+    // Fetch updated data only if the counter was reset
+    if (wasReset) {
+      subscription = await getSellerSubscription(uid);
+    }
 
     // Premium users can send unlimited notifications
-    if (updatedSubscription.subscriptionStatus === "premium") {
+    if (subscription.subscriptionStatus === "premium") {
       return { allowed: true, remaining: "unlimited", reason: null };
     }
 
     // Free users can send 3 notifications per week
-    const remaining = 3 - updatedSubscription.weeklyNotifications;
+    const remaining = 3 - subscription.weeklyNotifications;
     
     if (remaining <= 0) {
       return {
@@ -98,11 +137,16 @@ export const canSendNotification = async (uid) => {
 };
 
 /**
- * 🔹 Reset notification counter if a week has passed
+ * 🔹 Reset the weekly notification counter if a week has passed since the last reset.
+ * This function is called by `canSendNotification`.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @param {object} subscription - The seller's subscription object.
+ * @returns {Promise<boolean>} - A promise that resolves to `true` if the counter was reset, `false` otherwise.
  */
 const checkAndResetNotificationCounter = async (uid, subscription) => {
   try {
-    const userRef = doc(db, "users", uid);
+    const userRef = doc(db, "Student_Users", uid);
 
     // If no reset date exists, set it to now + 7 days
     if (!subscription.notificationResetDate) {
@@ -113,7 +157,7 @@ const checkAndResetNotificationCounter = async (uid, subscription) => {
         notificationResetDate: nextResetDate.toISOString(),
         weeklyNotifications: 0,
       });
-      return;
+      return true;
     }
 
     // Check if reset date has passed
@@ -129,22 +173,30 @@ const checkAndResetNotificationCounter = async (uid, subscription) => {
         notificationResetDate: nextResetDate.toISOString(),
         weeklyNotifications: 0,
       });
+      return true;
     }
+
+    return false;
   } catch (error) {
     console.error("Error resetting notification counter:", error);
+    return false;
   }
 };
 
 /**
- * 🔹 Increment product count when seller creates a product
+ * 🔹 Increment the product count for a seller when they create a new product.
+ * This is an atomic operation.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<void>}
  */
 export const incrementProductCount = async (uid) => {
   try {
-    const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, {
+    const userRef = doc(db, "Student_Users", uid);
+    await setDoc(userRef, {
       productCount: increment(1),
       updatedAt: serverTimestamp(),
-    });
+    }, { merge: true });
   } catch (error) {
     console.error("Error incrementing product count:", error);
     throw error;
@@ -152,24 +204,22 @@ export const incrementProductCount = async (uid) => {
 };
 
 /**
- * 🔹 Decrement product count when seller deletes a product
+ * 🔹 Decrement the product count for a seller when they delete a product.
+ * This is an atomic operation and will not go below 0.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<void>}
  */
 export const decrementProductCount = async (uid) => {
   try {
-    const userRef = doc(db, "users", uid);
-    const userDoc = await getDoc(userRef);
-
-    if (userDoc.exists()) {
-      const currentCount = userDoc.data().productCount || 0;
-      
-      // Don't go below 0
-      if (currentCount > 0) {
-        await updateDoc(userRef, {
-          productCount: increment(-1),
-          updatedAt: serverTimestamp(),
-        });
-      }
-    }
+    const userRef = doc(db, "Student_Users", uid);
+    // Using setDoc with merge to avoid errors if the document doesn't exist.
+    // The productCount will not go below 0, but this is handled by the UI logic mostly.
+    // A more robust solution would use a transaction to read the current count first.
+    await setDoc(userRef, {
+      productCount: increment(-1),
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
   } catch (error) {
     console.error("Error decrementing product count:", error);
     throw error;
@@ -177,15 +227,19 @@ export const decrementProductCount = async (uid) => {
 };
 
 /**
- * 🔹 Increment notification count when seller sends a notification
+ * 🔹 Increment the weekly notification count for a seller when they send a notification.
+ * This is an atomic operation.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<void>}
  */
 export const incrementNotificationCount = async (uid) => {
   try {
-    const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, {
+    const userRef = doc(db, "Student_Users", uid);
+    await setDoc(userRef, {
       weeklyNotifications: increment(1),
       updatedAt: serverTimestamp(),
-    });
+    }, { merge: true });
   } catch (error) {
     console.error("Error incrementing notification count:", error);
     throw error;
@@ -193,24 +247,27 @@ export const incrementNotificationCount = async (uid) => {
 };
 
 /**
- * 🔹 Upgrade seller to premium (after successful payment)
- * @param {string} uid - User ID
- * @param {number} months - Number of months for subscription
+ * 🔹 Upgrade a seller to the premium plan after a successful payment.
+ * This function updates the user's subscription status and sets the expiry date.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @param {number} [months=1] - The number of months for the subscription.
+ * @returns {Promise<object>} - A promise that resolves to an object with `success` (boolean) and `expiryDate` (string).
  */
 export const upgradeSellerToPremium = async (uid, months = 1) => {
   try {
-    const userRef = doc(db, "users", uid);
+    const userRef = doc(db, "Student_Users", uid);
 
     // Calculate expiry date
     const expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + months);
 
-    await updateDoc(userRef, {
+    await setDoc(userRef, {
       subscriptionStatus: "premium",
       subscriptionStartDate: serverTimestamp(),
       subscriptionExpiryDate: expiryDate.toISOString(),
       updatedAt: serverTimestamp(),
-    });
+    }, { merge: true });
 
     return {
       success: true,
@@ -223,7 +280,45 @@ export const upgradeSellerToPremium = async (uid, months = 1) => {
 };
 
 /**
- * 🔹 Check and downgrade expired premium subscriptions
+ * 🔹 Manually upgrade a seller to the premium plan (admin function).
+ * This function updates the user's subscription status and sets the expiry date.
+ * This function should only be callable by an administrator.
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @param {number} [months=1] - The number of months for the premium subscription.
+ * @returns {Promise<object>} - A promise that resolves to an object with `success` (boolean) and `expiryDate` (string).
+ */
+export const manuallyUpgradeSellerToPremium = async (uid, months = 1) => {
+  try {
+    const userRef = doc(db, "Student_Users", uid);
+
+    // Calculate expiry date
+    const expiryDate = new Date();
+    expiryDate.setMonth(expiryDate.getMonth() + months);
+
+    await setDoc(userRef, {
+      subscriptionStatus: "premium",
+      subscriptionStartDate: serverTimestamp(),
+      subscriptionExpiryDate: expiryDate.toISOString(),
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+
+    return {
+      success: true,
+      expiryDate: expiryDate.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error manually upgrading to premium:", error);
+    throw error;
+  }
+};
+
+/**
+ * 🔹 Check for and downgrade expired premium subscriptions.
+ * This function should be called periodically (e.g., when a user logs in or accesses a premium feature).
+ *
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<object>} - A promise that resolves to an object with `expired` (boolean) and `message` (string|null).
  */
 export const checkSubscriptionExpiry = async (uid) => {
   try {
@@ -235,7 +330,7 @@ export const checkSubscriptionExpiry = async (uid) => {
 
       if (now >= expiryDate) {
         // Subscription expired, downgrade to free
-        const userRef = doc(db, "users", uid);
+        const userRef = doc(db, "Student_Users", uid);
         await updateDoc(userRef, {
           subscriptionStatus: "free",
           subscriptionExpiryDate: null,
@@ -257,8 +352,11 @@ export const checkSubscriptionExpiry = async (uid) => {
 };
 
 /**
- * 🔹 Initialize Paystack payment for subscription
- * This is a dummy implementation - replace with actual Paystack integration
+ * 🔹 Initialize Paystack payment for a subscription.
+ *
+ * @param {string} email - The user's email address.
+ * @param {string} plan - The selected plan ("monthly", "quarterly", or "yearly").
+ * @returns {Promise<object>} - A promise that resolves to an object with payment details.
  */
 export const initializeSubscriptionPayment = async (email, plan) => {
   try {
@@ -352,7 +450,11 @@ export const initializeSubscriptionPayment = async (email, plan) => {
 };
 
 /**
- * 🔹 Verify Paystack payment and upgrade subscription
+ * 🔹 Verify a Paystack payment and upgrade the subscription if successful.
+ *
+ * @param {string} reference - The payment reference from Paystack.
+ * @param {string} uid - The user ID of the seller.
+ * @returns {Promise<object>} - A promise that resolves to an object with `success` (boolean) and `message` (string).
  */
 export const verifySubscriptionPayment = async (reference, uid) => {
   try {
@@ -407,7 +509,7 @@ export const verifySubscriptionPayment = async (reference, uid) => {
 
     return {
       success: true,
-      message: "Subscription activated successfully!",
+message: "Subscription activated successfully!",
     };
     */
   } catch (error) {

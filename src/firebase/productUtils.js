@@ -1,4 +1,9 @@
+/**
+ * @file This file contains utility functions for managing products, including CRUD operations and analytics tracking.
+ */
+
 import { db, storage } from "./FirebaseConfig";
+import { updateAnalytics } from "./analyticsUtils";
 import {
   collection,
   doc,
@@ -22,7 +27,13 @@ import {
 } from "firebase/storage";
 
 /**
- * 🔹 Upload multiple images to Firebase Storage
+ * 🔹 Upload multiple images to Firebase Storage for a product.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @param {string} productId - The ID of the product.
+ * @param {File[]} images - An array of image files to upload.
+ * @param {function} onProgress - A callback function to report upload progress.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of image download URLs.
  */
 const uploadProductImages = async (sellerId, productId, images, onProgress) => {
   try {
@@ -60,7 +71,13 @@ const uploadProductImages = async (sellerId, productId, images, onProgress) => {
 };
 
 /**
- * 🔹 Create a new product
+ * 🔹 Create a new product in Firestore and upload its images to Storage.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @param {object} productData - The product data to be saved.
+ * @param {File[]} images - An array of image files to upload.
+ * @param {function} onProgress - A callback function to report upload progress.
+ * @returns {Promise<string>} - A promise that resolves to the new product's ID.
  */
 export const createProduct = async (
   sellerId,
@@ -105,16 +122,16 @@ export const createProduct = async (
 };
 
 /**
- * 🔹 Get all products for a seller
+ * 🔹 Get all products for a specific seller.
+ * NOTE: This function does not order the products. The client should handle sorting.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @returns {Promise<object[]>} - A promise that resolves to an array of product objects.
  */
 export const getSellerProducts = async (sellerId) => {
   try {
     const productsRef = collection(db, "Products");
-    const q = query(
-      productsRef,
-      where("sellerId", "==", sellerId),
-      orderBy("createdAt", "desc"),
-    );
+    const q = query(productsRef, where("sellerId", "==", sellerId));
 
     const querySnapshot = await getDocs(q);
     const products = [];
@@ -134,7 +151,10 @@ export const getSellerProducts = async (sellerId) => {
 };
 
 /**
- * 🔹 Get a single product by ID
+ * 🔹 Get a single product by its ID.
+ *
+ * @param {string} productId - The ID of the product.
+ * @returns {Promise<object>} - A promise that resolves to the product object.
  */
 export const getProductById = async (productId) => {
   try {
@@ -156,7 +176,11 @@ export const getProductById = async (productId) => {
 };
 
 /**
- * 🔹 Update a product
+ * 🔹 Update a product in Firestore.
+ *
+ * @param {string} productId - The ID of the product to update.
+ * @param {object} updates - An object containing the fields to update.
+ * @returns {Promise<boolean>} - A promise that resolves to `true` if the update was successful.
  */
 export const updateProduct = async (productId, updates) => {
   try {
@@ -174,7 +198,11 @@ export const updateProduct = async (productId, updates) => {
 };
 
 /**
- * 🔹 Delete a product and its images
+ * 🔹 Delete a product from Firestore and its associated images from Storage.
+ *
+ * @param {string} productId - The ID of the product to delete.
+ * @param {string} sellerId - The ID of the seller (for image path construction).
+ * @returns {Promise<boolean>} - A promise that resolves to `true` if the deletion was successful.
  */
 export const deleteProduct = async (productId, sellerId) => {
   try {
@@ -210,7 +238,11 @@ export const deleteProduct = async (productId, sellerId) => {
 };
 
 /**
- * 🔹 Toggle product status (active/inactive)
+ * 🔹 Toggle a product's status between "active" and "inactive".
+ *
+ * @param {string} productId - The ID of the product.
+ * @param {string} currentStatus - The current status of the product.
+ * @returns {Promise<string>} - A promise that resolves to the new status.
  */
 export const toggleProductStatus = async (productId, currentStatus) => {
   try {
@@ -224,14 +256,30 @@ export const toggleProductStatus = async (productId, currentStatus) => {
 };
 
 /**
- * 🔹 Increment product views
+ * 🔹 Increment product views and update analytics.
+ *
+ * @param {string} productId - The ID of the product.
+ * @returns {Promise<void>}
  */
 export const incrementProductViews = async (productId) => {
   try {
     const productRef = doc(db, "Products", productId);
-    await updateDoc(productRef, {
-      views: increment(1),
-    });
+    const productSnap = await getDoc(productRef);
+
+    if (productSnap.exists()) {
+      const productData = productSnap.data();
+      const sellerId = productData.sellerId;
+
+      // Increment views in the product document
+      await updateDoc(productRef, {
+        views: increment(1),
+      });
+
+      // Update analytics
+      if (sellerId) {
+        await updateAnalytics(sellerId, productId, "views");
+      }
+    }
   } catch (error) {
     console.error("Error incrementing views:", error);
     throw error;
@@ -239,14 +287,30 @@ export const incrementProductViews = async (productId) => {
 };
 
 /**
- * 🔹 Increment product likes
+ * 🔹 Increment product likes and update analytics.
+ *
+ * @param {string} productId - The ID of the product.
+ * @returns {Promise<void>}
  */
 export const incrementProductLikes = async (productId) => {
   try {
     const productRef = doc(db, "Products", productId);
-    await updateDoc(productRef, {
-      likes: increment(1),
-    });
+    const productSnap = await getDoc(productRef);
+
+    if (productSnap.exists()) {
+      const productData = productSnap.data();
+      const sellerId = productData.sellerId;
+
+      // Increment likes in the product document
+      await updateDoc(productRef, {
+        likes: increment(1),
+      });
+
+      // Update analytics
+      if (sellerId) {
+        await updateAnalytics(sellerId, productId, "likes");
+      }
+    }
   } catch (error) {
     console.error("Error incrementing likes:", error);
     throw error;
@@ -254,14 +318,33 @@ export const incrementProductLikes = async (productId) => {
 };
 
 /**
- * 🔹 Increment product sales
+ * 🔹 Increment product sales and update analytics.
+ *
+ * @param {string} productId - The ID of the product.
+ * @param {number} quantity - The number of items sold.
+ * @param {number} price - The price of a single item.
+ * @returns {Promise<void>}
  */
-export const incrementProductSales = async (productId) => {
+export const incrementProductSales = async (productId, quantity, price) => {
   try {
     const productRef = doc(db, "Products", productId);
-    await updateDoc(productRef, {
-      sales: increment(1),
-    });
+    const productSnap = await getDoc(productRef);
+
+    if (productSnap.exists()) {
+      const productData = productSnap.data();
+      const sellerId = productData.sellerId;
+      const revenue = quantity * price;
+
+      // Increment sales in the product document
+      await updateDoc(productRef, {
+        sales: increment(quantity),
+      });
+
+      // Update analytics
+      if (sellerId) {
+        await updateAnalytics(sellerId, productId, "sales", quantity, revenue);
+      }
+    }
   } catch (error) {
     console.error("Error incrementing sales:", error);
     throw error;
@@ -269,107 +352,10 @@ export const incrementProductSales = async (productId) => {
 };
 
 /**
- * 🔹 Get seller analytics
- */
-export const getSellerAnalytics = async (sellerId) => {
-  try {
-    const products = await getSellerProducts(sellerId);
-
-    // Calculate totals
-    const totalViews = products.reduce(
-      (sum, product) => sum + (product.views || 0),
-      0,
-    );
-    const totalLikes = products.reduce(
-      (sum, product) => sum + (product.likes || 0),
-      0,
-    );
-    const totalSales = products.reduce(
-      (sum, product) => sum + (product.sales || 0),
-      0,
-    );
-    const totalRevenue = products.reduce(
-      (sum, product) => sum + (product.sales || 0) * (product.price || 0),
-      0,
-    );
-
-    // Get weekly data (last 7 days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const weeklyProducts = products.filter((product) => {
-      const createdAt = product.createdAt?.toDate();
-      return createdAt && createdAt >= sevenDaysAgo;
-    });
-
-    const weeklyViews = weeklyProducts.reduce(
-      (sum, product) => sum + (product.views || 0),
-      0,
-    );
-    const weeklySales = weeklyProducts.reduce(
-      (sum, product) => sum + (product.sales || 0),
-      0,
-    );
-    const weeklyRevenue = weeklyProducts.reduce(
-      (sum, product) => sum + (product.sales || 0) * (product.price || 0),
-      0,
-    );
-
-    // Get monthly data (last 30 days)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const monthlyProducts = products.filter((product) => {
-      const createdAt = product.createdAt?.toDate();
-      return createdAt && createdAt >= thirtyDaysAgo;
-    });
-
-    const monthlyViews = monthlyProducts.reduce(
-      (sum, product) => sum + (product.views || 0),
-      0,
-    );
-    const monthlySales = monthlyProducts.reduce(
-      (sum, product) => sum + (product.sales || 0),
-      0,
-    );
-    const monthlyRevenue = monthlyProducts.reduce(
-      (sum, product) => sum + (product.sales || 0) * (product.price || 0),
-      0,
-    );
-
-    // Calculate trends (dummy calculation for now)
-    const weeklyTrend = weeklyViews > 0 ? "+12%" : "0%";
-    const monthlyTrend = monthlyViews > 0 ? "+24%" : "0%";
-
-    return {
-      total: {
-        products: products.length,
-        views: totalViews,
-        likes: totalLikes,
-        sales: totalSales,
-        revenue: totalRevenue,
-      },
-      weekly: {
-        views: weeklyViews,
-        sales: weeklySales,
-        revenue: weeklyRevenue,
-        trend: weeklyTrend,
-      },
-      monthly: {
-        views: monthlyViews,
-        sales: monthlySales,
-        revenue: monthlyRevenue,
-        trend: monthlyTrend,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching analytics:", error);
-    throw error;
-  }
-};
-
-/**
- * 🔹 Search products by category and location
+ * 🔹 Search for products based on filters (category, location, price).
+ *
+ * @param {object} filters - The search filters.
+ * @returns {Promise<object[]>} - A promise that resolves to an array of product objects.
  */
 export const searchProducts = async (filters) => {
   try {
@@ -413,7 +399,10 @@ export const searchProducts = async (filters) => {
 };
 
 /**
- * 🔹 Get featured/popular products
+ * 🔹 Get a list of featured or popular products, ordered by views.
+ *
+ * @param {number} [limitCount=10] - The maximum number of products to fetch.
+ * @returns {Promise<object[]>} - A promise that resolves to an array of product objects.
  */
 export const getFeaturedProducts = async (limitCount = 10) => {
   try {
