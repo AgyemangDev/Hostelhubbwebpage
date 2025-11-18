@@ -30,14 +30,10 @@ const SellerLogin = () => {
         default:
           alert("Login failed. Unknown error.");
       }
-      return; // stop further execution
+      return;
     }
 
-    // If login successful
-    if (rememberMe) {
-      localStorage.setItem("hostelhubb_seller_data", JSON.stringify(result.data));
-    }
-
+    // Login successful - auth state listener will handle the rest
     alert("Login successful! Redirecting to your dashboard.");
     navigate("/seller-dashboard");
   };

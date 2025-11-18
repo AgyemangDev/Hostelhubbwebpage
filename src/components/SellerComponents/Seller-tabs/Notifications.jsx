@@ -3,15 +3,10 @@ import { useNavigate } from "react-router-dom";
 import {
   Bell,
   Send,
-  Users,
   Crown,
   AlertCircle,
   Loader2,
   CheckCircle,
-  Clock,
-  TrendingUp,
-  MessageSquare,
-  Target,
 } from "lucide-react";
 import { auth } from "../../../firebase/FirebaseConfig";
 import {
@@ -42,45 +37,9 @@ const Notifications = () => {
   const [formData, setFormData] = useState({
     title: "",
     message: "",
-    targetAudience: "all",
-    priority: "normal",
   });
 
   const [errors, setErrors] = useState({});
-
-  // Target audience options
-  const audienceOptions = [
-    {
-      value: "all",
-      label: "All Users",
-      description: "Send to everyone using the mobile app",
-      icon: Users,
-    },
-    {
-      value: "students",
-      label: "Students Only",
-      description: "Target only verified students",
-      icon: Target,
-    },
-    {
-      value: "recent_viewers",
-      label: "Recent Viewers",
-      description: "Users who viewed your products recently",
-      icon: TrendingUp,
-    },
-    {
-      value: "interested",
-      label: "Interested Users",
-      description: "Users who liked or saved your products",
-      icon: MessageSquare,
-    },
-  ];
-
-  // Priority options
-  const priorityOptions = [
-    { value: "normal", label: "Normal", color: "gray" },
-    { value: "high", label: "High", color: "orange" },
-  ];
 
   // Check notification limit on mount
   useEffect(() => {
@@ -177,8 +136,6 @@ const Notifications = () => {
       const notificationData = {
         title: formData.title.trim(),
         message: formData.message.trim(),
-        targetAudience: formData.targetAudience,
-        priority: formData.priority,
         sellerId: user.uid,
       };
 
@@ -196,8 +153,6 @@ const Notifications = () => {
       setFormData({
         title: "",
         message: "",
-        targetAudience: "all",
-        priority: "normal",
       });
 
       // Refresh data
@@ -247,7 +202,7 @@ const Notifications = () => {
           </div>
         </div>
         <p className="text-gray-600">
-          Send push notifications to users of the HostelHubb mobile app
+          Send push notifications to all users of the HostelHubb mobile app
         </p>
       </div>
 
@@ -352,89 +307,6 @@ const Notifications = () => {
                       {formData.message.length}/500 characters
                     </p>
                   )}
-                </div>
-              </div>
-
-              {/* Target Audience */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Target Audience
-                </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {audienceOptions.map((option) => {
-                    const Icon = option.icon;
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            targetAudience: option.value,
-                          }))
-                        }
-                        disabled={!canSend.allowed}
-                        className={`p-4 border-2 rounded-lg text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                          formData.targetAudience === option.value
-                            ? "border-[#610b0c] bg-red-50"
-                            : "border-gray-200 hover:border-[#610b0c]"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <Icon
-                            className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                              formData.targetAudience === option.value
-                                ? "text-[#610b0c]"
-                                : "text-gray-600"
-                            }`}
-                          />
-                          <div>
-                            <h4
-                              className={`font-semibold text-sm mb-1 ${
-                                formData.targetAudience === option.value
-                                  ? "text-[#610b0c]"
-                                  : "text-gray-900"
-                              }`}
-                            >
-                              {option.label}
-                            </h4>
-                            <p className="text-xs text-gray-600">
-                              {option.description}
-                            </p>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Priority */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Priority
-                </label>
-                <div className="flex gap-3">
-                  {priorityOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          priority: option.value,
-                        }))
-                      }
-                      disabled={!canSend.allowed}
-                      className={`flex-1 px-4 py-2 border-2 rounded-lg font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                        formData.priority === option.value
-                          ? `border-${option.color}-500 bg-${option.color}-50 text-${option.color}-700`
-                          : "border-gray-300 text-gray-700 hover:border-gray-400"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
                 </div>
               </div>
 
@@ -554,7 +426,7 @@ const Notifications = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 font-bold">•</span>
-                Target specific audiences for better engagement
+                Make your message clear and concise
               </li>
             </ul>
           </div>

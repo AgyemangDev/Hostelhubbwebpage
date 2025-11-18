@@ -26,16 +26,13 @@ import {
  */
 export const sendPushNotification = async (sellerId, notificationData) => {
   try {
-    const { title, message, targetAudience, priority } = notificationData;
+    const { title, message } = notificationData;
 
-    // Get Expo push tokens based on target audience
-    const pushTokens = await getTargetAudiencePushTokens(
-      targetAudience,
-      sellerId,
-    );
+    // Get all user push tokens
+    const pushTokens = await getAllUserPushTokens();
 
     if (pushTokens.length === 0) {
-      throw new Error("No users found for the selected audience");
+      throw new Error("No users found");
     }
 
     // Prepare Expo push notification messages
@@ -44,11 +41,10 @@ export const sendPushNotification = async (sellerId, notificationData) => {
       sound: "default",
       title: title,
       body: message,
-      priority: priority === "high" ? "high" : "default",
+      priority: "default",
       data: {
         sellerId,
         type: "seller_notification",
-        targetAudience,
       },
     }));
 
@@ -82,8 +78,6 @@ export const sendPushNotification = async (sellerId, notificationData) => {
       sellerId,
       title,
       message,
-      targetAudience,
-      priority,
       delivered: successCount,
       failed: failureCount,
       sentAt: serverTimestamp(),
@@ -107,95 +101,14 @@ export const sendPushNotification = async (sellerId, notificationData) => {
 };
 
 /**
- * 🔹 Get an array of push tokens based on the selected target audience.
- *
- * @param {string} targetAudience - The target audience ("all", "students", etc.).
- * @param {string} sellerId - The ID of the seller (for targeting specific user groups).
- * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
- */
-const getTargetAudiencePushTokens = async (targetAudience, sellerId) => {
-  try {
-    let pushTokens = [];
-
-    switch (targetAudience) {
-      case "all":
-        // Get all users with push tokens
-        pushTokens = await getAllUserPushTokens();
-        break;
-
-      case "students":
-        // Get only verified students
-        pushTokens = await getStudentPushTokens();
-        break;
-
-      case "recent_viewers":
-        // Get users who viewed seller's products recently (last 7 days)
-        pushTokens = await getRecentViewersPushTokens(sellerId);
-        break;
-
-      case "interested":
-        // Get users who liked or saved seller's products
-        pushTokens = await getInterestedUsersPushTokens(sellerId);
-        break;
-
-      default:
-        pushTokens = await getAllUserPushTokens();
-    }
-
-    // Filter out invalid tokens
-    return pushTokens.filter(
-      (token) => token && token.startsWith("ExponentPushToken"),
-    );
-  } catch (error) {
-    console.error("Error getting push tokens:", error);
-    throw error;
-  }
-};
-
-/**
  * 🔹 Get all user push tokens from the `Student_Users` collection.
  *
- * @param {boolean} [includeUserId=false] - Whether to include the user ID in the returned array.
- * @returns {Promise<string[]|object[]>} - A promise that resolves to an array of tokens or token-ID objects.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
  */
-const getAllUserPushTokens = async (includeUserId = false) => {
+const getAllUserPushTokens = async () => {
   try {
     const usersRef = collection(db, "Student_Users");
     const q = query(usersRef, where("expoPushToken", "!=", null));
-    const querySnapshot = await getDoc(q);
-
-    const tokens = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.expoPushToken) {
-        if (includeUserId) {
-          tokens.push({ token: data.expoPushToken, userId: doc.id });
-        } else {
-          tokens.push(data.expoPushToken);
-        }
-      }
-    });
-
-    return tokens;
-  } catch (error) {
-    console.error("Error fetching all user tokens:", error);
-    return [];
-  }
-};
-
-/**
- * 🔹 Get push tokens for verified students only.
- *
- * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
- */
-const getStudentPushTokens = async () => {
-  try {
-    const studentsRef = collection(db, "Student_Users");
-    const q = query(
-      studentsRef,
-      where("expoPushToken", "!=", null),
-      where("isVerified", "==", true), // Assuming you have a verification field
-    );
     const querySnapshot = await getDoc(q);
 
     const tokens = [];
@@ -206,93 +119,13 @@ const getStudentPushTokens = async () => {
       }
     });
 
-    return tokens;
-  } catch (error) {
-    console.error("Error fetching student tokens:", error);
-    return [];
-  }
-};
-
-/**
- * 🔹 Get push tokens of users who have recently viewed a seller's products.
- *
- * @param {string} sellerId - The ID of the seller.
- * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
- */
-const getRecentViewersPushTokens = async (sellerId) => {
-  try {
-    // Get all users with push tokens first
-    const allUserTokens = await getAllUserPushTokens(true); // Get tokens with user IDs
-
-    // Get product views from the last 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const viewsRef = collection(db, "Product_Views");
-    const q = query(
-      viewsRef,
-      where("sellerId", "==", sellerId),
-      where("viewedAt", ">=", sevenDaysAgo),
+    // Filter out invalid tokens
+    return tokens.filter(
+      (token) => token && token.startsWith("ExponentPushToken"),
     );
-
-    const querySnapshot = await getDoc(q);
-    const userIds = new Set();
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.userId) {
-        userIds.add(data.userId);
-      }
-    });
-
-    // Filter the tokens based on the user IDs
-    const tokens = allUserTokens
-      .filter((user) => userIds.has(user.userId))
-      .map((user) => user.token);
-
-    return tokens;
   } catch (error) {
-    console.error("Error fetching recent viewers tokens:", error);
-    // Fallback to all users if tracking not available
-    return await getAllUserPushTokens();
-  }
-};
-
-/**
- * 🔹 Get push tokens of users who have liked a seller's products.
- *
- * @param {string} sellerId - The ID of the seller.
- * @returns {Promise<string[]>} - A promise that resolves to an array of push tokens.
- */
-const getInterestedUsersPushTokens = async (sellerId) => {
-  try {
-    // Get all users with push tokens first
-    const allUserTokens = await getAllUserPushTokens(true); // Get tokens with user IDs
-
-    // Get users who liked seller's products
-    const likesRef = collection(db, "Product_Likes");
-    const q = query(likesRef, where("sellerId", "==", sellerId));
-
-    const querySnapshot = await getDoc(q);
-    const userIds = new Set();
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.userId) {
-        userIds.add(data.userId);
-      }
-    });
-
-    // Filter the tokens based on the user IDs
-    const tokens = allUserTokens
-      .filter((user) => userIds.has(user.userId))
-      .map((user) => user.token);
-
-    return tokens;
-  } catch (error) {
-    console.error("Error fetching interested users tokens:", error);
-    // Fallback to all users if tracking not available
-    return await getAllUserPushTokens();
+    console.error("Error fetching all user tokens:", error);
+    return [];
   }
 };
 

@@ -26,7 +26,8 @@ import {
 import { auth } from "../../firebase/FirebaseConfig";
 import { getSellerSubscription } from "../../firebase/subscriptionUtils";
 import { getSellerProducts } from "../../firebase/productUtils";
-import { getSellerAnalytics } from "../../firebase/analyticsUtils";
+import { getSellerAnalytics, syncProductCount } from "../../firebase/analyticsUtils";
+import { syncAllProductCounts, syncSubscriptionProductCount } from "../../firebase/syncUtils";
 import PremiumFeature from "./DashboardComponents/PremiumFeature";
 import StatCard from "./DashboardComponents/StatCard";
 import FeatureBadge from "./DashboardComponents/FeatureBadge";
@@ -40,6 +41,7 @@ const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [greeting, setGreeting] = useState("");
+  const [syncedThisSession, setSyncedThisSession] = useState(false);
 
   // Fetch dashboard data
   useEffect(() => {
@@ -76,7 +78,35 @@ const Dashboard = () => {
 
         // Fetch analytics
         const analyticsData = await getSellerAnalytics(user.uid);
-        setAnalytics(analyticsData);
+        
+        // Check if sync is needed (only once per session)
+        const needsSync = !syncedThisSession && (
+          analyticsData.total.products !== sortedProducts.length || 
+          (sortedProducts.length > 0 && analyticsData.total.products === 0)
+        );
+        
+        if (needsSync) {
+          console.log("Product count mismatch detected, running automatic sync...");
+          
+          // Run comprehensive sync
+          await syncAllProductCounts(user.uid);
+          await syncSubscriptionProductCount(user.uid);
+          
+          // Mark as synced for this session
+          setSyncedThisSession(true);
+          
+          // Refetch analytics after sync
+          const updatedAnalytics = await getSellerAnalytics(user.uid);
+          setAnalytics(updatedAnalytics);
+          
+          // Refetch subscription to get updated count
+          const updatedSub = await getSellerSubscription(user.uid);
+          setSubscription(updatedSub);
+          
+          console.log("✅ Automatic sync completed successfully");
+        } else {
+          setAnalytics(analyticsData);
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {

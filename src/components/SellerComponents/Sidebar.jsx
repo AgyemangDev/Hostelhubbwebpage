@@ -49,6 +49,8 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
       name: "Analytics",
       path: "/seller-dashboard/analytics",
       icon: BarChart3,
+      badge: subscriptionStatus === "free" ? "Premium" : null,
+      premiumFeature: subscriptionStatus === "free",
     },
     {
       name: "Subscription",
@@ -169,7 +171,7 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto mt-4 px-4 space-y-2">
           {navItems.map(
-            ({ name, path, icon: Icon, badge, disabled, lockIcon }) => (
+            ({ name, path, icon: Icon, badge, disabled, lockIcon, premiumFeature }) => (
               <NavLink
                 key={name}
                 to={disabled ? "#" : path}
@@ -193,8 +195,15 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
                   {name}
                 </div>
 
-                {badge && !lockIcon && (
+                {badge && !lockIcon && !premiumFeature && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-700">
+                    {badge}
+                  </span>
+                )}
+
+                {premiumFeature && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 flex items-center gap-1">
+                    <Crown className="w-3 h-3" />
                     {badge}
                   </span>
                 )}

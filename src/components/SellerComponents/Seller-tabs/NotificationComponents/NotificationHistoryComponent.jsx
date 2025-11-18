@@ -1,16 +1,6 @@
-import { Bell, Clock, Users } from "lucide-react";
+import { Bell, Clock, CheckCircle } from "lucide-react";
 
 const NotificationHistoryItem = ({ notification }) => {
-  const getAudienceLabel = (audience) => {
-    const labels = {
-      all: "All Users",
-      students: "Students",
-      recent_viewers: "Recent Viewers",
-      interested: "Interested Users",
-    };
-    return labels[audience] || audience;
-  };
-
   const formatDate = (timestamp) => {
     if (!timestamp) return "Just now";
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -33,15 +23,6 @@ const NotificationHistoryItem = ({ notification }) => {
       <div className="flex-1">
         <div className="flex items-start justify-between mb-1">
           <h4 className="font-semibold text-gray-900">{notification.title}</h4>
-          <span
-            className={`text-xs px-2 py-1 rounded-full ${
-              notification.priority === "high"
-                ? "bg-orange-100 text-orange-700"
-                : "bg-gray-100 text-gray-700"
-            }`}
-          >
-            {notification.priority === "high" ? "High" : "Normal"}
-          </span>
         </div>
         <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
         <div className="flex items-center gap-4 text-xs text-gray-500">
@@ -51,11 +32,9 @@ const NotificationHistoryItem = ({ notification }) => {
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">
-            <Users className="w-3 h-3" />
-            {getAudienceLabel(notification.targetAudience)}
+            <CheckCircle className="w-3 h-3 text-green-600" />
+            {notification.delivered || 0} delivered
           </span>
-          <span>•</span>
-          <span>{notification.delivered || 0} delivered</span>
         </div>
       </div>
     </div>

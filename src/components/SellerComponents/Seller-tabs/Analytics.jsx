@@ -11,10 +11,16 @@ import {
   Loader2,
   AlertCircle,
   BarChart3,
+  Crown,
+  Lock,
+  TrendingUp,
+  Zap,
 } from "lucide-react";
 import { auth } from "../../../firebase/FirebaseConfig";
-import { getSellerAnalytics } from "../../../firebase/analyticsUtils";
+import { getSellerAnalytics, syncProductCount } from "../../../firebase/analyticsUtils";
 import { getNotificationAnalytics } from "../../../firebase/notificationUtils";
+import { syncAllProductCounts } from "../../../firebase/syncUtils";
+import { getSellerSubscription } from "../../../firebase/subscriptionUtils";
 import InsightCard from "./AnaliticComponents/InsightCard";
 import TopProductItem from "./AnaliticComponents/TopProductItem";
 import StatCard from "./AnaliticComponents/StatCard";
@@ -24,6 +30,7 @@ const Analytics = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPremium, setIsPremium] = useState(false);
   const [timeRange, setTimeRange] = useState("weekly"); // weekly, monthly, all
   const [analytics, setAnalytics] = useState({
     total: {
@@ -67,21 +74,39 @@ const Analytics = () => {
           return;
         }
 
-        // Fetch product analytics
-        const productAnalytics = await getSellerAnalytics(user.uid);
-        setAnalytics(productAnalytics);
+        // Check subscription status first
+        const subscription = await getSellerSubscription(user.uid);
+        const premium = subscription.subscriptionStatus === "premium";
+        setIsPremium(premium);
 
-        // Fetch notification analytics
-        const notifAnalytics = await getNotificationAnalytics(user.uid);
-        setNotificationStats(notifAnalytics);
+        // Only fetch analytics if premium
+        if (premium) {
+          // Run comprehensive sync first to ensure accuracy
+          await syncAllProductCounts(user.uid);
 
-        // Get top performing products
-        if (productAnalytics.topProducts) {
-          setTopProducts(productAnalytics.topProducts);
+          // Fetch product analytics
+          const productAnalytics = await getSellerAnalytics(user.uid);
+          setAnalytics(productAnalytics);
+
+          // Fetch notification analytics
+          const notifAnalytics = await getNotificationAnalytics(user.uid);
+          setNotificationStats(notifAnalytics);
+
+          // Get top performing products
+          if (productAnalytics.topProducts) {
+            setTopProducts(productAnalytics.topProducts);
+          }
         }
       } catch (error) {
         console.error("Error fetching analytics:", error);
-        setError("Failed to load analytics data. Please try again.");
+        // Don't set error, just use default empty state
+        setAnalytics({
+          daily: { views: 0, sales: 0, revenue: 0 },
+          weekly: { views: 0, sales: 0, revenue: 0, trend: "0%" },
+          monthly: { views: 0, sales: 0, revenue: 0, trend: "0%" },
+          total: { products: 0, views: 0, likes: 0, sales: 0, revenue: 0 },
+          topProducts: [],
+        });
       } finally {
         setLoading(false);
       }
@@ -132,22 +157,119 @@ const Analytics = () => {
     );
   }
 
-  // Error state
-  if (error) {
+  // Premium Paywall
+  if (!isPremium) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-red-50 border-2 border-red-200 rounded-xl p-8 text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Error Loading Analytics
-          </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-[#610b0c] text-white rounded-lg hover:bg-[#4a0809] transition-colors font-medium"
-          >
-            Try Again
-          </button>
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Analytics Dashboard
+          </h1>
+          <p className="text-gray-600">
+            Track your performance and grow your business
+          </p>
+        </div>
+
+        <div className="min-h-[70vh] flex items-center justify-center">
+          <div className="max-w-2xl w-full">
+            {/* Premium Feature Card */}
+            <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 rounded-2xl shadow-2xl overflow-hidden border-2 border-amber-200">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-[#610b0c] to-[#8b1214] p-8 text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-4 backdrop-blur-sm">
+                  <Crown className="w-10 h-10 text-amber-300" />
+                </div>
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  Premium Feature
+                </h2>
+                <p className="text-amber-100 text-lg">
+                  Unlock powerful analytics to grow your business
+                </p>
+              </div>
+
+              {/* Content */}
+              <div className="p-8">
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-4">
+                    <Lock className="w-12 h-12 text-gray-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Analytics is a Premium Feature
+                  </h3>
+                  <p className="text-gray-600 text-lg">
+                    Upgrade to Premium to access detailed insights about your products and sales
+                  </p>
+                </div>
+
+                {/* Features List */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+                    <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Performance Tracking</h4>
+                      <p className="text-sm text-gray-600">Monitor views, sales, and revenue trends</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+                    <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Detailed Reports</h4>
+                      <p className="text-sm text-gray-600">Weekly, monthly, and all-time analytics</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+                    <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Package className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Top Products</h4>
+                      <p className="text-sm text-gray-600">See which products perform best</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+                    <div className="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Real-time Insights</h4>
+                      <p className="text-sm text-gray-600">Get instant updates on your metrics</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={() => navigate("/seller-dashboard/subscriptions")}
+                    className="flex-1 py-4 bg-[#610b0c] text-white rounded-lg hover:bg-[#4a0809] transition-colors font-semibold text-lg flex items-center justify-center gap-2 shadow-lg"
+                  >
+                    <Crown className="w-6 h-6" />
+                    Upgrade to Premium
+                  </button>
+                  <button
+                    onClick={() => navigate("/seller-dashboard")}
+                    className="flex-1 py-4 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-semibold text-lg"
+                  >
+                    Back to Dashboard
+                  </button>
+                </div>
+
+                {/* Pricing Hint */}
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-gray-500">
+                    Starting from <span className="font-bold text-[#610b0c]">GH₵50/month</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -155,17 +277,50 @@ const Analytics = () => {
 
   const currentData = getCurrentData();
 
-  if (!analytics || analytics.total?.views === 0) {
+  // Check if there's no data at all
+  const hasNoData = !analytics || 
+    (analytics.total?.views === 0 && 
+     analytics.total?.sales === 0 && 
+     analytics.total?.products === 0);
+
+  if (hasNoData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            No Analytics Data Yet
-          </h2>
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Analytics Dashboard
+          </h1>
           <p className="text-gray-600">
-            As you get more views, sales, and likes, your analytics will show up here.
+            Track your performance and grow your business
           </p>
+        </div>
+
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="text-center max-w-md">
+            <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <BarChart3 className="w-12 h-12 text-gray-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              No Analytics Data Yet
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Start by adding products to your store. As customers view and purchase your products, your analytics will appear here.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => navigate("/seller-dashboard/add-product")}
+                className="px-6 py-3 bg-[#610b0c] text-white rounded-lg hover:bg-[#4a0809] transition-colors font-medium"
+              >
+                Add Your First Product
+              </button>
+              <button
+                onClick={() => navigate("/seller-dashboard/products")}
+                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                View Products
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );

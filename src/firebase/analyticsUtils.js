@@ -156,6 +156,35 @@ export const updateTopProducts = async (sellerId) => {
     }
 };
 
+/**
+ * 🔹 Sync the product count in analytics with the actual number of products.
+ * This function should be called when there's a mismatch between analytics and actual products.
+ *
+ * @param {string} sellerId - The ID of the seller.
+ * @returns {Promise<number>} - A promise that resolves to the actual product count.
+ */
+export const syncProductCount = async (sellerId) => {
+    try {
+        const productsRef = collection(db, "Products");
+        const q = query(productsRef, where("sellerId", "==", sellerId));
+        const querySnapshot = await getDocs(q);
+        const actualCount = querySnapshot.size;
+
+        // Update analytics with actual count
+        const analyticsRef = doc(db, "Analytics", sellerId, "total", "all");
+        await updateDoc(analyticsRef, {
+            products: actualCount,
+            updatedAt: serverTimestamp(),
+        });
+
+        console.log(`Synced product count for seller ${sellerId}: ${actualCount}`);
+        return actualCount;
+    } catch (error) {
+        console.error("Error syncing product count:", error);
+        throw error;
+    }
+};
+
 
 /**
  * 🔹 Get seller analytics for a given time range.
@@ -176,37 +205,92 @@ export const getSellerAnalytics = async (sellerId) => {
 
         const getSnapData = (snap) => snap.exists() ? snap.data() : {};
 
+        const totalData = getSnapData(totalSnap);
+
         const analytics = {
-            daily: getSnapData(dailySnap),
-            weekly: getSnapData(weeklySnap),
-            monthly: getSnapData(monthlySnap),
-            total: getSnapData(totalSnap),
-            topProducts: getSnapData(totalSnap).topProducts || [],
+            daily: {
+                views: 0,
+                sales: 0,
+                revenue: 0,
+                ...getSnapData(dailySnap),
+            },
+            weekly: {
+                views: 0,
+                sales: 0,
+                revenue: 0,
+                trend: "0%",
+                ...getSnapData(weeklySnap),
+            },
+            monthly: {
+                views: 0,
+                sales: 0,
+                revenue: 0,
+                trend: "0%",
+                ...getSnapData(monthlySnap),
+            },
+            total: {
+                products: 0,
+                views: 0,
+                likes: 0,
+                sales: 0,
+                revenue: 0,
+                ...totalData,
+            },
+            topProducts: totalData.topProducts || [],
         };
         
         // Calculate trends (example: weekly views trend)
-        const previousWeek = getWeek(new Date(new Date().setDate(new Date().getDate() - 7)));
-        const previousWeekId = `${getYear(new Date())}-${String(previousWeek).padStart(2, '0')}`;
-        const prevWeeklySnap = await getDoc(doc(analyticsRef, "weekly", previousWeekId));
-        const prevWeeklyData = getSnapData(prevWeeklySnap);
+        try {
+            const previousWeek = getWeek(new Date(new Date().setDate(new Date().getDate() - 7)));
+            const previousWeekId = `${getYear(new Date())}-${String(previousWeek).padStart(2, '0')}`;
+            const prevWeeklySnap = await getDoc(doc(analyticsRef, "weekly", previousWeekId));
+            const prevWeeklyData = getSnapData(prevWeeklySnap);
 
-        const weeklyViews = analytics.weekly.views || 0;
-        const prevWeeklyViews = prevWeeklyData.views || 0;
+            const weeklyViews = analytics.weekly.views || 0;
+            const prevWeeklyViews = prevWeeklyData.views || 0;
 
-        if (prevWeeklyViews > 0) {
-            const trend = ((weeklyViews - prevWeeklyViews) / prevWeeklyViews) * 100;
-            analytics.weekly.trend = `${trend.toFixed(0)}%`;
-        } else if (weeklyViews > 0) {
-            analytics.weekly.trend = "+100%";
-        } else {
-            analytics.weekly.trend = "0%";
+            if (prevWeeklyViews > 0) {
+                const trend = ((weeklyViews - prevWeeklyViews) / prevWeeklyViews) * 100;
+                analytics.weekly.trend = `${trend > 0 ? '+' : ''}${trend.toFixed(0)}%`;
+            } else if (weeklyViews > 0) {
+                analytics.weekly.trend = "+100%";
+            } else {
+                analytics.weekly.trend = "0%";
+            }
+
+            // Calculate monthly trend
+            const previousMonth = getMonth(new Date(new Date().setMonth(new Date().getMonth() - 1))) + 1;
+            const previousMonthId = `${getYear(new Date())}-${String(previousMonth).padStart(2, '0')}`;
+            const prevMonthlySnap = await getDoc(doc(analyticsRef, "monthly", previousMonthId));
+            const prevMonthlyData = getSnapData(prevMonthlySnap);
+
+            const monthlyViews = analytics.monthly.views || 0;
+            const prevMonthlyViews = prevMonthlyData.views || 0;
+
+            if (prevMonthlyViews > 0) {
+                const trend = ((monthlyViews - prevMonthlyViews) / prevMonthlyViews) * 100;
+                analytics.monthly.trend = `${trend > 0 ? '+' : ''}${trend.toFixed(0)}%`;
+            } else if (monthlyViews > 0) {
+                analytics.monthly.trend = "+100%";
+            } else {
+                analytics.monthly.trend = "0%";
+            }
+        } catch (trendError) {
+            console.error("Error calculating trends:", trendError);
+            // Keep default trend values
         }
-
 
         return analytics;
 
     } catch (error) {
         console.error("Error fetching seller analytics for seller:", sellerId, error);
-        throw new Error(`Failed to fetch analytics: ${error.message}`);
+        // Return default empty analytics instead of throwing
+        return {
+            daily: { views: 0, sales: 0, revenue: 0 },
+            weekly: { views: 0, sales: 0, revenue: 0, trend: "0%" },
+            monthly: { views: 0, sales: 0, revenue: 0, trend: "0%" },
+            total: { products: 0, views: 0, likes: 0, sales: 0, revenue: 0 },
+            topProducts: [],
+        };
     }
 };

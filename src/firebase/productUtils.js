@@ -1,9 +1,8 @@
 /**
- * @file This file contains utility functions for managing products, including CRUD operations and analytics tracking.
+ * @file This file contains utility functions for managing products, including CRUD operations.
  */
 
 import { db, storage } from "./FirebaseConfig";
-import { updateAnalytics } from "./analyticsUtils";
 import {
   collection,
   doc,
@@ -14,10 +13,7 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
-  limit,
   serverTimestamp,
-  increment,
 } from "firebase/firestore";
 import {
   ref,
@@ -86,12 +82,25 @@ export const createProduct = async (
   onProgress,
 ) => {
   try {
+    console.log("Starting product creation...");
+    console.log("Seller ID:", sellerId);
+    console.log("Product Data:", productData);
+    console.log("Number of images:", images.length);
+
+    // Validate images
+    if (!images || images.length === 0) {
+      throw new Error("At least one image is required");
+    }
+
     // First, create the product document to get the ID
     const productsRef = collection(db, "Products");
+    console.log("Creating product document...");
+    
     const productDoc = await addDoc(productsRef, {
       ...productData,
       sellerId,
       images: [], // Will be updated after upload
+      frontImage: "", // Will be updated after upload
       views: 0,
       likes: 0,
       sales: 0,
@@ -100,23 +109,39 @@ export const createProduct = async (
     });
 
     const productId = productDoc.id;
+    console.log("Product document created with ID:", productId);
 
     // Upload images
+    console.log("Starting image upload...");
     const imageUrls = await uploadProductImages(
       sellerId,
       productId,
       images,
       onProgress,
     );
+    console.log("Images uploaded successfully:", imageUrls);
 
-    // Update product with image URLs
+    // Update product with image URLs (first image is the front image)
+    console.log("Updating product with image URLs...");
     await updateDoc(doc(db, "Products", productId), {
       images: imageUrls,
+      frontImage: imageUrls[0] || "",
     });
 
+    // Update analytics to increment product count
+    console.log("Updating analytics...");
+    const { updateAnalytics } = await import("./analyticsUtils");
+    await updateAnalytics(sellerId, productId, "products", 1);
+
+    console.log("Product created successfully!");
     return productId;
   } catch (error) {
     console.error("Error creating product:", error);
+    console.error("Error details:", {
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+    });
     throw error;
   }
 };
@@ -230,6 +255,10 @@ export const deleteProduct = async (productId, sellerId) => {
     // Delete product document
     await deleteDoc(doc(db, "Products", productId));
 
+    // Update analytics to decrement product count
+    const { updateAnalytics } = await import("./analyticsUtils");
+    await updateAnalytics(sellerId, productId, "products", -1);
+
     return true;
   } catch (error) {
     console.error("Error deleting product:", error);
@@ -251,182 +280,6 @@ export const toggleProductStatus = async (productId, currentStatus) => {
     return newStatus;
   } catch (error) {
     console.error("Error toggling product status:", error);
-    throw error;
-  }
-};
-
-/**
- * 🔹 Increment product views and update analytics.
- *
- * @param {string} productId - The ID of the product.
- * @returns {Promise<void>}
- */
-export const incrementProductViews = async (productId) => {
-  try {
-    const productRef = doc(db, "Products", productId);
-    const productSnap = await getDoc(productRef);
-
-    if (productSnap.exists()) {
-      const productData = productSnap.data();
-      const sellerId = productData.sellerId;
-
-      // Increment views in the product document
-      await updateDoc(productRef, {
-        views: increment(1),
-      });
-
-      // Update analytics
-      if (sellerId) {
-        await updateAnalytics(sellerId, productId, "views");
-      }
-    }
-  } catch (error) {
-    console.error("Error incrementing views:", error);
-    throw error;
-  }
-};
-
-/**
- * 🔹 Increment product likes and update analytics.
- *
- * @param {string} productId - The ID of the product.
- * @returns {Promise<void>}
- */
-export const incrementProductLikes = async (productId) => {
-  try {
-    const productRef = doc(db, "Products", productId);
-    const productSnap = await getDoc(productRef);
-
-    if (productSnap.exists()) {
-      const productData = productSnap.data();
-      const sellerId = productData.sellerId;
-
-      // Increment likes in the product document
-      await updateDoc(productRef, {
-        likes: increment(1),
-      });
-
-      // Update analytics
-      if (sellerId) {
-        await updateAnalytics(sellerId, productId, "likes");
-      }
-    }
-  } catch (error) {
-    console.error("Error incrementing likes:", error);
-    throw error;
-  }
-};
-
-/**
- * 🔹 Increment product sales and update analytics.
- *
- * @param {string} productId - The ID of the product.
- * @param {number} quantity - The number of items sold.
- * @param {number} price - The price of a single item.
- * @returns {Promise<void>}
- */
-export const incrementProductSales = async (productId, quantity, price) => {
-  try {
-    const productRef = doc(db, "Products", productId);
-    const productSnap = await getDoc(productRef);
-
-    if (productSnap.exists()) {
-      const productData = productSnap.data();
-      const sellerId = productData.sellerId;
-      const revenue = quantity * price;
-
-      // Increment sales in the product document
-      await updateDoc(productRef, {
-        sales: increment(quantity),
-      });
-
-      // Update analytics
-      if (sellerId) {
-        await updateAnalytics(sellerId, productId, "sales", quantity, revenue);
-      }
-    }
-  } catch (error) {
-    console.error("Error incrementing sales:", error);
-    throw error;
-  }
-};
-
-/**
- * 🔹 Search for products based on filters (category, location, price).
- *
- * @param {object} filters - The search filters.
- * @returns {Promise<object[]>} - A promise that resolves to an array of product objects.
- */
-export const searchProducts = async (filters) => {
-  try {
-    const { category, location, minPrice, maxPrice } = filters;
-
-    let q = query(collection(db, "Products"), where("status", "==", "active"));
-
-    if (category) {
-      q = query(q, where("category", "==", category));
-    }
-
-    if (location) {
-      q = query(q, where("location", "==", location));
-    }
-
-    const querySnapshot = await getDocs(q);
-    let products = [];
-
-    querySnapshot.forEach((doc) => {
-      products.push({
-        id: doc.id,
-        ...doc.data(),
-      });
-    });
-
-    // Filter by price range (client-side filtering)
-    if (minPrice !== undefined || maxPrice !== undefined) {
-      products = products.filter((product) => {
-        const price = product.price || 0;
-        if (minPrice !== undefined && price < minPrice) return false;
-        if (maxPrice !== undefined && price > maxPrice) return false;
-        return true;
-      });
-    }
-
-    return products;
-  } catch (error) {
-    console.error("Error searching products:", error);
-    throw error;
-  }
-};
-
-/**
- * 🔹 Get a list of featured or popular products, ordered by views.
- *
- * @param {number} [limitCount=10] - The maximum number of products to fetch.
- * @returns {Promise<object[]>} - A promise that resolves to an array of product objects.
- */
-export const getFeaturedProducts = async (limitCount = 10) => {
-  try {
-    const productsRef = collection(db, "Products");
-    const q = query(
-      productsRef,
-      where("status", "==", "active"),
-      orderBy("views", "desc"),
-      limit(limitCount),
-    );
-
-    const querySnapshot = await getDocs(q);
-    const products = [];
-
-    querySnapshot.forEach((doc) => {
-      products.push({
-        id: doc.id,
-        ...doc.data(),
-      });
-    });
-
-    return products;
-  } catch (error) {
-    console.error("Error fetching featured products:", error);
     throw error;
   }
 };
