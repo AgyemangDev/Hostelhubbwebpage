@@ -10,16 +10,17 @@ import {
   Bell,
   BarChart3,
   ShoppingCart,
+  ShoppingBag, // Add ShoppingBag
   AlertCircle,
 } from "lucide-react";
 
 const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
-  // 🔹 Replace Firebase data with local mock state
-  const [subscriptionStatus, setSubscriptionStatus] = useState("free"); // "free" or "premium"
-  const [productCount, setProductCount] = useState(0);
-  const [weeklyNotifications, setWeeklyNotifications] = useState(2);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // ... (rest of the component state)
+  const [subscriptionStatus] = useState("free"); // "free" or "premium"
+  const [productCount] = useState(0);
+  const [weeklyNotifications] = useState(2);
+  const [loading] = useState(false);
+  const [error] = useState(null);
   const navigate = useNavigate();
   const navItems = [
     {
@@ -31,6 +32,11 @@ const Sidebar = ({ isMobile, sidebarOpen, setSidebarOpen }) => {
       name: "Products",
       path: "/seller-dashboard/products",
       icon: ShoppingCart,
+    },
+    {
+      name: "Orders",
+      path: "/seller-dashboard/orders",
+      icon: ShoppingBag,
     },
     {
       name: "Add Product",

@@ -102,14 +102,14 @@ const Notifications = () => {
 
     if (!formData.title.trim()) {
       newErrors.title = "Notification title is required";
-    } else if (formData.title.trim().length > 100) {
-      newErrors.title = "Title must be less than 100 characters";
+    } else if (formData.title.trim().length > 20) {
+      newErrors.title = "Title must be less than 20 characters";
     }
 
     if (!formData.message.trim()) {
       newErrors.message = "Message is required";
-    } else if (formData.message.trim().length > 500) {
-      newErrors.message = "Message must be less than 500 characters";
+    } else if (formData.message.trim().length > 50) {
+      newErrors.message = "Message must be less than 50 characters";
     }
 
     setErrors(newErrors);
@@ -276,7 +276,7 @@ const Notifications = () => {
                     <p className="text-sm text-red-600">{errors.title}</p>
                   ) : (
                     <p className="text-sm text-gray-500">
-                      {formData.title.length}/100 characters
+                      {formData.title.length}/20 characters
                     </p>
                   )}
                 </div>
@@ -297,14 +297,14 @@ const Notifications = () => {
                     errors.message ? "border-red-500" : "border-gray-300"
                   }`}
                   placeholder="Enter your notification message..."
-                  maxLength={500}
+                  maxLength={50}
                 />
                 <div className="flex items-center justify-between mt-1">
                   {errors.message ? (
                     <p className="text-sm text-red-600">{errors.message}</p>
                   ) : (
                     <p className="text-sm text-gray-500">
-                      {formData.message.length}/500 characters
+                      {formData.message.length}/50 characters
                     </p>
                   )}
                 </div>

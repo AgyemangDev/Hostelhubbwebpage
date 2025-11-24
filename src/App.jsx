@@ -50,6 +50,7 @@ import AddProduct from "./components/SellerComponents/Seller-tabs/AddProducts";
 import Subscription from "./components/SellerComponents/Seller-tabs/Subscription";
 import Products from "./components/SellerComponents/Seller-tabs/Products";
 import EditProduct from "./components/SellerComponents/Seller-tabs/EditProduct";
+import Orders from "./components/SellerComponents/Seller-tabs/Orders";
 
 
 const App = () => {
@@ -238,6 +239,7 @@ const App = () => {
               <Route path="analytics" element={<Analytics />} />
               <Route path="subscriptions" element={<Subscription />} />
               <Route path="products" element={<Products />} />
+              <Route path="orders" element={<Orders />} />
               <Route path="edit-product/:productId" element={<EditProduct />} />
             </Route>
           </Routes>
