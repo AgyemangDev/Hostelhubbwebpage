@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronRight, Home, Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = ({
   heroRef,
@@ -17,13 +17,16 @@ const Navbar = ({
   const [activeRoute, setActiveRoute] = useState("home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const navItems = [
-    { displayName: "Home", routeName: "home", ref: heroRef },
-    { displayName: "Seller", routeName: "seller", ref: sellerRef },
+    { displayName: "Home", routeName: "home", ref: heroRef, section: "hero" },
+    { displayName: "Products", routeName: "products", path: "/products" },
+    { displayName: "Seller", routeName: "seller", ref: sellerRef, section: "seller" },
     // { displayName: "Features", routeName: "features", ref: featuresRef },
-    { displayName: "How We Work", routeName: "howwework", ref: howweworkRef },
-    { displayName: "Affiliate", routeName: "affiliate", ref: affiliateRef },
+    { displayName: "How We Work", routeName: "howwework", ref: howweworkRef, section: "howwework" },
+    { displayName: "Affiliate", routeName: "affiliate", ref: affiliateRef, section: "affiliate" },
   ];
 
   useEffect(() => {
@@ -34,10 +37,18 @@ const Navbar = ({
 
   const handleNavigation = (item) => {
     setActiveRoute(item.routeName);
-    if (item.ref?.current) {
-      item.ref.current.scrollIntoView({ behavior: "smooth" });
-    }
     setIsMenuOpen(false);
+    
+    if (item.path) {
+      // Direct route navigation (e.g., Products)
+      navigate(item.path);
+    } else if (isHomePage && item.ref?.current) {
+      // On home page, scroll to section
+      item.ref.current.scrollIntoView({ behavior: "smooth" });
+    } else if (item.section) {
+      // Not on home page, navigate to home with section hash
+      navigate(`/?section=${item.section}`);
+    }
   };
 
   return (

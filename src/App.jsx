@@ -1,18 +1,14 @@
-import React, { useRef } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import HeroSection from "./components/HeroSection";
-import Discover from "./components/Discover";
-import ContactAndSocialSection from "./components/ContactAndSocialSection";
-import WhatsAppChannel from "./components/WhatsAppChannel";
-import Footer from "./components/Footer";
-import HostelhubbWork from "./components/HowWeWork/HostelhubbWork";
+import HomePage from "./components/HomePage";
 
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TransactionPolicy from "./components/TransactionPolicy";
 import StorageTermsAgreement from "./components/Terms/StorageTermsAgreement";
 import TermsPage from "./components/TermsPage";
 import Download from "./components/download/Download";
+import ProductsPage from "./components/Products/ProductsPage";
+import AppDetailPage from "./components/Products/AppDetailPage";
 
 import HostelRedirect from "./components/HostelRedirect";
 import AffiliatePage from "./components/Affiliate/AffiliatePage";
@@ -33,7 +29,6 @@ import Login from "./components/Login";
 import AffiliateApplications from "./components/AgentDashboard/AffiliateApplications";
 import { AuthProvider } from "./firebase/AuthContext";
 import { SellerProvider } from "./context/SellerContext";
-import SellerSection from "./components/SellerComponents/SellerSection";
 
 // Seller Imports
 import SellerDashboard from "./components/SellerComponents/SellerDashboard";
@@ -54,45 +49,6 @@ import Orders from "./components/SellerComponents/Seller-tabs/Orders";
 
 
 const App = () => {
-  const heroRef = useRef(null);
-  const featuresRef = useRef(null);
-  const howweworkRef = useRef(null);
-  const sellerRef = useRef(null);
-  const testimonialsRef = useRef(null);
-  const ctaRef = useRef(null);
-  const whatsAppRef = useRef(null);
-  const footerRef = useRef(null);
-  const affiliateRef = useRef(null);
-
-  const scrollToSection = (sectionRef) => {
-    sectionRef?.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const scrollToNextSection = () => {
-    const sections = [
-      heroRef,
-      featuresRef,
-      sellerRef,
-      testimonialsRef,
-      ctaRef,
-      whatsAppRef,
-      footerRef,
-      affiliateRef,
-    ];
-    const currentSectionIndex = sections.findIndex(
-      (section) =>
-        section.current && section.current.getBoundingClientRect().top >= 0,
-    );
-
-    const nextSectionIndex = currentSectionIndex + 1;
-    if (nextSectionIndex >= sections.length) {
-      heroRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else if (nextSectionIndex < sections.length) {
-      const nextSection = sections[nextSectionIndex];
-      scrollToSection(nextSection);
-    }
-  };
-
   return (
     <AuthProvider>
       <SellerProvider>
@@ -100,55 +56,11 @@ const App = () => {
         <div className="font-sans overflow-x-hidden scroll-smooth relative">
           <Routes>
             {/* Main Landing Page */}
-            <Route
-              path="/"
-              element={
-                <>
-                  <Navbar
-                    heroRef={heroRef}
-                    featuresRef={featuresRef}
-                    howweworkRef={howweworkRef}
-                    sellerRef={sellerRef}
-                    testimonialsRef={testimonialsRef}
-                    ctaRef={ctaRef}
-                    affiliateRef={affiliateRef}
-                    whatsAppRef={whatsAppRef}
-                  />
-                  <div ref={heroRef}>
-                    <HeroSection scrollToNextSection={scrollToNextSection} />
-                  </div>
+            <Route path="/" element={<HomePage />} />
 
-                  <div ref={sellerRef}>
-                    <SellerSection />
-                  </div>
-
-                  {/* <div ref={featuresRef}>
-                    <FeaturesSection />
-                  </div>*/}
-                  <div ref={howweworkRef}>
-                    <HostelhubbWork />
-                  </div>
-
-                  <div ref={affiliateRef}>
-                    <AffiliateProgramSection />
-                  </div>
-                  <div ref={testimonialsRef}>
-                    <Discover />
-                  </div>
-                  <div ref={whatsAppRef}>
-                    <WhatsAppChannel
-                      scrollToNextSection={scrollToNextSection}
-                    />
-                  </div>
-                  <div ref={ctaRef}>
-                    <ContactAndSocialSection />
-                  </div>
-                  <div ref={footerRef}>
-                    <Footer />
-                  </div>
-                </>
-              }
-            />
+            {/* Products Pages */}
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:appId" element={<AppDetailPage />} />
 
             {/* Policy Pages */}
             <Route path="/terms" element={<TermsPage />} />
