@@ -1,0 +1,196 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Admin Users rules
+    match /Admin_Users/{userId} {
+      allow read, update: if true;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+      
+      match /Admin_Personal_Info/{personalInfoId} {
+        allow read, write, create, update: if true;
+        allow delete: if false;
+      }
+    }
+    
+    match /transaction/{transactionId} {
+      allow read, write: if true;
+    }
+    
+    match /Storage/{bookingReference} {
+      allow read, write: if true;
+    }
+    
+    match /Bookings/{bookingId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if true;
+    }
+    
+    // Student Users rules
+    match /Student_Users/{userId} {
+      allow read, update: if true;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow delete: if true;
+      
+      match /Personal_Info/{personalInfoId} {
+        allow read, write, create, update: if true;
+        allow delete: if true;
+      }
+      
+      match /shortlist/{hostelId} {
+        allow read, create: if request.auth != null && request.auth.uid == userId;
+        allow update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Allow users to update their own push token
+      match /expoPushToken {
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Seller Applications
+    match /Seller_Applications/{sellerId} {
+      allow create: if request.auth != null && request.auth.uid == sellerId;
+      allow read: if request.auth != null && request.auth.uid == sellerId;
+      allow update, delete: if false;
+    }
+    
+    // Seller Users
+    match /Seller_Users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Seller Subscriptions (stored in Student_Users collection)
+    // Note: Subscription data is actually stored in Student_Users/{userId}
+    // This is kept for backward compatibility if needed
+    match /Seller_Subscriptions/{sellerId} {
+      allow read: if request.auth != null && request.auth.uid == sellerId;
+      allow write: if request.auth != null && request.auth.uid == sellerId;
+    }
+    
+    // Employees
+    match /Employees/{userId} {
+      allow read, list, create, update: if true;
+      allow delete: if true;
+    }
+    
+    match /Meta/{docId} {
+      allow read: if true;
+    }
+    
+    // Hostel rules
+    match /Hostels/{hostelId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null;
+    }
+    
+    match /Hostels/{hostelId}/Hostel_Info/{infoId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null;
+    }
+    
+    // Reviews
+    match /Reviews/{reviewId} {
+      allow read, write: if true;
+    }
+    
+    // Complaints
+    match /Complaints/{complaintId} {
+      allow read, write: if true;
+    }
+    
+    match /feeds/{feedId} {
+      allow read, write: if true;
+    }
+    
+    // Session Reports
+    match /SessionReports/{reportId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null 
+        && request.resource.data.agentId == request.auth.uid;
+      allow update, delete: if request.auth != null 
+        && resource.data.agentId == request.auth.uid;
+    }
+    
+    // Products
+    match /Products/{productId} {
+      allow read: if true;
+      allow create: if request.auth != null 
+        && request.resource.data.sellerId == request.auth.uid;
+      allow update, delete: if request.auth != null 
+        && resource.data.sellerId == request.auth.uid;
+    }
+    
+    // ✅ FIXED: Analytics - Allow sellers to read and write their own analytics
+    match /Analytics/{sellerId}/{document=**} {
+      allow read: if request.auth != null && request.auth.uid == sellerId;
+      allow write: if request.auth != null && request.auth.uid == sellerId;
+    }
+    
+    // ✅ FIXED: Notification History - Allow sellers to read and write their own notifications
+    match /Notification_History/{notificationId} {
+      allow read: if request.auth != null 
+        && resource.data.sellerId == request.auth.uid;
+      allow create: if request.auth != null 
+        && request.resource.data.sellerId == request.auth.uid;
+      allow update, delete: if false;
+    }
+    
+    // Scheduled Notifications
+    match /Scheduled_Notifications/{notificationId} {
+      allow read: if request.auth != null 
+        && resource.data.sellerId == request.auth.uid;
+      allow create: if request.auth != null 
+        && request.resource.data.sellerId == request.auth.uid;
+      allow update: if request.auth != null 
+        && resource.data.sellerId == request.auth.uid;
+      allow delete: if false;
+    }
+    
+    // Product Views (for analytics tracking)
+    match /Product_Views/{viewId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+    
+    // Product Likes (for analytics tracking)
+    match /Product_Likes/{likeId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+    
+    // Agent Users
+    match /Agent_Users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Agent Subscriptions
+    match /Agent_Subscriptions/{agentId} {
+      allow read: if request.auth != null && request.auth.uid == agentId;
+      allow write: if request.auth != null && request.auth.uid == agentId;
+    }
+
+    // Orders
+    match /orders/{orderId} {
+      // Users can create their own orders
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      // Users can read their own orders
+      // Sellers can read orders placed with them
+      allow read: if request.auth != null && 
+                  (resource.data.userId == request.auth.uid || resource.data.sellerId == request.auth.uid);
+                  
+      // Sellers can update the status of orders placed with them
+      allow update: if request.auth != null && resource.data.sellerId == request.auth.uid;
+
+      // Nobody can delete orders for now
+      allow delete: if false;
+    }
+  }
+}

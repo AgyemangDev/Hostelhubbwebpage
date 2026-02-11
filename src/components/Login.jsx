@@ -15,14 +15,18 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
-  // Pre-fill saved credentials
+  // Pre-fill saved credentials and attempt auto-login if "Remember Me" was checked
   useEffect(() => {
     const savedEmail = localStorage.getItem("email")
     const savedPassword = localStorage.getItem("password")
-    if (savedEmail && savedPassword) {
+    const rememberMeChecked = localStorage.getItem("rememberMe") === "true"
+
+    if (savedEmail && savedPassword && rememberMeChecked) {
       setEmail(savedEmail)
       setPassword(savedPassword)
       setRememberMe(true)
+      // Attempt to log in automatically
+      handleLogin(savedEmail, savedPassword, true)
     }
   }, [])
 

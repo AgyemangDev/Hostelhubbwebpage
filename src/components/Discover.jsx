@@ -1,27 +1,37 @@
-
 import React from "react";
 import DiscoverInfoCard from "./DiscoverComponents/DiscoverInfoCard";
 import StatsGrid from "./DiscoverComponents/StatsGrid";
 
 const Discover = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100">
-      
-      <div className="max-w-7xl mx-auto px-4 pt-24 pb-16 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-    Why Choose HostelHubb?
-  </h2>
-  <p className="mt-4 text-lg text-gray-600">
-    Simplifying Student Living with Hostels & Storage You Can Trust
-  </p>
-</div>
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-          <DiscoverInfoCard />
-          <StatsGrid />
+    <section className="bg-gradient-to-b from-white to-gray-50 py-24">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left side - text and info */}
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <h2 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-tight">
+                Why Choose{" "}
+                <span className="bg-gradient-to-r from-[#610b0c] to-[#8b1214] bg-clip-text text-transparent">
+                  HostelHubb?
+                </span>
+              </h2>
+              <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
+                Experience effortless hostel booking and management. From
+                verified listings to secure payments and real-time updates —
+                HostelHubb simplifies student living like never before.
+              </p>
+            </div>
+            <DiscoverInfoCard />
+          </div>
+
+          {/* Right side - statistics */}
+          <div className="w-full">
+            <StatsGrid />
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
