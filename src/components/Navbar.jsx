@@ -26,7 +26,6 @@ const Navbar = ({
     { displayName: "Seller", routeName: "seller", ref: sellerRef, section: "seller" },
     // { displayName: "Features", routeName: "features", ref: featuresRef },
     { displayName: "How We Work", routeName: "howwework", ref: howweworkRef, section: "howwework" },
-    { displayName: "Affiliate", routeName: "affiliate", ref: affiliateRef, section: "affiliate" },
   ];
 
   useEffect(() => {

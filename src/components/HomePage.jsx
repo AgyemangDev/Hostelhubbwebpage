@@ -7,8 +7,7 @@ import ContactAndSocialSection from "./ContactAndSocialSection";
 import WhatsAppChannel from "./WhatsAppChannel";
 import Footer from "./Footer";
 import HostelhubbWork from "./HowWeWork/HostelhubbWork";
-import AffiliateProgramSection from "./AffiliateProgramSection";
-import SellerSection from "./SellerComponents/SellerSection";
+
 
 const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,13 +20,12 @@ const HomePage = () => {
   const ctaRef = useRef(null);
   const whatsAppRef = useRef(null);
   const footerRef = useRef(null);
-  const affiliateRef = useRef(null);
+  
 
   const sectionRefs = {
     hero: heroRef,
     seller: sellerRef,
     howwework: howweworkRef,
-    affiliate: affiliateRef,
     testimonials: testimonialsRef,
     whatsapp: whatsAppRef,
     cta: ctaRef,
@@ -59,7 +57,7 @@ const HomePage = () => {
       ctaRef,
       whatsAppRef,
       footerRef,
-      affiliateRef,
+   
     ];
     const currentSectionIndex = sections.findIndex(
       (section) =>
@@ -81,27 +79,21 @@ const HomePage = () => {
         heroRef={heroRef}
         featuresRef={featuresRef}
         howweworkRef={howweworkRef}
-        sellerRef={sellerRef}
         testimonialsRef={testimonialsRef}
         ctaRef={ctaRef}
-        affiliateRef={affiliateRef}
         whatsAppRef={whatsAppRef}
       />
       <div ref={heroRef}>
         <HeroSection scrollToNextSection={scrollToNextSection} />
       </div>
 
-      <div ref={sellerRef}>
-        <SellerSection />
-      </div>
+   
 
       <div ref={howweworkRef}>
         <HostelhubbWork />
       </div>
 
-      <div ref={affiliateRef}>
-        <AffiliateProgramSection />
-      </div>
+      
       <div ref={testimonialsRef}>
         <Discover />
       </div>
