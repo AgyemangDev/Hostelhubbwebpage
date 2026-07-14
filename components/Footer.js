@@ -13,7 +13,7 @@ const Footer = () => {
           </p>
         </div>
 
-        <div>
+        {/* <div>
           <p className="text-xs font-mono uppercase tracking-widest text-paper/50 mb-3">Cities</p>
           <ul className="space-y-2 text-sm">
             {CITIES.map((c) => (
@@ -24,7 +24,7 @@ const Footer = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
         <div>
           <p className="text-xs font-mono uppercase tracking-widest text-paper/50 mb-3">Company</p>

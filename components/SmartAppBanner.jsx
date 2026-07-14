@@ -7,7 +7,7 @@ const APP_STORE_URL = "https://apps.apple.com/us/app/hostelhubb/id6738483533";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb";
 const APP_SCHEME = "hostelhubb://"; // matches "scheme" in your app.json
 const DISMISS_KEY = "hh_app_banner_dismissed_at";
-const DISMISS_DAYS = 0;
+const DISMISS_DAYS = 1;
 const AUTO_REDIRECT_KEY = "hh_auto_redirect_attempted";
 
 function detectPlatform() {

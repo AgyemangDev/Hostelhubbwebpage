@@ -28,7 +28,7 @@ export default function HomePage() {
 
         <HeroBanner />
 
-        <UniversityRail />
+        {/* <UniversityRail /> */}
 
         <ServicesSection />
 
