@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   GoogleAuthProvider,
@@ -25,7 +25,7 @@ function studentNeedsProfile(student) {
   return REQUIRED_FIELDS.some((field) => !student?.[field]);
 }
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -142,5 +142,13 @@ export default function LoginPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageInner />
+    </Suspense>
   );
 }
