@@ -1,6 +1,7 @@
 import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
 import { AuthProvider } from "../context/AuthContext";
 import SmartAppBanner from "@/components/SmartAppBanner";
+import TawkTo from "@/components/TawkTo";
 
 import "./globals.css";
 
@@ -118,6 +119,7 @@ export default function RootLayout({ children }) {
           <SmartAppBanner />
           {children}
         </AuthProvider>
+        <TawkTo />
       </body>
     </html>
   );
