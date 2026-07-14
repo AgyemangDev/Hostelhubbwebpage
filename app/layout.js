@@ -25,7 +25,7 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hostelhubb.com";
+const SITE_URL = "https://hostelhubb.com";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -71,9 +71,21 @@ export const metadata = {
     title: "HostelHubb — Verified Hostels, Transport & Storage for Ghanaian Students",
     description:
       "Find verified hostels, book campus transport, and store your belongings safely — all in one app for students across Ghana.",
+    images: [
+      {
+        url: "/og-banner.jpg",
+        width: 1200,
+        height: 630,
+        alt: "HostelHubb — Verified Hostels, Transport & Storage for Ghanaian Students",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    title: "HostelHubb — Verified Hostels, Transport & Storage for Ghanaian Students",
+    description:
+      "Find verified hostels, book campus transport, and store your belongings safely — all in one app for students across Ghana.",
+    images: ["/og-banner.jpg"],
   },
   robots: {
     index: true,
