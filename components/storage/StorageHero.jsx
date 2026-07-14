@@ -1,53 +1,14 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
+import { useOpenApp } from "@/lib/useOpenApp";
+import GetAppModal from "./GetAppModal";
 
-const APP_STORE_URL = "https://apps.apple.com/us/app/hostelhubb/id6738483533";
-const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.Hostelhubb.Hostelhubb";
-const APP_SCHEME = "hostelhubb://"; // deep link straight into booking flow
-const WHATSAPP_NUMBER = "+233245746198"; // TODO: replace with your real number, no + or spaces
+const WHATSAPP_NUMBER = "+233245746198"; // TODO: confirm correct international format, no + or spaces per wa.me spec
 const WHATSAPP_MESSAGE = "Hi, I'd like to ask about HostelHubb storage concerning [Add Your Concerns]";
 
-function detectPlatform() {
-  if (typeof navigator === "undefined") return null;
-  const ua = navigator.userAgent || navigator.vendor || "";
-  const isIOS =
-    /iPad|iPhone|iPod/.test(ua) ||
-    (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
-  if (isIOS) return "ios";
-  if (/android/i.test(ua)) return "android";
-  return null;
-}
-
 export default function StorageHero() {
-  const handleBookStorage = () => {
-    const platform = detectPlatform();
-
-    // Desktop / unknown device -> just go to the web booking page.
-    if (!platform) {
-      window.location.href = "/storage/book";
-      return;
-    }
-
-    const storeUrl = platform === "ios" ? APP_STORE_URL : PLAY_STORE_URL;
-    let redirected = false;
-
-    const onVisibilityChange = () => {
-      if (document.hidden) redirected = true;
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    // Try to open the app.
-    window.location.href = APP_SCHEME;
-
-    // If we're still here after a beat, the app isn't installed -> store.
-    setTimeout(() => {
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      if (!redirected) {
-        window.location.href = storeUrl;
-      }
-    }, 1500);
-  };
+  const { handleClick: handleBookStorage, isModalOpen, closeModal } = useOpenApp();
 
   const handleContactUs = () => {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
@@ -56,7 +17,6 @@ export default function StorageHero() {
 
   return (
     <section className="relative overflow-hidden bg-gray-50">
-
       <div className="absolute top-0 left-0 w-full z-20">
         <Navbar />
       </div>
@@ -68,9 +28,7 @@ export default function StorageHero() {
       <div className="absolute inset-0 bg-teal-800/55" />
 
       <div className="relative max-w-7xl mx-auto px-6 pt-32 pb-16">
-
         <div className="max-w-2xl">
-
           <p className="uppercase tracking-[0.25em] text-sm text-teal-100">
             HostelHubb Storage
           </p>
@@ -86,7 +44,6 @@ export default function StorageHero() {
           </p>
 
           <div className="mt-10 flex gap-4 flex-wrap">
-
             <button
               onClick={handleBookStorage}
               className="rounded-xl bg-white px-7 py-3 font-semibold text-teal-700"
@@ -100,13 +57,11 @@ export default function StorageHero() {
             >
               Contact Us
             </button>
-
           </div>
-
         </div>
-
       </div>
 
+      <GetAppModal open={isModalOpen} onClose={closeModal} />
     </section>
   );
 }

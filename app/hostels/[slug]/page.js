@@ -7,6 +7,7 @@ import Footer from "../../../components/Footer";
 import Breadcrumbs from "@/components/hostels/Breadcrumbs";
 import JsonLd from "@/components/hostels/JsonLd";
 import RoomTypeList from "@/components/hostels/RoomTypeList";
+import BookNowButton from "@/components/hostels/BookNowButton";
 import { getAccommodationBySlug, listAccommodationSlugs } from "../../../lib/seoApi";
 import { slugify } from "../../../lib/slug";
 
@@ -189,14 +190,18 @@ export default async function HostelDetailPage({ params }) {
               {accommodation.accommodation_name}
             </h1>
           </div>
-          {minPrice != null && (
-            <div className="shrink-0 px-5 py-3 rounded-2xl bg-maroon-50 border border-maroon/20">
-              <p className="text-xs text-ink-soft">From</p>
-              <p className="font-mono text-xl font-semibold text-maroon">
-                GHS {minPrice.toLocaleString()}
-              </p>
-            </div>
-          )}
+
+          <div className="flex flex-col items-end gap-3 shrink-0">
+            {minPrice != null && (
+              <div className="px-5 py-3 rounded-2xl bg-maroon-50 border border-maroon/20">
+                <p className="text-xs text-ink-soft">From</p>
+                <p className="font-mono text-xl font-semibold text-maroon">
+                  GHS {minPrice.toLocaleString()}
+                </p>
+              </div>
+            )}
+            <BookNowButton accommodationName={accommodation.accommodation_name} />
+          </div>
         </div>
 
         <p className="mt-6 text-ink-soft leading-relaxed max-w-3xl">{accommodation.description}</p>
@@ -220,7 +225,7 @@ export default async function HostelDetailPage({ params }) {
 
         <section className="mt-10">
           <h2 className="text-lg font-display font-semibold text-ink mb-3">Room types</h2>
-          <RoomTypeList roomTypes={roomTypes} />
+          <RoomTypeList roomTypes={roomTypes} accommodationName={accommodation.accommodation_name} />
         </section>
 
 
