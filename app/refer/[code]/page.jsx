@@ -1,3 +1,5 @@
+import ReferLanding from "@/components/ReferLanding";
+
 const SITE_URL = "https://hostelhubb.com";
 
 export async function generateMetadata({ params }) {
@@ -38,19 +40,5 @@ export async function generateMetadata({ params }) {
 
 export default function ReferralPage({ params }) {
   const { code } = params;
-
-  return (
-    <div style={{ padding: 40, textAlign: "center", fontFamily: "sans-serif" }}>
-      <h1>You&apos;ve been invited to HostelHubb</h1>
-      <p>Use referral code <strong>{code}</strong> when you book to credit your friend.</p>
-      <p>
-        <a href="https://apps.apple.com/app/hostelhubb" style={{ marginRight: 16 }}>
-          Download on the App Store
-        </a>
-        <a href="https://play.google.com/store/apps/details?id=com.hostelhubb">
-          Get it on Google Play
-        </a>
-      </p>
-    </div>
-  );
+  return <ReferLanding code={code} />;
 }
