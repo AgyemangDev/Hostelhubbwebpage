@@ -43,7 +43,7 @@ function LoginPageInner() {
     phone_number: "",
     gender: "",
     institution: "",
-  });
+  }); 
 
   function finishLogin(student) {
     setStudent(student);
