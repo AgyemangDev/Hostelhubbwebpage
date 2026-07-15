@@ -26,7 +26,7 @@ export default function ReferLanding({ code }) {
         </button>
 
         <p style={styles.hint}>
-          Your referral code is applied automatically when you sign up in the app.
+          Enter the referral code anytime you are booking a service.
         </p>
       </div>
 

@@ -1,10 +1,8 @@
 import ReferLanding from "@/components/ReferLanding";
 
-const SITE_URL = "https://hostelhubb.com";
-
 export async function generateMetadata({ params }) {
-  const { code } = params;
-  const imageUrl = `${SITE_URL}/api/referral-card?code=${encodeURIComponent(code)}`;
+  const { code } = await params; // drop `await` if on Next 14
+  const imageUrl = `/api/referral-card?code=${encodeURIComponent(code)}`;
 
   const title = `Join me on HostelHubb — use code ${code}`;
   const description =
@@ -17,7 +15,7 @@ export async function generateMetadata({ params }) {
       type: "website",
       siteName: "HostelHubb",
       locale: "en_GH",
-      url: `${SITE_URL}/refer/${code}`,
+      url: `/refer/${code}`,
       title,
       description,
       images: [
@@ -38,7 +36,7 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function ReferralPage({ params }) {
-  const { code } = params;
+export default async function ReferralPage({ params }) {
+  const { code } = await params; // drop `await` if on Next 14
   return <ReferLanding code={code} />;
 }
