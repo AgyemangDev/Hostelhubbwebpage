@@ -42,7 +42,7 @@ export async function generateMetadata({ params }) {
 
   const { accommodation } = data;
   const title = `${accommodation.accommodation_name} — Student Hostel near ${accommodation.institution}`;
-  const description = buildDescription(accommodation);
+  const description = `${accommodation.accommodation_name} is available on HostelHubb. Reserve your spot now before it goes. No stress.`;
   const url = `${SITE_URL}/hostels/${accommodation.slug}`;
   const image = accommodation.front_image;
 
@@ -55,7 +55,9 @@ export async function generateMetadata({ params }) {
       description,
       url,
       type: "website",
-      images: image ? [{ url: image, width: 1200, height: 800, alt: accommodation.accommodation_name }] : [],
+      images: image
+        ? [{ url: image, width: 1200, height: 800, alt: accommodation.accommodation_name }]
+        : [],
     },
     twitter: {
       card: "summary_large_image",

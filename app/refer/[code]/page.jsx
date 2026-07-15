@@ -6,7 +6,7 @@ export async function generateMetadata({ params }) {
 
   const title = `Join me on HostelHubb — use code ${code}`;
   const description =
-    "Book verified hostels, campus transport, and secure storage — all in one app for students across Ghana.";
+    "Use my HostelHubb referral code to book student accommodation, storage, and transport in Ghana, and enjoy exclusive rewards each time.";
 
   return {
     title,
