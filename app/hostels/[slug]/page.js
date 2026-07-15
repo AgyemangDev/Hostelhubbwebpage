@@ -11,7 +11,10 @@ import BookNowButton from "@/components/hostels/BookNowButton";
 import { getAccommodationBySlug, listAccommodationSlugs } from "../../../lib/seoApi";
 import { slugify } from "../../../lib/slug";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hostelhubb.com";
+// Public-facing frontend domain — used for OG tags, canonical URLs, and
+// JSON-LD. This is intentionally NOT NEXT_PUBLIC_SITE_URL, which points
+// at the backend API base and is used for data fetching only.
+const SITE_URL = "https://hostelhubb.com";
 
 // ISR: cache the rendered page and refresh from Express at most once an hour.
 export const revalidate = 3600;
