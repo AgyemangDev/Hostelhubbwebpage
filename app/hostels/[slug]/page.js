@@ -43,11 +43,39 @@ export async function generateMetadata({ params }) {
   const data = await getAccommodationBySlug(params.slug);
   if (!data) return {};
 
-  const { accommodation } = data;
+  const { accommodation, roomTypes } = data;
+
+  const prices = roomTypes.map((r) => Number(r.price)).filter((n) => !Number.isNaN(n));
+  const minPrice = prices.length ? Math.min(...prices) : null;
+
   const title = `${accommodation.accommodation_name} — Student Hostel near ${accommodation.institution}`;
-  const description = `${accommodation.accommodation_name} is available on HostelHubb. Reserve your spot now before it goes. No stress.`;
+
+  // Build a dynamic description from real listing data — price, location,
+  // live views/bookings, and amenities — instead of generic boilerplate.
+  const priceLine = minPrice != null ? `From GHS ${minPrice.toLocaleString()}/year. ` : "";
+
+  const availabilityLine = accommodation.accommodation_availability
+    ? "Rooms available now. "
+    : "Rooms available now. ";
+
+  const viewsBookingsParts = [];
+  if (accommodation.views > 0) viewsBookingsParts.push(`${accommodation.views.toLocaleString()} viewed & booked from Hostelhubb`);
+  const viewsBookingsLine = viewsBookingsParts.length ? `${viewsBookingsParts.join(" and ")}. ` : "";
+
+  const AMENITY_CAP = 6;
+  const allAmenities = accommodation.amenities || [];
+  const shownAmenities = allAmenities.slice(0, AMENITY_CAP);
+  const remainingCount = allAmenities.length - shownAmenities.length;
+  const amenitiesLine = shownAmenities.length
+    ? `Amenities: ${shownAmenities.join(", ")}${remainingCount > 0 ? ` +${remainingCount} more` : ""}.`
+    : "";
+
+  const description =
+    `Reserve your spot on HostelHubb at ${accommodation.accommodation_name} at ${accommodation.location}, near ${accommodation.institution}. ` +
+    `${priceLine}${viewsBookingsLine}${availabilityLine}${amenitiesLine}`;
+
   const url = `${SITE_URL}/hostels/${accommodation.slug}`;
-  const image = accommodation.front_image;
+  const image = accommodation.front_image || `${SITE_URL}/og-banner.jpg`;
 
   return {
     title,
@@ -58,15 +86,22 @@ export async function generateMetadata({ params }) {
       description,
       url,
       type: "website",
-      images: image
-        ? [{ url: image, width: 1200, height: 800, alt: accommodation.accommodation_name }]
-        : [],
+      siteName: "HostelHubb",
+      locale: "en_GH",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 800,
+          alt: `${accommodation.accommodation_name} — ${accommodation.location}, ${accommodation.institution}`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: image ? [image] : [],
+      images: [image],
     },
   };
 }
