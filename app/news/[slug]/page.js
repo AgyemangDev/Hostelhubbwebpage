@@ -6,6 +6,18 @@ import { getAllNewsSlugs, getNewsBySlug } from "@/lib/news";
 
 export const revalidate = 3600;
 
+const SITE_URL = "https://www.hostelhubb.com"; // ← replace with your real domain
+
+// coverImage is sometimes a relative path ("/images/news/...") and
+// sometimes already a full external URL ("https://cdn.../..."). Naively
+// prefixing SITE_URL onto an already-absolute URL produces a broken,
+// unfetchable image URL — which is why OG previews were falling back to
+// the site-wide default. This handles both cases correctly.
+function resolveImageUrl(coverImage) {
+  if (!coverImage) return null;
+  return /^https?:\/\//i.test(coverImage) ? coverImage : `${SITE_URL}${coverImage}`;
+}
+
 function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
@@ -15,20 +27,40 @@ function formatDate(dateString) {
 }
 
 // Pre-render every known slug at build time.
-// (Equivalent of the old getStaticPaths.)
 export async function generateStaticParams() {
   const slugs = getAllNewsSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
-// Per-page <title>/<meta description>, generated per article.
+// Per-article <title>, description, canonical URL, Open Graph, Twitter card.
 export async function generateMetadata({ params }) {
   const article = getNewsBySlug(params.slug);
   if (!article) return {};
 
+  const url = `${SITE_URL}/news/${article.slug}`;
+  const imageUrl = resolveImageUrl(article.coverImage);
+
   return {
     title: `${article.title} | Hostelhubb News`,
     description: article.excerpt,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url,
+      siteName: "Hostelhubb",
+      type: "article",
+      publishedTime: article.date,
+      images: imageUrl ? [{ url: imageUrl, alt: article.imageAlt || article.title }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
+      images: imageUrl ? [imageUrl] : [],
+    },
   };
 }
 
@@ -36,14 +68,41 @@ export default async function NewsArticlePage({ params }) {
   const article = getNewsBySlug(params.slug);
 
   if (!article) {
-    notFound(); // renders app/news/[slug]/not-found or app/not-found
+    notFound();
   }
 
-  const { title, category, author, date, coverImage, imageAlt, content } =
+  const { title, category, author, date, coverImage, imageAlt, content, excerpt, slug } =
     article;
+
+  const url = `${SITE_URL}/news/${slug}`;
+  const imageUrl = resolveImageUrl(coverImage);
+
+  // Structured data so Google can show this as an Article rich result.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: title,
+    description: excerpt,
+    image: [imageUrl],
+    datePublished: date,
+    dateModified: date,
+    author: [{ "@type": "Organization", name: author }],
+    publisher: {
+      "@type": "Organization",
+      name: "Hostelhubb",
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/icon.png` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <Link
         href="/news"
         className="mb-8 inline-block text-sm font-medium text-teal-700 hover:underline"
@@ -60,7 +119,8 @@ export default async function NewsArticlePage({ params }) {
       </h1>
 
       <div className="mt-3 text-sm text-stone-500">
-        By {author} · {formatDate(date)}
+        By {author} ·{" "}
+        <time dateTime={date}>{formatDate(date)}</time>
       </div>
 
       <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-stone-100">
