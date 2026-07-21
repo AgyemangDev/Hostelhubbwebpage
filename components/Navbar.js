@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { displayName: "Hostels", routeName: "hostels", path: "/hostels" },
   { displayName: "Storage", routeName: "storage", path: "/storage" },
   { displayName: "Transport", routeName: "transport", path: "/transport" },
+  { displayName: "News/Updates", routeName: "news", path: "/news" },
 ];
 
 const Navbar = () => {

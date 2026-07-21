@@ -7,6 +7,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "firebasestorage.googleapis.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.cheapoguides.com",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },
