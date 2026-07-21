@@ -1,10 +1,26 @@
 // app/news/page.jsx
 import { getNewsSummaries } from "@/lib/news";
 import NewsCard from "@/components/news/NewsCard";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata = {
   title: "News | Hostelhubb",
   description: "Updates, guides, and announcements from Hostelhubb.",
+  alternates: {
+    canonical: `${SITE_URL}/news`,
+  },
+  openGraph: {
+    title: "News | Hostelhubb",
+    description: "Updates, guides, and announcements from Hostelhubb.",
+    url: `${SITE_URL}/news`,
+    siteName: "Hostelhubb",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "News | Hostelhubb",
+    description: "Updates, guides, and announcements from Hostelhubb.",
+  },
 };
 
 // ISR: rebuild this page in the background at most once an hour.

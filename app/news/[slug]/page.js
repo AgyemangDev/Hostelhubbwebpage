@@ -3,10 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getAllNewsSlugs, getNewsBySlug } from "@/lib/news";
+import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 3600;
-
-const SITE_URL = "https://www.hostelhubb.com"; // ← replace with your real domain
 
 // coverImage is sometimes a relative path ("/images/news/...") and
 // sometimes already a full external URL ("https://cdn.../..."). Naively
@@ -53,6 +52,7 @@ export async function generateMetadata({ params }) {
       siteName: "Hostelhubb",
       type: "article",
       publishedTime: article.date,
+      authors: [article.author],
       images: imageUrl ? [{ url: imageUrl, alt: article.imageAlt || article.title }] : [],
     },
     twitter: {
