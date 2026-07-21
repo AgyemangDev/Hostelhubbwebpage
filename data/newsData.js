@@ -5,22 +5,23 @@
 // never inside a client component.
 
 const newsData = [
- {
-    id: 5,
-    slug: "student-storage-tips-semester-break",
-    title: "Don't Drag Your Whole Room Home This Break — Let HostelHubb Store It",
+{
+    id: 6,
+    slug: "affordable-secure-storage-no-hidden-fees",
+    title: "Stop Dragging Luggage AND Overpaying for Storage — HostelHubb Has a Cheaper Way",
     excerpt:
-      "Luggages, mini-fridges, electrical appliances, boxes of clothes — none of it needs to survive a trotro/bus ride home and back. Reserve HostelHubb Storage and we'll pick up your items and deliver them right back when school resumes.",
+      "Don't drag your things home by bus, and don't overpay to store them either. HostelHubb gives you a simple, cheap, secure alternative — with free pickup and delivery to your next accommodation.",
     category: "Storage & Moving Tips",
     author: "HostelHubb Team",
-    date: "2026-06-20",
+    date: "2026-07-21",
     coverImage: "https://cdn.cheapoguides.com/wp-content/uploads/sites/2/2017/05/shop-2148839_1920.jpg",
-    imageAlt: "Storage boxes and a suitcase packed in a student room",
+    imageAlt: "Student storage boxes ready for pickup",
     content: [
-      "Semester breaks bring a question a lot of students put off until the last minute: what actually happens to everything in your room while you're gone? Mattresses, mini-fridges, cooking equipment, boxes of clothes — none of it fits neatly into a single trotro ride home, and paying to move it all twice a year adds up fast.",
-      "The default option, hauling everything back and forth yourself, is expensive and exhausting. It usually means arriving home with more bags than you left with, only to repeat the whole process in reverse a few weeks later — and anything that gets damaged or lost along the way is on you.",
-      "You don't have to be the one carrying it. HostelHubb Storage picks your items up directly from your room before you travel, holds them securely for the break, and delivers everything back the moment school resumes — no trotro negotiations, no borrowed car boot, no lugging a mattress through a bus station.",
-      "It's built to be the cheapest way to skip the back-and-forth entirely, so break planning is one less thing on your list. Reserve your HostelHubb Storage spot before you travel, and let us handle the pickup, safekeeping, and delivery.",
+      "Every semester break, students face two problems, not just one. The first is obvious: dragging mattresses, mini-fridges, and boxes of clothes home by bus or trotro, then dragging it all back a few weeks later. The second is one people don't talk about enough: what it actually costs to store those things somewhere else in the meantime.",
+      "A lot of storage options out there charge extravagant fees for something that should be simple — you're just asking someone to hold your items safely for a few weeks. There's no reason that should come with a steep price tag on top of the stress of moving everything in the first place.",
+      "HostelHubb offers a simpler, cheaper way to handle both problems at once. Our storage is secure and budget-friendly, without the excessive charges some services tack on. You're not paying for extravagance — just honest, affordable safekeeping.",
+      "And you don't have to lift a finger to get your things there or back. Pickup is free, and so is delivery straight to your next accommodation when the new academic year starts. We collect your items before you travel, store them securely, and bring them right to your new hostel or room when school resumes — no bus fare, no negotiating with a driver, no carrying a mattress through a station.",
+      "Stop struggling with luggage, and stop overpaying to store it. Reserve your HostelHubb Storage spot and let us handle the rest — simply, securely, and affordably.",
     ],
   },
 ];
